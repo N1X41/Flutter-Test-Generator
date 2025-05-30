@@ -1,0 +1,12 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:test_demo_app/features/auth_login/methods/auth_login_methods.dart';
+
+void main() {
+  group('Тестирование метода calculateTotalPages', () {
+    test('Тест для копирования', () {
+      final result = calculateTotalPages();
+      const expected = null; // Заполните ожидаемое значение
+      expect(result, expected);
+    });
+  });
+}
