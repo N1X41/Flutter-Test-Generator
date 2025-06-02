@@ -1,8 +1,9 @@
 // ===== ЛЕКСЕР И ПАРСЕР ДЛЯ DART КОДА =====
-// Является подстраховкой для реализованной регулярки в виде полноценного лексера с грамматикой
+// Основной лексер для анализа Dart кода с полноценной грамматикой
 
-/// Лексер для токенизации Dart кода
-/// Принимает: - code - исходный код для анализа
+/**
+ * Интерфейс токена для лексического анализа Dart кода
+ */
 interface Token {
     type: TokenType;
     value: string;
@@ -11,9 +12,13 @@ interface Token {
     column: number;
 }
 
+/**
+ * Перечисление типов токенов для Dart лексера
+ */
 enum TokenType {
     // Ключевые слова
     CLASS = 'CLASS',
+    IMPORT = 'IMPORT',
     FUNCTION = 'FUNCTION', 
     ASYNC = 'ASYNC',
     AWAIT = 'AWAIT',
@@ -42,9 +47,17 @@ enum TokenType {
     TYPE = 'TYPE',
     STRING = 'STRING',
     NUMBER = 'NUMBER',
+    BOOLEAN = 'BOOLEAN',
+    CHAR = 'CHAR',
+    FLOAT = 'FLOAT',
+    DOUBLE = 'DOUBLE',
     
     // Операторы и символы
     ASSIGN = 'ASSIGN',          // =
+    EQUALS = 'EQUALS',          // ==
+    NOT_EQUALS = 'NOT_EQUALS',  // !=
+    LT_EQUALS = 'LT_EQUALS',    // <=
+    GT_EQUALS = 'GT_EQUALS',    // >=
     DOT = 'DOT',               // .
     COMMA = 'COMMA',           // ,
     SEMICOLON = 'SEMICOLON',   // ;
@@ -68,8 +81,10 @@ enum TokenType {
     UNKNOWN = 'UNKNOWN'
 }
 
-/// Лексер для разбора Dart кода на токены
-/// Принимает: - code - исходный код для токенизации
+/**
+ * Лексер для разбора Dart кода на токены
+ * @param code - исходный код для токенизации
+ */
 export class DartLexer {
     private code: string;
     private position: number;
@@ -80,6 +95,7 @@ export class DartLexer {
     // Ключевые слова Dart
     private keywords = new Map([
         ['class', TokenType.CLASS],
+        ['import', TokenType.IMPORT],
         ['async', TokenType.ASYNC],
         ['await', TokenType.AWAIT],
         ['if', TokenType.IF],
@@ -100,7 +116,14 @@ export class DartLexer {
         ['Future', TokenType.FUTURE],
         ['extends', TokenType.EXTENDS],
         ['implements', TokenType.IMPLEMENTS],
-        ['is', TokenType.IS]
+        ['is', TokenType.IS],
+        // Дополнительные типы данных
+        ['bool', TokenType.BOOLEAN],
+        ['char', TokenType.CHAR], 
+        ['float', TokenType.FLOAT],
+        ['double', TokenType.DOUBLE],
+        ['String', TokenType.TYPE],
+        ['int', TokenType.TYPE]
     ]);
 
     constructor(code: string) {
@@ -111,8 +134,10 @@ export class DartLexer {
         this.tokens = [];
     }
 
-    /// Основная функция токенизации
-    /// Принимает: нет параметров, работает с внутренним состоянием
+    /**
+     * Основная функция токенизации
+     * @returns массив токенов
+     */
     public tokenize(): Token[] {
         while (this.position < this.code.length) {
             this.skipWhitespace();
@@ -142,20 +167,25 @@ export class DartLexer {
         return this.tokens;
     }
 
-    /// Получение текущего символа
-    /// Принимает: нет параметров
+    /**
+     * Получение текущего символа
+     * @returns текущий символ строки
+     */
     private currentChar(): string {
         return this.code[this.position];
     }
 
-    /// Просмотр следующего символа без перемещения позиции
-    /// Принимает: нет параметров
+    /**
+     * Просмотр следующего символа без перемещения позиции
+     * @returns следующий символ или пустая строка
+     */
     private peekChar(): string {
         return this.position + 1 < this.code.length ? this.code[this.position + 1] : '';
     }
 
-    /// Перемещение на следующий символ
-    /// Принимает: нет параметров
+    /**
+     * Перемещение на следующий символ
+     */
     private advance(): void {
         if (this.currentChar() === '\n') {
             this.line++;
@@ -166,26 +196,36 @@ export class DartLexer {
         this.position++;
     }
 
-    /// Проверка является ли символ буквой
-    /// Принимает: - char - символ для проверки
+    /**
+     * Проверка является ли символ буквой
+     * @param char - символ для проверки
+     * @returns true если символ является буквой
+     */
     private isLetter(char: string): boolean {
         return /[a-zA-Z]/.test(char);
     }
 
-    /// Проверка является ли символ цифрой
-    /// Принимает: - char - символ для проверки
+    /**
+     * Проверка является ли символ цифрой
+     * @param char - символ для проверки
+     * @returns true если символ является цифрой
+     */
     private isDigit(char: string): boolean {
         return /[0-9]/.test(char);
     }
 
-    /// Проверка является ли символ буквенно-цифровым или подчеркиванием
-    /// Принимает: - char - символ для проверки
+    /**
+     * Проверка является ли символ буквенно-цифровым или подчеркиванием
+     * @param char - символ для проверки
+     * @returns true если символ буквенно-цифровой или подчеркивание
+     */
     private isAlphaNumeric(char: string): boolean {
         return this.isLetter(char) || this.isDigit(char) || char === '_';
     }
 
-    /// Пропуск пробельных символов
-    /// Принимает: нет параметров
+    /**
+     * Пропуск пробельных символов
+     */
     private skipWhitespace(): void {
         while (this.position < this.code.length && 
                /\s/.test(this.currentChar()) && 
@@ -194,8 +234,9 @@ export class DartLexer {
         }
     }
 
-    /// Чтение идентификатора или ключевого слова
-    /// Принимает: нет параметров
+    /**
+     * Чтение идентификатора или ключевого слова
+     */
     private readIdentifierOrKeyword(): void {
         const startPos = this.position;
         let value = '';
@@ -210,32 +251,72 @@ export class DartLexer {
         this.addToken(tokenType, value);
     }
 
-    /// Чтение числового литерала
-    /// Принимает: нет параметров
+    /**
+     * Чтение числового литерала (включая отрицательные и с плавающей точкой)
+     */
     private readNumber(): void {
         let value = '';
-
-        while (this.position < this.code.length && 
-               (this.isDigit(this.currentChar()) || this.currentChar() === '.')) {
+        let hasDecimalPoint = false;
+        
+        // Проверяем знак минус для отрицательных чисел
+        if (this.currentChar() === '-') {
             value += this.currentChar();
             this.advance();
         }
-
-        this.addToken(TokenType.NUMBER, value);
+        
+        while (this.position < this.code.length && 
+               (this.isDigit(this.currentChar()) || 
+                (this.currentChar() === '.' && !hasDecimalPoint))) {
+            
+            if (this.currentChar() === '.') {
+                hasDecimalPoint = true;
+            }
+            
+            value += this.currentChar();
+            this.advance();
+        }
+        
+        // Проверяем суффиксы типов (f для float, d для double)
+        if (this.position < this.code.length) {
+            const suffix = this.currentChar().toLowerCase();
+            if (suffix === 'f') {
+                value += this.currentChar();
+                this.advance();
+                this.addToken(TokenType.FLOAT, value);
+                return;
+            } else if (suffix === 'd') {
+                value += this.currentChar();
+                this.advance();
+                this.addToken(TokenType.DOUBLE, value);
+                return;
+            }
+        }
+        
+        // Определяем тип числа автоматически
+        if (hasDecimalPoint) {
+            this.addToken(TokenType.DOUBLE, value);
+        } else {
+            this.addToken(TokenType.NUMBER, value);
+        }
     }
 
-    /// Чтение строкового литерала
-    /// Принимает: нет параметров
+    /**
+     * Чтение строкового литерала с поддержкой экранированных символов
+     */
     private readString(): void {
         const quote = this.currentChar();
         let value = quote;
         this.advance();
-
+        
         while (this.position < this.code.length && 
                this.currentChar() !== quote) {
-            if (this.currentChar() === '\\') {
-                value += this.currentChar();
+            
+            // Обработка экранированных символов
+            if (this.currentChar() === '\\' && this.position + 1 < this.code.length) {
+                value += this.currentChar(); // добавляем \
                 this.advance();
+                
+                // Добавляем экранированный символ
                 if (this.position < this.code.length) {
                     value += this.currentChar();
                     this.advance();
@@ -245,17 +326,19 @@ export class DartLexer {
                 this.advance();
             }
         }
-
-        if (this.position < this.code.length) {
+        
+        // Добавляем закрывающую кавычку если она есть
+        if (this.position < this.code.length && this.currentChar() === quote) {
             value += this.currentChar();
             this.advance();
         }
-
+        
         this.addToken(TokenType.STRING, value);
     }
 
-    /// Чтение однострочного комментария
-    /// Принимает: нет параметров
+    /**
+     * Чтение однострочного комментария
+     */
     private readSingleLineComment(): void {
         let value = '';
 
@@ -268,8 +351,9 @@ export class DartLexer {
         this.addToken(TokenType.COMMENT, value);
     }
 
-    /// Чтение многострочного комментария
-    /// Принимает: нет параметров
+    /**
+     * Чтение многострочного комментария
+     */
     private readMultiLineComment(): void {
         let value = '';
 
@@ -287,8 +371,9 @@ export class DartLexer {
         this.addToken(TokenType.COMMENT, value);
     }
 
-    /// Чтение символьных операторов
-    /// Принимает: нет параметров
+    /**
+     * Чтение символов и операторов (включая составные операторы)
+     */
     private readSymbol(): void {
         const char = this.currentChar();
 
@@ -318,12 +403,48 @@ export class DartLexer {
                 this.advance();
                 break;
             case '<':
-                this.addToken(TokenType.LT, char);
-                this.advance();
+                if (this.peekChar() === '=') {
+                    this.addToken(TokenType.LT_EQUALS, '<=');
+                    this.advance();
+                    this.advance();
+                } else {
+                    this.addToken(TokenType.LT, char);
+                    this.advance();
+                }
                 break;
             case '>':
-                this.addToken(TokenType.GT, char);
-                this.advance();
+                if (this.peekChar() === '=') {
+                    this.addToken(TokenType.GT_EQUALS, '>=');
+                    this.advance();
+                    this.advance();
+                } else {
+                    this.addToken(TokenType.GT, char);
+                    this.advance();
+                }
+                break;
+            case '=':
+                if (this.peekChar() === '>') {
+                    this.addToken(TokenType.ARROW, '=>');
+                    this.advance();
+                    this.advance();
+                } else if (this.peekChar() === '=') {
+                    this.addToken(TokenType.EQUALS, '==');
+                    this.advance();
+                    this.advance();
+                } else {
+                    this.addToken(TokenType.ASSIGN, char);
+                    this.advance();
+                }
+                break;
+            case '!':
+                if (this.peekChar() === '=') {
+                    this.addToken(TokenType.NOT_EQUALS, '!=');
+                    this.advance();
+                    this.advance();
+                } else {
+                    this.addToken(TokenType.UNKNOWN, char);
+                    this.advance();
+                }
                 break;
             case '.':
                 this.addToken(TokenType.DOT, char);
@@ -337,19 +458,18 @@ export class DartLexer {
                 this.addToken(TokenType.SEMICOLON, char);
                 this.advance();
                 break;
-            case '=':
-                if (this.peekChar() === '>') {
-                    this.addToken(TokenType.ARROW, '=>');
-                    this.advance();
-                    this.advance();
-                } else {
-                    this.addToken(TokenType.ASSIGN, char);
-                    this.advance();
-                }
-                break;
             case '\n':
                 this.addToken(TokenType.NEWLINE, char);
                 this.advance();
+                break;
+            case '-':
+                // Проверяем, не является ли это началом отрицательного числа
+                if (this.isDigit(this.peekChar())) {
+                    this.readNumber();
+                } else {
+                    this.addToken(TokenType.UNKNOWN, char);
+                    this.advance();
+                }
                 break;
             default:
                 this.addToken(TokenType.UNKNOWN, char);
@@ -358,8 +478,11 @@ export class DartLexer {
         }
     }
 
-    /// Добавление токена в список
-    /// Принимает: - type - тип токена, - value - значение токена
+    /**
+     * Добавление токена в список
+     * @param type - тип токена
+     * @param value - значение токена
+     */
     private addToken(type: TokenType, value: string): void {
         this.tokens.push({
             type,
@@ -373,8 +496,10 @@ export class DartLexer {
 
 // ===== AST УЗЛЫ ДЛЯ ПАРСЕРА =====
 
-/// Базовый класс для всех AST узлов
-/// Принимает: - type - тип узла
+/**
+ * Базовый класс для всех AST узлов
+ * @param type - тип узла
+ */
 export abstract class ASTNode {
     public type: string;
     
@@ -383,8 +508,12 @@ export abstract class ASTNode {
     }
 }
 
-/// Узел класса
-/// Принимает: - name - имя класса, - extendsClass - родительский класс, - body - тело класса
+/**
+ * Узел класса
+ * @param name - имя класса
+ * @param extendsClass - родительский класс
+ * @param body - тело класса
+ */
 export class ClassNode extends ASTNode {
     public name: string;
     public extendsClass?: string;
@@ -398,8 +527,14 @@ export class ClassNode extends ASTNode {
     }
 }
 
-/// Узел метода
-/// Принимает: - name - имя метода, - returnType - тип возврата, - isAsync - асинхронный ли, - parameters - параметры, - body - тело метода
+/**
+ * Узел метода
+ * @param name - имя метода
+ * @param returnType - тип возврата
+ * @param isAsync - асинхронный ли
+ * @param parameters - параметры
+ * @param body - тело метода
+ */
 export class MethodNode extends ASTNode {
     public name: string;
     public returnType: string;
@@ -417,8 +552,11 @@ export class MethodNode extends ASTNode {
     }
 }
 
-/// Узел события (для Bloc)
-/// Принимает: - eventType - тип события, - handler - обработчик
+/**
+ * Узел события (для Bloc)
+ * @param eventType - тип события
+ * @param handler - обработчик
+ */
 export class EventHandlerNode extends ASTNode {
     public eventType: string;
     public handler: string;
@@ -430,8 +568,11 @@ export class EventHandlerNode extends ASTNode {
     }
 }
 
-/// Узел вызова метода emit
-/// Принимает: - stateName - имя состояния, - parameters - параметры
+/**
+ * Узел вызова метода emit
+ * @param stateName - имя состояния
+ * @param parameters - параметры
+ */
 export class EmitNode extends ASTNode {
     public stateName: string;
     public parameters: string[];
@@ -443,8 +584,12 @@ export class EmitNode extends ASTNode {
     }
 }
 
-/// Узел условного блока (if/else)
-/// Принимает: - condition - условие, - thenBody - тело then, - elseBody - тело else
+/**
+ * Узел условного блока (if/else)
+ * @param condition - условие
+ * @param thenBody - тело then
+ * @param elseBody - тело else
+ */
 export class ConditionalNode extends ASTNode {
     public condition: string;
     public thenBody: ASTNode[];
@@ -458,8 +603,12 @@ export class ConditionalNode extends ASTNode {
     }
 }
 
-/// Узел блока try-catch
-/// Принимает: - tryBody - тело try, - catchBody - тело catch, - finallyBody - тело finally
+/**
+ * Узел блока try-catch
+ * @param tryBody - тело try
+ * @param catchBody - тело catch
+ * @param finallyBody - тело finally
+ */
 export class TryCatchNode extends ASTNode {
     public tryBody: ASTNode[];
     public catchBody: ASTNode[];
@@ -473,8 +622,11 @@ export class TryCatchNode extends ASTNode {
     }
 }
 
-/// Узел зависимости (final поле)
-/// Принимает: - name - имя переменной, - type - тип зависимости
+/**
+ * Узел зависимости (final поле)
+ * @param name - имя переменной
+ * @param type - тип зависимости
+ */
 export class DependencyNode extends ASTNode {
     public name: string;
     public type: string;
@@ -488,8 +640,10 @@ export class DependencyNode extends ASTNode {
 
 // ===== ПАРСЕР DART КОДА =====
 
-/// Парсер для создания AST из токенов
-/// Принимает: - tokens - массив токенов для парсинга
+/**
+ * Парсер для создания AST из токенов
+ * @param tokens - массив токенов для парсинга
+ */
 export class DartParser {
     private tokens: Token[];
     private position: number;
@@ -499,8 +653,10 @@ export class DartParser {
         this.position = 0;
     }
 
-    /// Парсинг класса Cubit/Bloc
-    /// Принимает: нет параметров
+    /**
+     * Парсинг класса Cubit/Bloc
+     * @returns узел класса или null
+     */
     public parseClass(): ClassNode | null {
         const classToken = this.findToken(TokenType.CLASS);
         if (!classToken) return null;
@@ -524,8 +680,10 @@ export class DartParser {
         return new ClassNode(className, extendsClass, body);
     }
 
-    /// Парсинг тела класса
-    /// Принимает: нет параметров
+    /**
+     * Парсинг тела класса
+     * @returns массив узлов AST
+     */
     private parseClassBody(): ASTNode[] {
         const body: ASTNode[] = [];
         
@@ -537,8 +695,10 @@ export class DartParser {
         return body;
     }
 
-    /// Парсинг зависимостей (final поля)
-    /// Принимает: нет параметров
+    /**
+     * Парсинг зависимостей (final поля)
+     * @returns массив узлов зависимостей
+     */
     private parseDependencies(): DependencyNode[] {
         const dependencies: DependencyNode[] = [];
         
@@ -563,8 +723,10 @@ export class DartParser {
         return dependencies;
     }
 
-    /// Парсинг обработчиков событий (для Bloc)
-    /// Принимает: нет параметров
+    /**
+     * Парсинг обработчиков событий (для Bloc)
+     * @returns массив узлов обработчиков событий
+     */
     private parseEventHandlers(): EventHandlerNode[] {
         const handlers: EventHandlerNode[] = [];
         
@@ -600,8 +762,10 @@ export class DartParser {
         return handlers;
     }
 
-    /// Парсинг методов класса
-    /// Принимает: нет параметров
+    /**
+     * Парсинг методов класса
+     * @returns массив узлов методов
+     */
     private parseMethods(): MethodNode[] {
         const methods: MethodNode[] = [];
         
@@ -638,8 +802,11 @@ export class DartParser {
         return methods;
     }
 
-    /// Парсинг тела метода
-    /// Принимает: - methodName - имя метода
+    /**
+     * Парсинг тела метода
+     * @param methodName - имя метода
+     * @returns массив узлов AST
+     */
     private parseMethodBody(methodName: string): ASTNode[] {
         const body: ASTNode[] = [];
         
@@ -655,8 +822,10 @@ export class DartParser {
         return body;
     }
 
-    /// Парсинг вызовов emit
-    /// Принимает: нет параметров
+    /**
+     * Парсинг вызовов emit
+     * @returns массив узлов emit
+     */
     private parseEmitCalls(): EmitNode[] {
         const emits: EmitNode[] = [];
         
@@ -685,8 +854,10 @@ export class DartParser {
         return emits;
     }
 
-    /// Парсинг условных блоков
-    /// Принимает: нет параметров
+    /**
+     * Парсинг условных блоков
+     * @returns массив узлов условных блоков
+     */
     private parseConditionalBlocks(): ConditionalNode[] {
         const conditionals: ConditionalNode[] = [];
         
@@ -704,8 +875,10 @@ export class DartParser {
         return conditionals;
     }
 
-    /// Парсинг try-catch блоков
-    /// Принимает: нет параметров
+    /**
+     * Парсинг try-catch блоков
+     * @returns массив узлов try-catch
+     */
     private parseTryCatchBlocks(): TryCatchNode[] {
         const tryCatchBlocks: TryCatchNode[] = [];
         
@@ -725,27 +898,40 @@ export class DartParser {
 
     // ===== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ =====
 
-    /// Поиск токена по типу
-    /// Принимает: - type - тип токена для поиска
+    /**
+     * Поиск токена по типу
+     * @param type - тип токена для поиска
+     * @returns найденный токен или null
+     */
     private findToken(type: TokenType): Token | null {
         return this.tokens.find(token => token.type === type) || null;
     }
 
-    /// Поиск позиции токена
-    /// Принимает: - token - токен для поиска позиции
+    /**
+     * Поиск позиции токена
+     * @param token - токен для поиска позиции
+     * @returns позиция токена в массиве
+     */
     private findTokenPosition(token: Token): number {
         return this.tokens.indexOf(token);
     }
 
-    /// Просмотр токена со смещением
-    /// Принимает: - offset - смещение, - startFrom - начальная позиция
+    /**
+     * Просмотр токена со смещением
+     * @param offset - смещение
+     * @param startFrom - начальная позиция
+     * @returns токен или null
+     */
     private peekToken(offset: number, startFrom: number = this.position): Token | null {
         const pos = startFrom + offset;
         return pos < this.tokens.length ? this.tokens[pos] : null;
     }
 
-    /// Проверка является ли метод асинхронным
-    /// Принимает: - position - позиция в массиве токенов
+    /**
+     * Проверка является ли метод асинхронным
+     * @param position - позиция в массиве токенов
+     * @returns true если метод асинхронный
+     */
     private checkAsyncMethod(position: number): boolean {
         for (let i = position; i < Math.min(position + 10, this.tokens.length); i++) {
             if (this.tokens[i].type === TokenType.ASYNC) {
@@ -759,8 +945,11 @@ export class DartParser {
         return false;
     }
 
-    /// Извлечение условия из if блока
-    /// Принимает: - position - позиция if токена
+    /**
+     * Извлечение условия из if блока
+     * @param position - позиция if токена
+     * @returns строка условия
+     */
     private extractCondition(position: number): string {
         let condition = '';
         let parenCount = 0;
@@ -787,26 +976,36 @@ export class DartParser {
         return condition.trim();
     }
 
-    /// Извлечение тела блока
-    /// Принимает: - position - позиция начального токена, - blockType - тип блока
+    /**
+     * Извлечение тела блока
+     * @param position - позиция начального токена
+     * @param blockType - тип блока
+     * @returns массив узлов AST
+     */
     private extractBlockBody(position: number, blockType: string): ASTNode[] {
         // Упрощенная реализация - возвращаем пустой массив
         // В полной реализации здесь был бы рекурсивный парсинг
         return [];
     }
 
-    /// Извлечение тела else блока
-    /// Принимает: - position - позиция if токена
+    /**
+     * Извлечение тела else блока
+     * @param position - позиция if токена
+     * @returns массив узлов AST
+     */
     private extractElseBody(position: number): ASTNode[] {
         // Упрощенная реализация - возвращаем пустой массив
         return [];
     }
 }
 
-// ===== ЭКСПОРТИРУЕМЫЕ ФУНКЦИИ ДЛЯ ЗАМЕНЫ РЕГУЛЯРОК =====
+// ===== ЭКСПОРТИРУЕМЫЕ ФУНКЦИИ ДЛЯ АНАЛИЗА DART КОДА =====
 
-/// Парсинг класса через лексер (подстраховка для parseCubitOrBloc)
-/// Принимает: - classCode - код класса для анализа
+/**
+ * Парсинг класса через лексер
+ * @param classCode - код класса для анализа
+ * @returns объект с событиями, зависимостями и информацией о классе
+ */
 export function parseClassWithLexer(classCode: string): {
     events: { name: string; handler: string }[];
     dependencies: { name: string; type: string }[];
@@ -841,8 +1040,11 @@ export function parseClassWithLexer(classCode: string): {
     };
 }
 
-/// Парсинг состояний через лексер (подстраховка для parseInlineStates)
-/// Принимает: - classCode - код с определениями состояний
+/**
+ * Парсинг состояний через лексер
+ * @param classCode - код с определениями состояний
+ * @returns массив объектов состояний
+ */
 export function parseStatesWithLexer(classCode: string): {
     name: string;
     isInitial: boolean;
@@ -884,8 +1086,12 @@ export function parseStatesWithLexer(classCode: string): {
     return states;
 }
 
-/// Парсинг методов через лексер (подстраховка для parseEnhancedMethods)
-/// Принимает: - classCode - код класса, - isBloc - является ли блоком
+/**
+ * Парсинг методов через лексер
+ * @param classCode - код класса
+ * @param isBloc - является ли блоком
+ * @returns массив объектов методов
+ */
 export function parseMethodsWithLexer(classCode: string, isBloc: boolean): {
     name: string;
     type: 'event' | 'method';
@@ -935,8 +1141,12 @@ export function parseMethodsWithLexer(classCode: string, isBloc: boolean): {
     return methods;
 }
 
-/// Извлечение тела метода через лексер (подстраховка для extractMethodBodyFromCode)
-/// Принимает: - classCode - код класса, - methodName - имя метода
+/**
+ * Извлечение тела метода через лексер
+ * @param classCode - код класса
+ * @param methodName - имя метода
+ * @returns тело метода в виде строки или null
+ */
 export function extractMethodBodyWithLexer(classCode: string, methodName: string): string | null {
     const lexer = new DartLexer(classCode);
     const tokens = lexer.tokenize();
@@ -944,10 +1154,41 @@ export function extractMethodBodyWithLexer(classCode: string, methodName: string
     // Ищем начало метода
     for (let i = 0; i < tokens.length - 3; i++) {
         const token = tokens[i];
-        if (token.type === TokenType.IDENTIFIER && token.value === methodName &&
-            i > 0 && (tokens[i - 1].type === TokenType.VOID || 
-                      tokens[i - 1].type === TokenType.FUTURE ||
-                      tokens[i - 1].value === 'String')) {
+        if (token.type === TokenType.IDENTIFIER && token.value === methodName) {
+            
+            // Проверяем различные паттерны возвращаемых типов перед именем метода
+            let hasValidReturnType = false;
+            
+            // Паттерн 1: void methodName 
+            if (i > 0 && tokens[i - 1].type === TokenType.VOID) {
+                hasValidReturnType = true;
+            }
+            // Паттерн 2: Future<void> methodName 
+            else if (i > 3 && 
+                     tokens[i - 4].type === TokenType.FUTURE &&
+                     tokens[i - 3].type === TokenType.LT &&
+                     tokens[i - 2].type === TokenType.VOID &&
+                     tokens[i - 1].type === TokenType.GT) {
+                hasValidReturnType = true;
+            }
+            // Паттерн 3: Future<SomeType> methodName
+            else if (i > 3 && 
+                     tokens[i - 4].type === TokenType.FUTURE &&
+                     tokens[i - 3].type === TokenType.LT &&
+                     tokens[i - 2].type === TokenType.IDENTIFIER &&
+                     tokens[i - 1].type === TokenType.GT) {
+                hasValidReturnType = true;
+            }
+            // Паттерн 4: String/int/bool methodName
+            else if (i > 0 && (tokens[i - 1].value === 'String' || 
+                               tokens[i - 1].value === 'int' ||
+                               tokens[i - 1].value === 'bool')) {
+                hasValidReturnType = true;
+            }
+            
+            if (!hasValidReturnType) {
+                continue;
+            }
             
             // Ищем открывающую скобку
             for (let j = i + 1; j < tokens.length; j++) {
@@ -966,6 +1207,27 @@ export function extractMethodBodyWithLexer(classCode: string, methodName: string
                         }
                         
                         body += bodyToken.value;
+                        // Добавляем пробел после токена, кроме специальных случаев
+                        if (bodyToken.type !== TokenType.DOT && 
+                            bodyToken.type !== TokenType.LPAREN &&
+                            bodyToken.type !== TokenType.LBRACE &&
+                            bodyToken.type !== TokenType.LBRACKET &&
+                            bodyToken.type !== TokenType.WHITESPACE) {
+                            // Проверяем следующий токен
+                            if (k + 1 < tokens.length) {
+                                const nextToken = tokens[k + 1];
+                                if (nextToken.type !== TokenType.DOT && 
+                                    nextToken.type !== TokenType.RPAREN &&
+                                    nextToken.type !== TokenType.RBRACE &&
+                                    nextToken.type !== TokenType.RBRACKET &&
+                                    nextToken.type !== TokenType.SEMICOLON &&
+                                    nextToken.type !== TokenType.COMMA &&
+                                    nextToken.type !== TokenType.WHITESPACE) {
+                                    body += ' ';
+                                }
+                            }
+                        }
+                        
                         if (bodyToken.type === TokenType.NEWLINE || 
                             bodyToken.type === TokenType.SEMICOLON) {
                             body += ' ';
@@ -981,14 +1243,19 @@ export function extractMethodBodyWithLexer(classCode: string, methodName: string
     return null;
 }
 
-/// Парсинг методов кубитов через лексер
-/// Принимает: - classCode - код класса
-export function parseCubitMethodsWithLexer(classCode: string): {
+/**
+ * Парсинг всех методов через лексер (для блоков и кубитов)
+ * @param classCode - код класса
+ * @param includePrivate - включать ли приватные методы
+ * @returns массив объектов методов с подробной информацией
+ */
+export function parseAllMethodsWithLexer(classCode: string, includePrivate: boolean = false): {
     name: string;
     returnType: string;
     isAsync: boolean;
     isArrowFunction: boolean;
     body: string;
+    isPrivate: boolean;
 }[] {
     const lexer = new DartLexer(classCode);
     const tokens = lexer.tokenize();
@@ -998,117 +1265,290 @@ export function parseCubitMethodsWithLexer(classCode: string): {
         isAsync: boolean;
         isArrowFunction: boolean;
         body: string;
+        isPrivate: boolean;
     }[] = [];
     
     for (let i = 0; i < tokens.length - 3; i++) {
         const token = tokens[i];
         
-        // Ищем типы возврата методов (void, Future, String, int, bool)
-        if ((token.type === TokenType.VOID || 
-             token.type === TokenType.FUTURE ||
-             token.value === 'String' || 
-             token.value === 'int' ||
-             token.value === 'bool') &&
+        // Ищем различные паттерны методов
+        let hasValidReturnType = false;
+        let returnType = '';
+        let methodStartIndex = -1;
+        
+        // Паттерн 1: void methodName
+        if (token.type === TokenType.VOID && 
             tokens[i + 1].type === TokenType.IDENTIFIER) {
-            
-            const methodName = tokens[i + 1].value;
-            const returnType = token.value;
-            
-            // Фильтруем методы
-            if (methodName.startsWith('_') || 
-                methodName === 'super' || 
-                methodName.includes('Cubit') ||
-                methodName.includes('Bloc')) {
-                continue;
-            }
-            
-            // Ищем параметры и тело метода
-            let paramStartIndex = -1;
-            let isAsync = false;
-            let isArrowFunction = false;
-            let bodyStartIndex = -1;
-            
-            // Находим открывающую скобку параметров
-            for (let j = i + 2; j < tokens.length; j++) {
-                if (tokens[j].type === TokenType.LPAREN) {
-                    paramStartIndex = j;
-                    break;
-                }
-            }
-            
-            if (paramStartIndex === -1) continue;
-            
-            // Ищем закрывающую скобку параметров и дальше
-            let paramEndIndex = -1;
-            let parenCount = 1;
-            for (let j = paramStartIndex + 1; j < tokens.length; j++) {
-                if (tokens[j].type === TokenType.LPAREN) {
-                    parenCount++;
-                } else if (tokens[j].type === TokenType.RPAREN) {
-                    parenCount--;
-                    if (parenCount === 0) {
-                        paramEndIndex = j;
-                        break;
-                    }
-                }
-            }
-            
-            if (paramEndIndex === -1) continue;
-            
-            // Проверяем async и стрелочную функцию
-            for (let j = paramEndIndex + 1; j < Math.min(paramEndIndex + 5, tokens.length); j++) {
-                if (tokens[j].type === TokenType.ASYNC) {
-                    isAsync = true;
-                } else if (tokens[j].type === TokenType.ARROW) {
-                    isArrowFunction = true;
-                    bodyStartIndex = j + 1;
-                    break;
-                } else if (tokens[j].type === TokenType.LBRACE) {
-                    bodyStartIndex = j;
-                    break;
-                }
-            }
-            
-            if (bodyStartIndex === -1) continue;
-            
-            // Извлекаем тело метода
-            let body = '';
-            if (isArrowFunction) {
-                // Для стрелочных функций - до точки с запятой
-                for (let j = bodyStartIndex; j < tokens.length; j++) {
-                    if (tokens[j].type === TokenType.SEMICOLON) {
-                        break;
-                    }
-                    body += tokens[j].value + ' ';
-                }
-            } else {
-                // Для обычных методов - до закрывающей скобки
-                let braceCount = 1;
-                for (let j = bodyStartIndex + 1; j < tokens.length && braceCount > 0; j++) {
-                    if (tokens[j].type === TokenType.LBRACE) {
-                        braceCount++;
-                    } else if (tokens[j].type === TokenType.RBRACE) {
-                        braceCount--;
-                        if (braceCount === 0) break;
-                    }
-                    
-                    body += tokens[j].value;
-                    if (tokens[j].type === TokenType.NEWLINE || 
-                        tokens[j].type === TokenType.SEMICOLON) {
-                        body += ' ';
-                    }
-                }
-            }
-            
-            methods.push({
-                name: methodName,
-                returnType: returnType,
-                isAsync: isAsync,
-                isArrowFunction: isArrowFunction,
-                body: body.trim()
-            });
+            hasValidReturnType = true;
+            returnType = 'void';
+            methodStartIndex = i + 1;
         }
+        // Паттерн 2: Future<void> methodName
+        else if (token.type === TokenType.FUTURE &&
+                 i + 4 < tokens.length &&
+                 tokens[i + 1].type === TokenType.LT &&
+                 tokens[i + 2].type === TokenType.VOID &&
+                 tokens[i + 3].type === TokenType.GT &&
+                 tokens[i + 4].type === TokenType.IDENTIFIER) {
+            hasValidReturnType = true;
+            returnType = 'Future<void>';
+            methodStartIndex = i + 4;
+        }
+        // Паттерн 3: Future<SomeType> methodName
+        else if (token.type === TokenType.FUTURE &&
+                 i + 4 < tokens.length &&
+                 tokens[i + 1].type === TokenType.LT &&
+                 tokens[i + 2].type === TokenType.IDENTIFIER &&
+                 tokens[i + 3].type === TokenType.GT &&
+                 tokens[i + 4].type === TokenType.IDENTIFIER) {
+            hasValidReturnType = true;
+            returnType = `Future<${tokens[i + 2].value}>`;
+            methodStartIndex = i + 4;
+        }
+        // Паттерн 4: String/int/bool methodName
+        else if ((token.value === 'String' || 
+                  token.value === 'int' ||
+                  token.value === 'bool') &&
+                 tokens[i + 1].type === TokenType.IDENTIFIER) {
+            hasValidReturnType = true;
+            returnType = token.value;
+            methodStartIndex = i + 1;
+        }
+        
+        if (!hasValidReturnType || methodStartIndex === -1) {
+            continue;
+        }
+        
+        const methodName = tokens[methodStartIndex].value;
+        const isPrivate = methodName.startsWith('_');
+        
+        // Фильтруем методы
+        if (methodName === 'super' || 
+            methodName.includes('Cubit') ||
+            methodName.includes('Bloc')) {
+            continue;
+        }
+        
+        // Пропускаем приватные методы если не нужны
+        if (isPrivate && !includePrivate) {
+            continue;
+        }
+        
+        // Ищем параметры и тело метода
+        let paramStartIndex = -1;
+        let isAsync = false;
+        let isArrowFunction = false;
+        let bodyStartIndex = -1;
+        
+        // Находим открывающую скобку параметров
+        for (let j = methodStartIndex + 1; j < tokens.length; j++) {
+            if (tokens[j].type === TokenType.LPAREN) {
+                paramStartIndex = j;
+                break;
+            }
+        }
+        
+        if (paramStartIndex === -1) continue;
+        
+        // Ищем закрывающую скобку параметров и дальше
+        let paramEndIndex = -1;
+        let parenCount = 1;
+        for (let j = paramStartIndex + 1; j < tokens.length; j++) {
+            if (tokens[j].type === TokenType.LPAREN) {
+                parenCount++;
+            } else if (tokens[j].type === TokenType.RPAREN) {
+                parenCount--;
+                if (parenCount === 0) {
+                    paramEndIndex = j;
+                    break;
+                }
+            }
+        }
+        
+        if (paramEndIndex === -1) continue;
+        
+        // Проверяем async и стрелочную функцию
+        for (let j = paramEndIndex + 1; j < Math.min(paramEndIndex + 5, tokens.length); j++) {
+            if (tokens[j].type === TokenType.ASYNC) {
+                isAsync = true;
+            } else if (tokens[j].type === TokenType.ARROW) {
+                isArrowFunction = true;
+                bodyStartIndex = j + 1;
+                break;
+            } else if (tokens[j].type === TokenType.LBRACE) {
+                bodyStartIndex = j;
+                break;
+            }
+        }
+        
+        if (bodyStartIndex === -1) continue;
+        
+        // Извлекаем тело метода
+        let body = '';
+        if (isArrowFunction) {
+            // Для стрелочных функций - до точки с запятой
+            for (let j = bodyStartIndex; j < tokens.length; j++) {
+                if (tokens[j].type === TokenType.SEMICOLON) {
+                    break;
+                }
+                body += tokens[j].value + ' ';
+            }
+        } else {
+            // Для обычных методов - до закрывающей скобки
+            let braceCount = 1;
+            for (let j = bodyStartIndex + 1; j < tokens.length && braceCount > 0; j++) {
+                if (tokens[j].type === TokenType.LBRACE) {
+                    braceCount++;
+                } else if (tokens[j].type === TokenType.RBRACE) {
+                    braceCount--;
+                    if (braceCount === 0) break;
+                }
+                
+                body += tokens[j].value;
+                // Добавляем пробел после токена, кроме специальных случаев
+                if (tokens[j].type !== TokenType.DOT && 
+                    tokens[j].type !== TokenType.LPAREN &&
+                    tokens[j].type !== TokenType.LBRACE &&
+                    tokens[j].type !== TokenType.LBRACKET &&
+                    tokens[j].type !== TokenType.WHITESPACE) {
+                    // Проверяем следующий токен
+                    if (j + 1 < tokens.length) {
+                        const nextToken = tokens[j + 1];
+                        if (nextToken.type !== TokenType.DOT && 
+                            nextToken.type !== TokenType.RPAREN &&
+                            nextToken.type !== TokenType.RBRACE &&
+                            nextToken.type !== TokenType.RBRACKET &&
+                            nextToken.type !== TokenType.SEMICOLON &&
+                            nextToken.type !== TokenType.COMMA &&
+                            nextToken.type !== TokenType.WHITESPACE) {
+                            body += ' ';
+                        }
+                    }
+                }
+                
+                if (tokens[j].type === TokenType.NEWLINE || 
+                    tokens[j].type === TokenType.SEMICOLON) {
+                    body += ' ';
+                }
+            }
+        }
+        
+        methods.push({
+            name: methodName,
+            returnType: returnType,
+            isAsync: isAsync,
+            isArrowFunction: isArrowFunction,
+            body: body.trim(),
+            isPrivate: isPrivate
+        });
     }
     
     return methods;
+}
+
+/**
+ * Для обратной совместимости
+ * @param classCode - код класса
+ * @returns массив объектов методов кубита
+ */
+export function parseCubitMethodsWithLexer(classCode: string): {
+    name: string;
+    returnType: string;
+    isAsync: boolean;
+    isArrowFunction: boolean;
+    body: string;
+}[] {
+    return parseAllMethodsWithLexer(classCode, false).map(method => ({
+        name: method.name,
+        returnType: method.returnType,
+        isAsync: method.isAsync,
+        isArrowFunction: method.isArrowFunction,
+        body: method.body
+    }));
+}
+
+/**
+ * Парсинг импортов через лексер
+ * @param classCode - код файла для анализа импортов
+ * @returns массив объектов импортов
+ */
+export function parseImportsWithLexer(classCode: string): {
+    path: string;
+    isPackageImport: boolean;
+    isRelativeImport: boolean;
+    fileName: string;
+    containsEntity: boolean;
+}[] {
+    const lexer = new DartLexer(classCode);
+    const tokens = lexer.tokenize();
+    const imports: {
+        path: string;
+        isPackageImport: boolean;
+        isRelativeImport: boolean;
+        fileName: string;
+        containsEntity: boolean;
+    }[] = [];
+    
+    for (let i = 0; i < tokens.length - 1; i++) {
+        const token = tokens[i];
+        
+        // Ищем токен import
+        if (token.type === TokenType.IMPORT) {
+            // Следующий токен должен быть строкой с путем
+            const pathToken = tokens[i + 1];
+            if (pathToken.type === TokenType.STRING) {
+                // Убираем кавычки из пути
+                const path = pathToken.value.slice(1, -1);
+                const isPackageImport = path.startsWith('package:');
+                const isRelativeImport = path.startsWith('./') || path.startsWith('../');
+                
+                // Извлекаем имя файла из пути
+                const pathParts = path.split('/');
+                const fileName = pathParts[pathParts.length - 1];
+                
+                // Проверяем, содержит ли путь слово entity/entities
+                const containsEntity = path.toLowerCase().includes('entit');
+                
+                imports.push({
+                    path,
+                    isPackageImport,
+                    isRelativeImport,
+                    fileName,
+                    containsEntity
+                });
+            }
+        }
+    }
+    
+    return imports;
+}
+
+/**
+ * Отладочная функция для тестирования парсинга импортов
+ * @param classCode - код для тестирования
+ * @returns детальная информация о токенах
+ */
+export function debugParseImports(classCode: string): {
+    totalTokens: number;
+    importTokens: number;
+    stringTokens: number;
+    allTokens: { type: string; value: string }[];
+    imports: any[];
+} {
+    const lexer = new DartLexer(classCode);
+    const tokens = lexer.tokenize();
+    
+    const importTokens = tokens.filter(t => t.type === TokenType.IMPORT).length;
+    const stringTokens = tokens.filter(t => t.type === TokenType.STRING).length;
+    
+    const allTokens = tokens.map(t => ({ type: t.type, value: t.value }));
+    const imports = parseImportsWithLexer(classCode);
+    
+    return {
+        totalTokens: tokens.length,
+        importTokens,
+        stringTokens,
+        allTokens: allTokens.slice(0, 20), // Первые 20 токенов для отладки
+        imports
+    };
 } 

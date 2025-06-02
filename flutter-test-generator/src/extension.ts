@@ -4,10 +4,17 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import { generateTest as generateMethodTest } from './methodGenerator';
 import { generateTest as generateDtoTest } from './dtoGenerator';
-import { generateTest as generateCubitTest } from './cubitGenerator';
+import { generateTest as generateCubitTest } from './cubitGeneratorNew';
+import { extractFeatureName } from './utils';
 
 let packageName: string | null = null;
 
+/**
+ * Находит символ в указанной позиции в дереве символов документа
+ * @param symbols - массив символов документа
+ * @param position - позиция для поиска
+ * @returns найденный символ или null
+ */
 function findSymbolAtPosition(symbols: vscode.DocumentSymbol[], position: vscode.Position): vscode.DocumentSymbol | null {
     for (const symbol of symbols) {
         if (symbol.range.contains(position)) {
@@ -23,16 +30,11 @@ function findSymbolAtPosition(symbols: vscode.DocumentSymbol[], position: vscode
     return null;
 }
 
-function extractFeatureName(filePath: string): string | null {
-    const parts = filePath.split(path.sep);
-    const featuresIndex = parts.indexOf('features');
-    if (featuresIndex !== -1 && featuresIndex + 1 < parts.length) {
-        const featureName = parts[featuresIndex + 1];
-        return featureName;
-    }
-    return null;
-}
-
+/**
+ * Активирует расширение Flutter Test Generator
+ * Регистрирует команды и провайдеры для генерации тестов
+ * @param context - контекст расширения VS Code
+ */
 export function activate(context: vscode.ExtensionContext) {
     console.log('Flutter Test Generator: расширение активировано!');
 
@@ -125,6 +127,10 @@ export function activate(context: vscode.ExtensionContext) {
     );
 }
 
+/**
+ * Деактивирует расширение Flutter Test Generator
+ * Выполняет очистку ресурсов при отключении расширения
+ */
 export function deactivate() {
     console.log('Flutter Test Generator: расширение деактивировано.');
 }

@@ -1,8 +1,27 @@
 import * as vscode from 'vscode';
-import { parseClassWithLexer, parseStatesWithLexer, extractMethodBodyWithLexer, parseCubitMethodsWithLexer } from './dartLexer';
+import { parseClassWithLexer, parseStatesWithLexer, extractMethodBodyWithLexer, parseCubitMethodsWithLexer, parseAllMethodsWithLexer } from './dartLexer';
+import { 
+    toSnakeCase, 
+    toPascalCase, 
+    getStateTypeConfig, 
+    createTransitionKey, 
+    cleanCode, 
+    hasSignificantCodeAfter, 
+    extractMethodName,
+    classifyDependency,
+    generateMockName,
+    generateMockVariableName,
+    deduplicateBy,
+    REGEX_PATTERNS,
+    extractFeatureName
+} from './utils';
+import { createTestAnalysisWebview } from './webviewGenerator';
 
 // ===== ОСНОВНЫЕ ИНТЕРФЕЙСЫ ДЛЯ ГЕНЕРАЦИИ ТЕСТОВ =====
 
+/**
+ * Интерфейс информации о состоянии
+ */
 interface StateInfo {
     name: string;                // Название состояния (например, AuthLoadingState)
     properties?: string[];       // Свойства состояния (например, ['String message', 'int code'])
@@ -12,16 +31,25 @@ interface StateInfo {
     isSuccess?: boolean;         // Является ли успешным состоянием
 }
 
+/**
+ * Интерфейс информации о зависимости
+ */
 interface DependencyInfo {
     name: string;                // Имя переменной зависимости (например, authRepo)
     type: string;                // Тип зависимости (например, IAuthRepository)
 }
 
+/**
+ * Интерфейс информации о событии
+ */
 interface EventInfo {
     name: string;                // Название события (например, AuthLoginUserEvent)
     handler: string;             // Название метода-обработчика (например, _onPerformAuthorization) 
 }
 
+/**
+ * Интерфейс разобранного метода
+ */
 interface ParsedMethod {
     name: string;                // Название метода/события
     type: 'event' | 'method';    // Тип: событие (для Bloc) или метод (для Cubit)
@@ -30,6 +58,9 @@ interface ParsedMethod {
     guardConditions: string[];   // Guard условия (запрещенные состояния)
 }
 
+/**
+ * Интерфейс перехода конечного автомата
+ */
 interface FSMTransition {
     from: string;                // Исходное состояние
     to: string;                  // Целевое состояние
@@ -37,18 +68,27 @@ interface FSMTransition {
     condition?: string;          // Условие перехода
 }
 
+/**
+ * Интерфейс конечного автомата
+ */
 interface FSM {
     states: string[];            // Все состояния в автомате
     transitions: FSMTransition[]; // Все возможные переходы
     initialState: string;        // Начальное состояние
 }
 
+/**
+ * Интерфейс тестового пути
+ */
 interface TestPath {
     states: string[];            // Последовательность состояний в пути
     methods: string[];           // Последовательность методов/событий
     conditions: (string | undefined)[]; // Условия для каждого перехода
 }
 
+/**
+ * Интерфейс ветки выполнения
+ */
 interface ExecutionBranch {
     branchId: string;            // Уникальный идентификатор ветки (например, "login_success_1")
     states: string[];            // Последовательность состояний в этой ветке
@@ -62,6 +102,9 @@ interface ExecutionBranch {
 
 // ===== ИНТЕРФЕЙСЫ ДЛЯ ПАРСЕРА =====
 
+/**
+ * Интерфейс контекста метода Dart
+ */
 interface DartMethodContext {
     blockType: 'try' | 'catch' | 'if' | 'else' | 'switch' | 'case' | 'default' | 'root';
     startIndex: number;
@@ -70,6 +113,9 @@ interface DartMethodContext {
     parentContext?: DartMethodContext;
 }
 
+/**
+ * Интерфейс перехода между состояниями
+ */
 interface StateTransition {
     fromState: string;           // Начальное состояние
     toState: string;             // Конечное состояние
@@ -81,11 +127,17 @@ interface StateTransition {
     conditionGuards: string[];   // Условия/ограничения перехода
 }
 
+/**
+ * Интерфейс guard условия
+ */
 interface GuardCondition {
     blockedState: string;        // Заблокированное состояние
     action: string;              // Действие (обычно "return")
 }
 
+/**
+ * Интерфейс расширенной информации о методе
+ */
 interface EnhancedMethodInfo {
     name: string;                // Название метода/события
     type: 'event' | 'method';    // Тип: событие (для Bloc) или метод (для Cubit)
@@ -104,11 +156,17 @@ interface EnhancedMethodInfo {
     isArrowFunction?: boolean;   // ДОБАВЛЕНИЕ: является ли стрелочной функцией
 }
 
+/**
+ * Интерфейс расширенной информации о состоянии
+ */
 interface EnhancedStateInfo extends StateInfo {
     isReachable?: boolean;       // Достижимость состояния
     reachabilityPaths?: string[]; // Пути достижения состояния
 }
 
+/**
+ * Интерфейс информации об emit вызове
+ */
 interface EmitInfo {
     state: string;               // Нормализованное название состояния
     rawStatement: string;        // Оригинальный emit statement  
@@ -120,6 +178,12 @@ interface EmitInfo {
 
 // ===== ИСПРАВЛЕННЫЕ ФУНКЦИИ ПАРСИНГА =====
 
+/**
+ * Находит соответствующую закрывающую скобку
+ * @param text - текст для поиска
+ * @param startIndex - индекс открывающей скобки
+ * @returns индекс закрывающей скобки
+ */
 function findMatchingBrace(text: string, startIndex: number): number {
     let braceCount = 1;
     let currentIndex = startIndex + 1;
@@ -137,6 +201,11 @@ function findMatchingBrace(text: string, startIndex: number): number {
     return braceCount === 0 ? currentIndex - 1 : text.length;
 }
 
+/**
+ * Парсит контексты метода (блоки try, catch, if, etc.)
+ * @param methodBody - тело метода для анализа
+ * @returns массив контекстов метода
+ */
 function parseMethodContexts(methodBody: string): DartMethodContext[] {
     const contexts: DartMethodContext[] = [];
     
@@ -204,7 +273,11 @@ function parseMethodContexts(methodBody: string): DartMethodContext[] {
     return contexts.sort((a, b) => a.startIndex - b.startIndex);
 }
 
-// Парсинг guard условий
+/**
+ * Парсит guard условия из тела метода
+ * @param methodBody - тело метода для анализа
+ * @returns массив guard условий
+ */
 function parseGuardConditions(methodBody: string): GuardCondition[] {
     const guardConditions: GuardCondition[] = [];
     
@@ -223,7 +296,12 @@ function parseGuardConditions(methodBody: string): GuardCondition[] {
     return guardConditions;
 }
 
-// Определение allowedStates
+/**
+ * Вычисляет разрешенные состояния на основе guard условий
+ * @param realStates - Set реальных состояний
+ * @param guardConditions - массив guard условий
+ * @returns массив разрешенных состояний
+ */
 function calculateAllowedStates(realStates: Set<string>, guardConditions: GuardCondition[]): string[] {
     const allowedStates = Array.from(realStates);
     
@@ -238,6 +316,15 @@ function calculateAllowedStates(realStates: Set<string>, guardConditions: GuardC
     return allowedStates;
 }
 
+/**
+ * Анализирует статус emit вызова (транзитный или финальный)
+ * @param methodBody - тело метода
+ * @param emitPosition - позиция emit в тексте
+ * @param contexts - массив контекстов метода
+ * @param emitContext - контекст данного emit
+ * @param fullEmitMatch - полное совпадение emit
+ * @returns объект с информацией о статусе emit
+ */
 function analyzeEmitStatusFixed(methodBody: string, emitPosition: number, contexts: DartMethodContext[], emitContext: DartMethodContext | null, fullEmitMatch: string): { isTransient: boolean; isFinal: boolean; reason: string } {
     if (!emitContext) {
         return {
@@ -315,6 +402,12 @@ function analyzeEmitStatusFixed(methodBody: string, emitPosition: number, contex
     };
 }
 
+/**
+ * Парсит расширенные emit выражения из тела метода
+ * @param methodBody - тело метода для анализа
+ * @param methodName - имя метода для логирования
+ * @returns объект с emit'ами и контекстами
+ */
 function parseEnhancedEmitStatements(methodBody: string, methodName: string): {
     emits: EmitInfo[];
     contexts: DartMethodContext[];
@@ -370,7 +463,18 @@ function parseEnhancedEmitStatements(methodBody: string, methodName: string): {
     return { emits, contexts };
 }
 
-function parseStorageRepositoryCalls(methodBody: string, classCode: string): {
+/**
+ * Парсит вызовы репозиториев, хранилищ и приватных методов в теле метода
+ * @param methodBody - Тело метода для анализа
+ * @param classCode - Полный код класса для контекста
+ * @param knownEventHandlers - Список известных обработчиков событий (для исключения из приватных методов)
+ * @returns Объект с массивами вызовов репозиториев, хранилищ и приватных методов
+ */
+function parseStorageRepositoryCalls(
+    methodBody: string, 
+    classCode: string, 
+    knownEventHandlers: string[] = []
+): {
     repositoryCalls: string[];
     storageCalls: string[];
     privateMethodCalls: string[];
@@ -393,12 +497,14 @@ function parseStorageRepositoryCalls(methodBody: string, classCode: string): {
         storageCalls.push(storageMatch[0].slice(0, -1));
     }
     
-    // Ищем вызовы приватных методов
+    // Ищем вызовы приватных методов (исключая известные обработчики событий)
     const privateMethodRegex = /_\w+\(/g;
     let privateMatch;
     while ((privateMatch = privateMethodRegex.exec(methodBody)) !== null) {
         const methodCall = privateMatch[0].slice(0, -1);
-        if (!methodCall.includes('_on') && !methodCall.includes('_handle')) {
+        
+        // Исключаем известные обработчики событий из списка приватных методов
+        if (!knownEventHandlers.includes(methodCall)) {
             privateMethodCalls.push(methodCall);
         }
     }
@@ -406,70 +512,33 @@ function parseStorageRepositoryCalls(methodBody: string, classCode: string): {
     return { repositoryCalls, storageCalls, privateMethodCalls };
 }
 
+/**
+ * Извлекает тело метода из кода класса через лексер
+ * @param classCode - Код класса для анализа
+ * @param methodName - Имя метода для извлечения тела
+ * @returns Тело метода в виде строки или null если метод не найден
+ */
 function extractMethodBodyFromCode(classCode: string, methodName: string): string | null {
-    // Сначала пробуем лексер
     const lexerResult = extractMethodBodyWithLexer(classCode, methodName);
     if (lexerResult) {
         console.log(`🔧 ЛЕКСЕР: Извлечено тело метода ${methodName}`);
         return lexerResult;
     }
     
-    // Fallback на старый метод с регулярками если лексер не справился
-    console.log(`⚠️ ЛЕКСЕР: Не удалось извлечь тело метода ${methodName}, используем регулярки`);
-    
-    const methodStartRegex = new RegExp(`Future<void>\\s+_?${methodName}\\s*\\([^)]*\\)\\s*async\\s*\\{`, 'g');
-    const match = methodStartRegex.exec(classCode);
-    
-    if (!match) {
-        // Пробуем найти обычный метод
-        const normalMethodRegex = new RegExp(`(?:Future<[^>]+>|void)\\s+${methodName}\\s*\\([^)]*\\)\\s*(?:async\\s*)?\\s*\\{`, 'g');
-        const normalMatch = normalMethodRegex.exec(classCode);
-        if (!normalMatch) {
-            return null;
-        }
-        
-        const startIndex = normalMatch.index + normalMatch[0].length;
-        let braceCount = 1;
-        let currentIndex = startIndex;
-        
-        while (currentIndex < classCode.length && braceCount > 0) {
-            const char = classCode[currentIndex];
-            if (char === '{') {
-                braceCount++;
-            } else if (char === '}') {
-                braceCount--;
-            }
-            currentIndex++;
-        }
-        
-        if (braceCount === 0) {
-            return classCode.substring(startIndex, currentIndex - 1);
-        }
-        return null;
-    }
-    
-    const startIndex = match.index + match[0].length;
-    let braceCount = 1;
-    let currentIndex = startIndex;
-    
-    while (currentIndex < classCode.length && braceCount > 0) {
-        const char = classCode[currentIndex];
-        if (char === '{') {
-            braceCount++;
-        } else if (char === '}') {
-            braceCount--;
-        }
-        currentIndex++;
-    }
-    
-    if (braceCount === 0) {
-        return classCode.substring(startIndex, currentIndex - 1);
-    }
-    
+    console.log(`⚠️ ЛЕКСЕР: Не удалось извлечь тело метода ${methodName}`);
     return null;
 }
 
 // Создание переходов из всех allowedStates
+/**
+ * Создает структуры переходов состояний из всех allowedStates
+ * @param emits - массив информации об emit'ах
+ * @param repositoryCalls - массив вызовов репозитория
+ * @param storageCalls - массив вызовов хранилища
+ * @param privateMethodCalls - массив вызовов приватных методов
+ * @param allowedStates - массив разрешенных состояний
+ * @returns массив переходов состояний
+ */
 function createStateTransitionStructuresFixed(emits: EmitInfo[], repositoryCalls: string[], storageCalls: string[], privateMethodCalls: string[], allowedStates: string[]): StateTransition[] {
     const transitions: StateTransition[] = [];
     
@@ -503,6 +572,18 @@ function createStateTransitionStructuresFixed(emits: EmitInfo[], repositoryCalls
     return transitions;
 }
 
+/**
+ * Парсит отдельный метод и создает расширенную информацию о нем
+ * @param name - Имя метода/события
+ * @param handler - Имя обработчика (для событий блока)
+ * @param methodBody - Тело метода для анализа
+ * @param type - Тип: 'event' для событий блока, 'method' для методов кубита
+ * @param classCode - Полный код класса для контекста
+ * @param realStates - Set реальных состояний из файла состояний
+ * @param isArrowFunction - Является ли метод стрелочной функцией
+ * @param knownEventHandlers - Список известных обработчиков событий (для исключения из приватных методов)
+ * @returns Объект EnhancedMethodInfo с полной информацией о методе
+ */
 function parseEnhancedSingleMethod(
     name: string, 
     handler: string, 
@@ -510,10 +591,15 @@ function parseEnhancedSingleMethod(
     type: 'event' | 'method',
     classCode: string,
     realStates: Set<string>, // принимаем только реальные состояния
-    isArrowFunction: boolean = false  // флаг стрелочной функции
+    isArrowFunction: boolean = false,  // флаг стрелочной функции
+    knownEventHandlers: string[] = []  // известные обработчики событий
 ): EnhancedMethodInfo {
     const { emits } = parseEnhancedEmitStatements(methodBody, name);
-    const { repositoryCalls, storageCalls, privateMethodCalls } = parseStorageRepositoryCalls(methodBody, classCode);
+    const { repositoryCalls, storageCalls, privateMethodCalls } = parseStorageRepositoryCalls(
+        methodBody, 
+        classCode, 
+        knownEventHandlers
+    );
     
     // Парсинг guard условий и расчет allowedStates
     const guardConditions = parseGuardConditions(methodBody);
@@ -546,6 +632,13 @@ function parseEnhancedSingleMethod(
     };
 }
 
+/**
+ * Парсит методы кубита/блока и создает расширенную информацию
+ * @param classCode - Код класса для анализа
+ * @param cubitName - Имя класса кубита/блока
+ * @param isBloc - Является ли класс блоком (true) или кубитом (false)
+ * @param realStates - Массив реальных состояний из файла состояний
+ */
 function parseEnhancedMethods(classCode: string, cubitName: string, isBloc: boolean, realStates: StateInfo[]): {
     enhancedMethods: EnhancedMethodInfo[];
     enhancedStates: EnhancedStateInfo[];
@@ -556,49 +649,99 @@ function parseEnhancedMethods(classCode: string, cubitName: string, isBloc: bool
     // Создаем Set только из реальных состояний
     const realStatesSet = new Set(realStates.map(s => s.name));
     
-    // Парсим основную информацию о кубите/блоке
-    const { events, dependencies } = parseCubitOrBloc(classCode);
+    // 1. Парсим все методы через унифицированный лексер 
+    // includePrivate = true для блоков (нужны приватные обработчики _on*), false для кубитов
+    const allMethods = parseAllMethodsWithLexer(classCode, isBloc);
+    const processedMethodNames = new Set<string>();
     
-    if (isBloc && events.length > 0) {
-        // Для блоков парсим события и их обработчики
+    if (isBloc) {
+        // Для блоков: сначала парсим события и их обработчики, потом глобальные методы
+        const { events } = parseCubitOrBloc(classCode);
+        
+        // Собираем список всех обработчиков событий для правильной фильтрации приватных методов
+        const knownEventHandlers = events.map(event => event.handler);
+        
         console.log(`🔧 ЛЕКСЕР: Обрабатываем ${events.length} событий блока`);
+        console.log(`📋 Известные обработчики: ${knownEventHandlers.join(', ')}`);
+        
+        // 1.1. Обработчики событий (приватные методы _on*)
         for (const event of events) {
-            const methodBody = extractMethodBodyFromCode(classCode, event.handler);
-            if (methodBody) {
+            const handlerMethod = allMethods.find(m => m.name === event.handler);
+            if (handlerMethod && handlerMethod.body) {
                 const enhancedMethod = parseEnhancedSingleMethod(
                     event.name,
                     event.handler,
-                    methodBody,
+                    handlerMethod.body,
                     'event',
                     classCode,
                     realStatesSet,
-                    false
+                    handlerMethod.isArrowFunction,
+                    knownEventHandlers
                 );
                 enhancedMethods.push(enhancedMethod);
+                processedMethodNames.add(event.handler);
+                console.log(`   📧 Событие ${event.name} → ${event.handler} (${handlerMethod.isArrowFunction ? 'стрелочная' : 'обычная'} функция)`);
             }
         }
-    } else {
-        // Для кубитов используем лексер вместо регулярок
-        console.log(`🔧 ЛЕКСЕР: Парсим методы кубита через лексер`);
-        const lexerMethods = parseCubitMethodsWithLexer(classCode);
         
-        for (const lexerMethod of lexerMethods) {
-            if (lexerMethod.body) {
+        // 1.2. Глобальные методы блока (публичные методы, не являющиеся обработчиками)
+        const globalMethods = allMethods.filter(m => 
+            !m.isPrivate && 
+            !processedMethodNames.has(m.name) &&
+            !m.name.includes('Bloc') &&
+            !m.name.includes('Cubit')
+        );
+        
+        for (const globalMethod of globalMethods) {
+            if (globalMethod.body) {
                 const enhancedMethod = parseEnhancedSingleMethod(
-                    lexerMethod.name,
-                    lexerMethod.name,
-                    lexerMethod.body,
+                    globalMethod.name,
+                    globalMethod.name,
+                    globalMethod.body,
                     'method',
                     classCode,
                     realStatesSet,
-                    lexerMethod.isArrowFunction
+                    globalMethod.isArrowFunction,
+                    knownEventHandlers
                 );
                 enhancedMethods.push(enhancedMethod);
-                console.log(`   ✓ Метод ${lexerMethod.name} (${lexerMethod.isArrowFunction ? 'стрелочная' : 'обычная'} функция)`);
+                console.log(`   ⚙️ Глобальный метод ${globalMethod.name} (${globalMethod.isArrowFunction ? 'стрелочная' : 'обычная'} функция)`);
             }
         }
         
-        console.log(`🔧 ЛЕКСЕР: Найдено ${lexerMethods.length} методов кубита`);
+        console.log(`✓ НОВЫЙ ПАРСЕР: Найдено ${enhancedMethods.length} методов для блока (${events.length} событий + ${globalMethods.length} глобальных методов)`);
+        
+    } else {
+        // Для кубитов: все публичные методы (нет обработчиков событий)
+        console.log(`🔧 ЛЕКСЕР: Парсим методы кубита через лексер`);
+        
+        const cubitMethods = allMethods.filter(m => 
+            !m.isPrivate && 
+            !m.name.includes('Cubit') &&
+            !m.name.includes('Bloc')
+        );
+        
+        // Для кубитов нет обработчиков событий
+        const knownEventHandlers: string[] = [];
+        
+        for (const cubitMethod of cubitMethods) {
+            if (cubitMethod.body) {
+                const enhancedMethod = parseEnhancedSingleMethod(
+                    cubitMethod.name,
+                    cubitMethod.name,
+                    cubitMethod.body,
+                    'method',
+                    classCode,
+                    realStatesSet,
+                    cubitMethod.isArrowFunction,
+                    knownEventHandlers
+                );
+                enhancedMethods.push(enhancedMethod);
+                console.log(`   ⚙️ Метод ${cubitMethod.name} (${cubitMethod.isArrowFunction ? 'стрелочная' : 'обычная'} функция)`);
+            }
+        }
+        
+        console.log(`✓ НОВЫЙ ПАРСЕР: Найдено ${cubitMethods.length} методов кубита`);
     }
     
     // Создаем EnhancedStateInfo только для реальных состояний
@@ -620,6 +763,93 @@ function parseEnhancedMethods(classCode: string, cubitName: string, isBloc: bool
 
 // ===== ФУНКЦИИ ПОСТРОЕНИЯ АВТОМАТА И ГЕНЕРАЦИИ ТЕСТОВ =====
 
+/**
+ * Создает ветки выполнения на основе реальных тестовых путей
+ * @param testPaths - массив реальных тестовых путей
+ * @param combinedPaths - массив комбинированных тестовых путей
+ * @param enhancedMethods - массив расширенной информации о методах
+ * @returns Map с ветками выполнения, соответствующими реальным тестам
+ */
+function createExecutionBranchesFromTestPaths(
+    testPaths: TestPath[], 
+    combinedPaths: TestPath[], 
+    enhancedMethods: EnhancedMethodInfo[]
+): Map<string, ExecutionBranch[]> {
+    const executionBranches = new Map<string, ExecutionBranch[]>();
+    
+    // 1. Обязательные тесты (один тест на финальное состояние метода)
+    for (const path of testPaths) {
+        if (path.methods.length === 0) continue; // пропускаем тест инициализации
+        
+        const methodName = path.methods[0];
+        const method = enhancedMethods.find(m => m.name === methodName);
+        if (!method) continue;
+        
+        const fromState = path.states[0];
+        const toState = path.states[path.states.length - 1];
+        
+        // Ищем соответствующий переход
+        const transition = method.transitions.find(t => 
+            t.fromState === fromState && t.toState === toState
+        ) || method.transitions.find(t => t.toState === toState); // fallback
+        
+        const branchId = `${methodName}_basic_${toState}`;
+        const branch: ExecutionBranch = {
+            branchId,
+            states: transition ? [transition.fromState, ...transition.transientStates, transition.toState] : path.states,
+            repositoryCalls: transition?.repositoryCalls || method.repositoryCalls,
+            storageCalls: transition?.storageCalls || method.storageCalls,
+            privateMethodCalls: transition?.privateMethodCalls || method.privateMethodCalls,
+            isSuccessPath: !toState.toLowerCase().includes('error'),
+            isErrorPath: toState.toLowerCase().includes('error'),
+            isFinalState: method.finalStates.includes(toState)
+        };
+        
+        if (!executionBranches.has(methodName)) {
+            executionBranches.set(methodName, []);
+        }
+        executionBranches.get(methodName)!.push(branch);
+    }
+    
+    // 2. Комбинированные тесты (случайные пути)
+    for (let i = 0; i < combinedPaths.length; i++) {
+        const path = combinedPaths[i];
+        if (path.methods.length === 0) continue;
+        
+        const combinedData = createCombinedTestData(path, enhancedMethods);
+        const pathDescription = path.methods.join('→');
+        const branchId = `combined_${i}_${pathDescription}`;
+        
+        const branch: ExecutionBranch = {
+            branchId,
+            states: combinedData.allStatesInOrder.length > 0 ? combinedData.allStatesInOrder : path.states,
+            repositoryCalls: combinedData.combinedRepositoryCalls,
+            storageCalls: combinedData.combinedStorageCalls,
+            privateMethodCalls: combinedData.combinedPrivateMethodCalls,
+            isSuccessPath: !path.states[path.states.length - 1].toLowerCase().includes('error'),
+            isErrorPath: path.states[path.states.length - 1].toLowerCase().includes('error'),
+            isFinalState: true // комбинированные пути всегда ведут к финальному состоянию
+        };
+        
+        // Добавляем комбинированную ветку как отдельную категорию
+        const combinedKey = `combined_test_${i}`;
+        if (!executionBranches.has(combinedKey)) {
+            executionBranches.set(combinedKey, []);
+        }
+        executionBranches.get(combinedKey)!.push(branch);
+    }
+    
+    console.log(`✓ Создано ${Array.from(executionBranches.values()).reduce((acc, branches) => acc + branches.length, 0)} веток выполнения на основе реальных тестовых путей`);
+    return executionBranches;
+}
+
+/**
+ * Строит расширенный конечный автомат состояний
+ * @param enhancedMethods - массив расширенной информации о методах
+ * @param enhancedStates - массив расширенной информации о состояниях
+ * @param initialState - начальное состояние
+ * @returns объект с FSM, методами и ветками выполнения
+ */
 function buildEnhancedFSM(
     enhancedMethods: EnhancedMethodInfo[], 
     enhancedStates: EnhancedStateInfo[], 
@@ -632,7 +862,6 @@ function buildEnhancedFSM(
     const states = [initialState, ...enhancedStates.map(s => s.name)];
     const transitions: FSMTransition[] = [];
     const parsedMethods: ParsedMethod[] = [];
-    const executionBranches = new Map<string, ExecutionBranch[]>();
     
     for (const method of enhancedMethods) {
         const parsedMethod: ParsedMethod = {
@@ -653,24 +882,6 @@ function buildEnhancedFSM(
             };
             transitions.push(fsmTransition);
         }
-        
-        // Создаем ветки выполнения
-        const branches: ExecutionBranch[] = [];
-        for (let i = 0; i < method.transitions.length; i++) {
-            const transition = method.transitions[i];
-            const branch: ExecutionBranch = {
-                branchId: `${method.name}_${i}`,
-                states: [transition.fromState, ...transition.transientStates, transition.toState],
-                repositoryCalls: transition.repositoryCalls,
-                storageCalls: transition.storageCalls,
-                privateMethodCalls: transition.privateMethodCalls,
-                isSuccessPath: !transition.toState.toLowerCase().includes('error'),
-                isErrorPath: transition.toState.toLowerCase().includes('error'),
-                isFinalState: method.finalStates.includes(transition.toState)
-            };
-            branches.push(branch);
-        }
-        executionBranches.set(method.name, branches);
     }
     
     const fsm: FSM = {
@@ -679,10 +890,21 @@ function buildEnhancedFSM(
         initialState
     };
     
+    // Ветки выполнения будут созданы позже на основе реальных тестовых путей
+    const executionBranches = new Map<string, ExecutionBranch[]>();
+    
     return { fsm, parsedMethods, executionBranches };
 }
 
-// Функция для генерации случайных путей длиной 2-3 перехода
+/**
+ * Генерирует случайные комбинированные пути
+ * @param fsm - конечный автомат состояний
+ * @param enhancedMethods - массив расширенной информации о методах
+ * @param maxPaths - максимальное количество путей
+ * @param minLength - минимальная длина пути
+ * @param maxLength - максимальная длина пути
+ * @returns массив тестовых путей
+ */
 function generateRandomCombinedPaths(
     fsm: FSM, 
     enhancedMethods: EnhancedMethodInfo[], 
@@ -743,8 +965,13 @@ function generateRandomCombinedPaths(
     return combinedPaths;
 }
 
-// Функция для объединения данных переходов в комбинированный тест
-function createCombinedTestData(path: TestPath, enhancedMethods: EnhancedMethodInfo[]): {
+/**
+ * Создает объединенные тестовые данные для пути
+ * @param path - тестовый путь
+ * @param enhancedMethods - массив расширенной информации о методах
+ * @returns объект с объединенными данными теста
+ */
+export function createCombinedTestData(path: TestPath, enhancedMethods: EnhancedMethodInfo[]): {
     combinedRepositoryCalls: string[];
     combinedStorageCalls: string[];
     combinedPrivateMethodCalls: string[];
@@ -803,6 +1030,13 @@ function createCombinedTestData(path: TestPath, enhancedMethods: EnhancedMethodI
     };
 }
 
+/**
+ * Генерирует тестовые пути из автомата состояний
+ * @param fsm - конечный автомат состояний
+ * @param enhancedMethods - массив расширенной информации о методах
+ * @param maxPaths - максимальное количество путей
+ * @returns массив тестовых путей
+ */
 function generateTestPaths(fsm: FSM, enhancedMethods: EnhancedMethodInfo[], maxPaths: number = Number.MAX_SAFE_INTEGER): TestPath[] {
     const paths: TestPath[] = [];
     
@@ -832,20 +1066,21 @@ function generateTestPaths(fsm: FSM, enhancedMethods: EnhancedMethodInfo[], maxP
 
 // ===== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ =====
 
-function toSnakeCase(str: string): string {
-    return str.replace(/([A-Z])/g, '_$1')
-              .toLowerCase()
-              .replace(/^_/, '');
-}
 
-// Функция для преобразования featureName в правильное название состояния
-function toStateClassName(featureName: string): string {
-    // Преобразуем feature_name в FeatureName
-    return featureName.split('_')
-                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                     .join('');
-}
-
+/**
+ * Генерирует структуру тестовых файлов
+ * @param workspaceRoot - корневая директория рабочего пространства
+ * @param testDir - директория тестов
+ * @param featureName - имя фичи
+ * @param cubitName - имя кубита/блока
+ * @param enhancedMethods - анализированные методы
+ * @param enhancedStates - анализированные состояния
+ * @param testPaths - тестовые пути
+ * @param combinedPaths - комбинированные тестовые пути
+ * @param isBloc - является ли блоком
+ * @param fsm - конечный автомат состояний
+ * @param classCode - исходный код класса
+ */
 export async function generateTestFilesStructure(
     workspaceRoot: vscode.Uri,
     testDir: string,
@@ -854,6 +1089,7 @@ export async function generateTestFilesStructure(
     enhancedMethods: EnhancedMethodInfo[],
     enhancedStates: EnhancedStateInfo[],
     testPaths: TestPath[],
+    combinedPaths: TestPath[],
     isBloc: boolean,
     fsm: FSM,
     classCode: string  // Исходный код класса
@@ -875,6 +1111,7 @@ export async function generateTestFilesStructure(
         enhancedMethods,
         enhancedStates,
         testPaths,
+        combinedPaths,
         isBloc,
         fsm,
         classCode
@@ -898,7 +1135,14 @@ export async function generateTestFilesStructure(
     console.log('✅ Структура тестов создана успешно!');
 }
 
-// Функция для форматирования созданных файлов
+/**
+ * Функция для форматирования созданных файлов
+ * @param workspaceRoot - корневая директория рабочего пространства
+ * @param testDir - директория тестов
+ * @param featureName - имя фичи
+ * @param cubitName - имя кубита/блока
+ * @param isBloc - является ли блоком
+ */
 async function formatCreatedFiles(
     workspaceRoot: vscode.Uri,
     testDir: string,
@@ -942,12 +1186,26 @@ async function formatCreatedFiles(
     }
 }
 
+/**
+ * Генерирует расширенное содержимое теста
+ * @param cubitName - имя кубита/блока
+ * @param featureName - имя фичи
+ * @param enhancedMethods - массив расширенной информации о методах
+ * @param enhancedStates - массив расширенной информации о состояниях
+ * @param testPaths - массив тестовых путей
+ * @param combinedPaths - массив комбинированных тестовых путей
+ * @param isBloc - является ли блоком
+ * @param fsm - конечный автомат состояний
+ * @param classCode - исходный код класса для парсинга зависимостей
+ * @returns строка с содержимым теста
+ */
 function generateEnhancedTestContent(
     cubitName: string,
     featureName: string,
     enhancedMethods: EnhancedMethodInfo[],
     enhancedStates: EnhancedStateInfo[],
     testPaths: TestPath[],
+    combinedPaths: TestPath[],
     isBloc: boolean,
     fsm: FSM,
     classCode: string  // Исходный код класса для парсинга зависимостей
@@ -956,7 +1214,7 @@ function generateEnhancedTestContent(
     const instanceName = cubitName.charAt(0).toLowerCase() + cubitName.slice(1);
     
     // Правильное название общего состояния
-    const stateClassName = `${toStateClassName(featureName)}State`;
+    const stateClassName = `${toPascalCase(featureName)}State`;
     
     // Автоматическое определение всех зависимостей из исходного кода
     const repositories: DependencyInfo[] = [];
@@ -1095,7 +1353,6 @@ function generateEnhancedTestContent(
     }).filter(test => test.length > 0);
     
     // 2. КОМБИНИРОВАННЫЕ ТЕСТЫ (случайные пути 2-3 перехода)
-    const combinedPaths = generateRandomCombinedPaths(fsm, enhancedMethods, 5);
     const combinedTestCases = combinedPaths.map((path, index) => {
         const combinedData = createCombinedTestData(path, enhancedMethods);
         const finalState = path.states[path.states.length - 1];
@@ -1170,6 +1427,14 @@ void main() {
 `;
 }
 
+/**
+ * Генерирует файл теста для фичи
+ * @param workspaceRoot - корневая директория рабочего пространства
+ * @param testDir - директория тестов
+ * @param featureName - имя фичи
+ * @param cubitName - имя кубита/блока
+ * @param isBloc - является ли блоком
+ */
 async function generateFeatureTestFileNew(
     workspaceRoot: vscode.Uri,
     testDir: string,
@@ -1195,6 +1460,12 @@ void main() {
     console.log(`✓ Feature test файл создан: ${featureTestFile.fsPath}`);
 }
 
+/**
+ * Обновляет главный тестовый файл
+ * @param workspaceRoot - корневая директория рабочего пространства
+ * @param testDir - директория тестов
+ * @param featureName - имя фичи
+ */
 async function updateMainTestFileNew(
     workspaceRoot: vscode.Uri,
     testDir: string,
@@ -1294,8 +1565,11 @@ Future<void> main() async {
     }
 }
 
-/// Парсинг кубита/блока через лексер вместо регулярок
-/// Принимает: - classCode - код класса для анализа
+/**
+ * Парсинг кубита/блока через лексер
+ * @param classCode - код класса для анализа
+ * @returns объект с событиями и зависимостями
+ */
 function parseCubitOrBloc(classCode: string): { events: EventInfo[], dependencies: DependencyInfo[] } {
     // Используем лексер вместо регулярок
     const lexerResult = parseClassWithLexer(classCode);
@@ -1314,8 +1588,11 @@ function parseCubitOrBloc(classCode: string): { events: EventInfo[], dependencie
     return { events, dependencies };
 }
 
-/// Парсинг состояний через лексер вместо регулярок
-/// Принимает: - classCode - код с определениями состояний
+/**
+ * Парсинг состояний через лексер
+ * @param classCode - код с определениями состояний
+ * @returns массив объектов состояний
+ */
 function parseInlineStates(classCode: string): StateInfo[] {
     // Используем лексер вместо регулярок
     const lexerStates = parseStatesWithLexer(classCode);
@@ -1332,6 +1609,11 @@ function parseInlineStates(classCode: string): StateInfo[] {
     return states;
 }
 
+/**
+ * Парсинг состояний из файла
+ * @param stateFilePath - путь к файлу с состояниями
+ * @returns Promise с массивом состояний
+ */
 async function parseStates(stateFilePath: vscode.Uri): Promise<StateInfo[]> {
     try {
         const stateDocument = await vscode.workspace.openTextDocument(stateFilePath);
@@ -1345,6 +1627,12 @@ async function parseStates(stateFilePath: vscode.Uri): Promise<StateInfo[]> {
 
 // ===== ФУНКЦИИ ГЕНЕРАЦИИ DOT ГРАФОВ =====
 
+/**
+ * Генерирует DOT граф для конечного автомата состояний
+ * @param fsm - конечный автомат состояний
+ * @param states - массив информации о состояниях
+ * @returns строка с DOT кодом
+ */
 function generateFSMGraphvizDot(fsm: FSM, states?: StateInfo[]): string {
     let dot = 'digraph FSM {\n';
     dot += '  rankdir=LR;\n';
@@ -1419,6 +1707,13 @@ function generateFSMGraphvizDot(fsm: FSM, states?: StateInfo[]): string {
     return dot;
 }
 
+/**
+ * Генерирует DOT граф для тестовых путей
+ * @param fsm - конечный автомат состояний
+ * @param paths - массив тестовых путей
+ * @param states - массив информации о состояниях
+ * @returns строка с DOT кодом
+ */
 function generateTestPathsGraphvizDot(fsm: FSM, paths: TestPath[], states?: StateInfo[]): string {
     let dot = 'digraph TestPaths {\n';
     dot += '  rankdir=LR;\n';
@@ -1486,14 +1781,19 @@ function generateTestPathsGraphvizDot(fsm: FSM, paths: TestPath[], states?: Stat
         dot += `  "${state}" [style=filled, fillcolor=${color}, label="${label}"];\n`;
     }
     
-    // Добавляем тестовые пути с разными цветами для каждого пути
+    // Добавляем тестовые пути с уникальной комбинацией цвет + ширина линии
     const pathColors = ['red', 'blue', 'green', 'purple', 'orange', 'brown', 'pink', 'gray', 'olive', 'navy'];
+    const baseWidth = 2; // Базовая ширина линии
+    const widthStep = 1; // Шаг увеличения ширины для каждой "группы" цветов
     
     for (let i = 0; i < paths.length; i++) {
         const path = paths[i];
-        const color = pathColors[i % pathColors.length];
+        const colorIndex = i % pathColors.length;
+        const color = pathColors[colorIndex];
+        const widthGroup = Math.floor(i / pathColors.length);
+        const penwidth = baseWidth + widthGroup * widthStep;
         
-        dot += `\n  // Тестовый путь ${i + 1}: ${path.methods.join(' → ') || 'инициализация'}\n`;
+        dot += `\n  // Тестовый путь ${i + 1}: ${path.methods.join(' → ') || 'инициализация'} (цвет: ${color}, ширина: ${penwidth})\n`;
         
         if (path.states.length === 1) {
             // Путь инициализации - только одно состояние
@@ -1505,12 +1805,12 @@ function generateTestPathsGraphvizDot(fsm: FSM, paths: TestPath[], states?: Stat
                 const toState = path.states[j + 1];
                 const method = path.methods[j];
                 
-                dot += `  "${fromState}" -> "${toState}" [label="Путь ${i + 1}:\\n${method}", color=${color}, penwidth=2, fontcolor=${color}];\n`;
+                dot += `  "${fromState}" -> "${toState}" [label="Путь ${i + 1}:\\n${method}", color=${color}, penwidth=${penwidth}, fontcolor=${color}];\n`;
             }
         }
     }
     
-    // Добавляем легенду для понимания путей
+    // Добавляем легенду для понимания путей с уникальными комбинациями цвет+ширина
     if (paths.length > 0) {
         dot += '\n  // Легенда тестовых путей\n';
         dot += '  subgraph cluster_legend {\n';
@@ -1518,12 +1818,28 @@ function generateTestPathsGraphvizDot(fsm: FSM, paths: TestPath[], states?: Stat
         dot += '    style=filled;\n';
         dot += '    fillcolor=lightyellow;\n';
         
-        for (let i = 0; i < Math.min(paths.length, pathColors.length); i++) {
-            const color = pathColors[i];
+        // Показываем все пути в легенде с их уникальными визуальными характеристиками
+        for (let i = 0; i < paths.length; i++) {
+            const colorIndex = i % pathColors.length;
+            const color = pathColors[colorIndex];
+            const widthGroup = Math.floor(i / pathColors.length);
+            const penwidth = baseWidth + widthGroup * widthStep;
+            
             const pathDescription = paths[i].methods.length > 0 
                 ? paths[i].methods.join(' → ') 
                 : 'Инициализация';
-            dot += `    "legend${i}" [shape=box, style=filled, fillcolor=white, label="Путь ${i + 1}:\\n${pathDescription}", color=${color}, penwidth=2];\n`;
+            
+            // Создаем описание с указанием ширины для различения одинаковых цветов
+            const visualDescription = widthGroup > 0 
+                ? `${pathDescription}\\n(ширина: ${penwidth})`
+                : pathDescription;
+            
+            dot += `    "legend${i}" [shape=box, style=filled, fillcolor=white, label="Путь ${i + 1}:\\n${visualDescription}", color=${color}, penwidth=${penwidth}];\n`;
+        }
+        
+        // Добавляем пояснение о системе визуального кодирования
+        if (paths.length > pathColors.length) {
+            dot += `    "legend_info" [shape=plaintext, label="Примечание:\\nОдинаковые цвета различаются\\nшириной линий", fontsize=9, color=gray];\n`;
         }
         
         dot += '  }\n';
@@ -1535,6 +1851,18 @@ function generateTestPathsGraphvizDot(fsm: FSM, paths: TestPath[], states?: Stat
 
 // ===== ФУНКЦИЯ ГЕНЕРАЦИИ WEBVIEW =====
 
+/**
+ * Создает WebView панель для анализа тестов
+ * @param workspaceRoot - корневая директория рабочего пространства
+ * @param testDir - директория тестов
+ * @param featureName - имя фичи
+ * @param cubitName - имя кубита/блока
+ * @param enhancedMethods - анализированные методы
+ * @param enhancedStates - анализированные состояния
+ * @param fsm - автомат состояний
+ * @param testPaths - массив тестовых путей
+ * @param executionBranches - Map веток выполнения
+ */
 async function generateInfoFile(
     workspaceRoot: vscode.Uri,
     testDir: string,
@@ -1548,552 +1876,55 @@ async function generateInfoFile(
 ) {
     console.log('\n📋 НОВЫЙ ГЕНЕРАТОР: Создание WebView панели...');
     
-    // Генерируем комбинированные пути для статистики
-    const combinedPaths = generateRandomCombinedPaths(fsm, enhancedMethods, 5);
-    
-    // Генерируем HTML для информации о методах
-    const methodsInfoHtml = enhancedMethods.map(method => `
-        <div class="method-info">
-            <h4>${method.type === 'event' ? '📧' : '⚙️'} ${method.name} (${method.type})</h4>
-            <div class="method-details">
-                <div class="allowed-states">
-                    <strong>✓ Разрешенные состояния:</strong> 
-                    ${method.allowedStates.length > 0 ? method.allowedStates.join(', ') : 'Нет'}
-                </div>
-                <div class="reachable-states">
-                    <strong>🎯 Достижимые состояния:</strong> 
-                    ${method.reachableStates.length > 0 ? method.reachableStates.join(', ') : 'Нет'}
-                </div>
-                <div class="final-states">
-                    <strong>🏁 Финальные состояния:</strong> 
-                    ${method.finalStates.length > 0 ? method.finalStates.join(', ') : 'Нет'}
-                </div>
-                <div class="transient-states">
-                    <strong>🔄 Транзитные состояния:</strong> 
-                    ${method.transientStates.length > 0 ? method.transientStates.join(', ') : 'Нет'}
-                </div>
-                ${method.guardConditions.length > 0 ? `
-                <div class="guard-conditions">
-                    <strong>🚫 Guard условия:</strong> 
-                    ${method.guardConditions.map(g => g.blockedState).join(', ')}
-                </div>` : ''}
-                <div class="transitions-count">
-                    <strong>🔄 Переходов:</strong> 
-                    ${method.transitions.length}
-                </div>
-                <div class="calls-info">
-                    <strong>📞 Вызовы:</strong>
-                    Repository: ${method.repositoryCalls.join(', ') || 'нет'}, 
-                    Storage: ${method.storageCalls.join(', ') || 'нет'}, 
-                    Private: ${method.privateMethodCalls.join(', ') || 'нет'}
-                </div>
-            </div>
-        </div>
-    `).join('');
-
-    // Генерируем HTML для веток выполнения
-    const branchesInfoHtml = Array.from(executionBranches.entries()).map(([methodName, branches]) => `
-        <div class="event-branches">
-            <h4>⚙️ ${methodName}</h4>
-            ${branches.map((branch, index) => `
-                <div class="branch-info">
-                    <h5>${branch.isSuccessPath ? '✅' : branch.isErrorPath ? '❌' : '🔄'} ${branch.branchId}</h5>
-                    <div class="branch-details">
-                        <div><strong>Путь:</strong> ${branch.states.join(' → ')}</div>
-                        <div><strong>Репозиторий:</strong> ${branch.repositoryCalls.join(', ') || 'нет'}</div>
-                        <div><strong>Хранилище:</strong> ${branch.storageCalls.join(', ') || 'нет'}</div>
-                        <div><strong>Приватные методы:</strong> ${branch.privateMethodCalls.join(', ') || 'нет'}</div>
-                        <div><strong>Финальная ветка:</strong> ${branch.isFinalState ? 'Да' : 'Нет'}</div>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `).join('');
-    
-    // Генерируем HTML для комбинированных путей
-    const combinedPathsHtml = combinedPaths.map((path, index) => `
-        <div class="combined-path-info">
-            <h5>🔗 Комбинированный путь ${index + 1}</h5>
-            <div class="path-details">
-                <div><strong>Последовательность состояний:</strong> ${path.states.join(' → ')}</div>
-                <div><strong>Последовательность методов:</strong> ${path.methods.join(' → ')}</div>
-                <div><strong>Длина пути:</strong> ${path.methods.length} переходов</div>
-                ${(() => {
-                    const combinedData = createCombinedTestData(path, enhancedMethods);
-                    return `
-                    <div><strong>Объединенные Repository вызовы:</strong> ${combinedData.combinedRepositoryCalls.join(', ') || 'нет'}</div>
-                    <div><strong>Объединенные Storage вызовы:</strong> ${combinedData.combinedStorageCalls.join(', ') || 'нет'}</div>
-                    <div><strong>Состояния конкретных переходов:</strong> ${combinedData.allStatesInOrder.join(', ') || 'нет'}</div>
-                    <div><strong>Все достижимые состояния:</strong> ${combinedData.allReachableStates.join(', ') || 'нет'}</div>
-                    `;
-                })()}
-            </div>
-        </div>
-    `).join('');
-
-    // Создаем DOT графы для кнопок
+    // Создаем DOT графы
     const fsmDot = generateFSMGraphvizDot(fsm, enhancedStates);
     const pathsDot = generateTestPathsGraphvizDot(fsm, testPaths, enhancedStates);
 
-    // Генерируем HTML контент
-    const htmlContent = `<!DOCTYPE html>
- <html>
- <head>
-     <title>Анализ генератора тестов v2.0: ${cubitName}</title>
-     <meta charset="UTF-8">
-     <script src="https://unpkg.com/@hpcc-js/wasm@1.12.8/dist/index.min.js"></script>
-     <script src="https://unpkg.com/d3@5"></script>
-     <script src="https://unpkg.com/d3-graphviz@3.1.0/build/d3-graphviz.min.js"></script>
-     <style>
-         body { 
-             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-             margin: 0; 
-             padding: 20px;
-             background-color: #f8f9fa;
-             color: #212529;
-             line-height: 1.6;
-         }
-         .container {
-             max-width: 1400px;
-             margin: 0 auto;
-             background-color: white;
-             padding: 30px;
-             border-radius: 12px;
-             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-         }
-         .header {
-             color: #2c3e50;
-             border-bottom: 3px solid #3498db;
-             padding-bottom: 15px;
-             margin-bottom: 30px;
-             text-align: center;
-         }
-         .stats {
-             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-             color: white;
-             border-radius: 8px;
-             padding: 20px;
-             margin: 20px 0;
-         }
-         .stats h3 {
-             margin-top: 0;
-             color: white;
-         }
-         .stats ul {
-             list-style-type: none;
-             padding: 0;
-         }
-         .stats li {
-             margin: 8px 0;
-             padding: 5px 0;
-             border-bottom: 1px solid rgba(255,255,255,0.2);
-         }
-         .methods-section {
-             background-color: #f8f9fa;
-             border: 1px solid #dee2e6;
-             border-radius: 8px;
-             padding: 20px;
-             margin: 20px 0;
-         }
-         .method-info {
-             background-color: white;
-             border-left: 4px solid #007bff;
-             border-radius: 4px;
-             padding: 15px;
-             margin: 15px 0;
-             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-         }
-         .method-details {
-             margin-top: 10px;
-             font-size: 0.9em;
-         }
-         .method-details > div {
-             margin: 8px 0;
-             padding: 5px 0;
-         }
-         .allowed-states { color: #28a745; }
-         .reachable-states { color: #007bff; }
-         .final-states { color: #fd7e14; }
-         .transient-states { color: #6f42c1; }
-         .guard-conditions { color: #dc3545; }
-         .transitions-count { color: #6610f2; }
-         .calls-info { color: #6c757d; }
-         .event-branches {
-             background-color: white;
-             border-left: 4px solid #28a745;
-             border-radius: 4px;
-             padding: 15px;
-             margin: 15px 0;
-             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-         }
-         .branch-info {
-             background-color: #f8f9fa;
-             border: 1px solid #e9ecef;
-             border-radius: 4px;
-             padding: 12px;
-             margin: 10px 0;
-         }
-         .branch-details {
-             margin-top: 8px;
-             font-size: 0.9em;
-         }
-         .branch-details > div {
-             margin: 4px 0;
-         }
-         .combined-path-info {
-             background-color: white;
-             border-left: 4px solid #ffc107;
-             border-radius: 4px;
-             padding: 15px;
-             margin: 15px 0;
-             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-         }
-         .path-details {
-             margin-top: 8px;
-             font-size: 0.9em;
-         }
-         .path-details > div {
-             margin: 4px 0;
-         }
-         .enhanced-badge {
-             background: linear-gradient(45deg, #28a745, #20c997);
-             color: white;
-             padding: 5px 15px;
-             border-radius: 20px;
-             font-size: 0.8em;
-             margin-left: 15px;
-             font-weight: bold;
-         }
-         .buttons-section {
-             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-             color: white;
-             border-radius: 8px;
-             padding: 20px;
-             margin: 20px 0;
-             text-align: center;
-         }
-         .btn {
-             display: inline-block;
-             padding: 12px 24px;
-             margin: 10px;
-             background-color: #007bff;
-             color: white;
-             text-decoration: none;
-             border-radius: 6px;
-             border: none;
-             cursor: pointer;
-             font-size: 14px;
-             transition: all 0.3s ease;
-         }
-         .btn:hover {
-             background-color: #0056b3;
-             transform: translateY(-2px);
-             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-         }
-         .btn-primary { background-color: #007bff; }
-         .btn-success { background-color: #28a745; }
-         .btn-warning { background-color: #ffc107; color: #212529; }
-         .btn-info { background-color: #17a2b8; }
-         .btn-secondary { background-color: #6c757d; }
-         .tech-info {
-             background-color: #e9ecef;
-             border-radius: 8px;
-             padding: 20px;
-             margin: 20px 0;
-         }
-         .tech-info h4 {
-             color: #495057;
-             border-bottom: 2px solid #adb5bd;
-             padding-bottom: 8px;
-         }
-         .tech-info ul {
-             list-style-type: none;
-             padding: 0;
-         }
-         .tech-info li {
-             margin: 6px 0;
-             padding: 6px 12px;
-             background-color: #f8f9fa;
-             border-left: 3px solid #28a745;
-             border-radius: 3px;
-         }
-         
-         /* Стили для графов */
-         .graph-container {
-             background-color: white;
-             border: 2px solid #dee2e6;
-             border-radius: 8px;
-             padding: 20px;
-             margin: 20px 0;
-             text-align: center;
-             min-height: 400px;
-         }
-         .graph-display {
-             width: 100%;
-             height: 500px;
-             border: 1px solid #ccc;
-             overflow: auto;
-             background-color: #fafafa;
-         }
-         .graph-buttons {
-             margin-bottom: 15px;
-         }
-         .graph-buttons .btn {
-             margin: 5px;
-         }
-         
-         /* Стили для выпадающих секций */
-         .collapsible {
-             background-color: #3498db;
-             color: white;
-             cursor: pointer;
-             padding: 18px;
-             width: 100%;
-             border: none;
-             text-align: left;
-             outline: none;
-             font-size: 16px;
-             font-weight: bold;
-             border-radius: 8px;
-             margin: 10px 0;
-             transition: all 0.3s ease;
-         }
-         .collapsible:hover {
-             background-color: #2980b9;
-         }
-         .collapsible.active {
-             background-color: #2980b9;
-         }
-         .collapsible::after {
-             content: '▼';
-             float: right;
-             margin-left: 5px;
-             transition: transform 0.3s ease;
-         }
-         .collapsible.active::after {
-             transform: rotate(180deg);
-         }
-         .collapsible-content {
-             max-height: 0;
-             overflow: hidden;
-             transition: max-height 0.3s ease;
-             background-color: #f8f9fa;
-             border-radius: 0 0 8px 8px;
-         }
-         .collapsible-content.active {
-             max-height: 2000px;
-             padding: 20px;
-         }
-     </style>
- </head>
- <body>
-     <div class="container">         
-         <div class="stats">
-             <h3>📊 Статистика анализа</h3>
-             <ul>
-                 <li><strong>🔧 Методов/событий:</strong> ${enhancedMethods.length}</li>
-                 <li><strong>🏗️ Состояний:</strong> ${enhancedStates.length}</li>
-                 <li><strong>🔄 Переходов в автомате:</strong> ${fsm.transitions.length}</li>
-                 <li><strong>📝 Обязательных тестов:</strong> ${testPaths.length} (метод → конечное состояние)</li>
-                 <li><strong>🔗 Комбинированных тестов:</strong> ${combinedPaths.length} (пути 2-3 перехода)</li>
-                 <li><strong>📝 Всего тестов:</strong> ${testPaths.length + combinedPaths.length}</li>
-                 <li><strong>🌳 Веток выполнения:</strong> ${Array.from(executionBranches.values()).reduce((total, branches) => total + branches.length, 0)}</li>
-                 <li><strong>🚀 Начальное состояние:</strong> ${fsm.initialState}</li>
-                 <li><strong>📅 Дата анализа:</strong> ${new Date().toLocaleString('ru-RU')}</li>
-             </ul>
-         </div>
-
-         <div class="methods-section">
-             <h3>⚙️ Детальная информация о методах/событиях</h3>
-             ${methodsInfoHtml}
-         </div>
-
-         <div class="buttons-section">
-             <h3>🔧 Функции генератора</h3>
-             <button class="btn btn-warning" onclick="copyFSMDot()">📋 Копировать DOT (FSM)</button>
-             <button class="btn btn-info" onclick="copyPathsDot()">📋 Копировать DOT (Пути)</button>
-             <button class="btn btn-secondary" onclick="openGraphvizOnline()">🌐 Graphviz Online</button>
-         </div>
-
-         <!-- Автомат состояний с графом -->
-         <div class="graph-container">
-             <h3>🏗️ Автомат состояний</h3>
-             <div class="graph-buttons">
-                 <button class="btn btn-primary" onclick="showFSMGraph()">🎨 Показать граф</button>
-                 <button class="btn btn-secondary" onclick="hideFSMGraph()">❌ Скрыть граф</button>
-             </div>
-             <div id="fsm-graph" class="graph-display" style="display: none;"></div>
-             
-             <!-- Выпадающая подробная информация об автомате -->
-             <button class="collapsible">📋 Подробная информация об автомате состояний</button>
-             <div class="collapsible-content">
-                 <div class="stats">
-                     <p><strong>🚀 Начальное состояние:</strong> ${fsm.initialState}</p>
-                     <p><strong>🏗️ Все состояния:</strong></p>
-                     <ul>
-                         ${fsm.states.map(state => {
-                             const stateInfo = enhancedStates.find(s => s.name === state);
-                             const flags = [];
-                             if (stateInfo?.isInitial) flags.push('🚀 начальное');
-                             if (stateInfo?.isLoading) flags.push('⏳ загрузка');
-                             if (stateInfo?.isError) flags.push('❌ ошибка');
-                             if (stateInfo?.isSuccess) flags.push('✅ успех');
-                             return `<li>${state}${flags.length > 0 ? ` (${flags.join(', ')})` : ''}</li>`;
-                         }).join('')}
-                     </ul>
-                     <p><strong>🔄 Переходы:</strong></p>
-                     <ul>
-                         ${fsm.transitions.map(t => `<li>${t.from} →[${t.method}]→ ${t.to}</li>`).join('')}
-                     </ul>
-                 </div>
-             </div>
-         </div>
-
-         <!-- Тестовые пути с графом -->
-         <div class="graph-container">
-             <h3>🛤️ Тестовые пути</h3>
-             <div class="graph-buttons">
-                 <button class="btn btn-success" onclick="showPathsGraph()">🎨 Показать граф</button>
-                 <button class="btn btn-secondary" onclick="hidePathsGraph()">❌ Скрыть граф</button>
-             </div>
-             <div id="paths-graph" class="graph-display" style="display: none;"></div>
-             
-             <!-- Выпадающая подробная информация о тестовых путях -->
-             <button class="collapsible">📋 Подробная информация о тестовых путях</button>
-             <div class="collapsible-content">
-                 <div class="stats">
-                     <h4>📝 Обязательные тесты (метод → конечное состояние):</h4>
-                     ${testPaths.map((path, index) => `<p>${index + 1}. <strong>${path.methods.join(', ')}</strong> → <em>${path.states.join(' → ')}</em></p>`).join('')}
-                     
-                     <h4>🔗 Комбинированные тесты (конкретные переходы объединяются):</h4>
-                     ${combinedPaths.map((path, index) => `<p>${index + 1}. <strong>${path.methods.join(' → ')}</strong> → <em>${path.states.join(' → ')}</em></p>`).join('')}
-                 </div>
-             </div>
-         </div>
-
-         <!-- Выпадающие ветки выполнения -->
-         <div class="methods-section">
-             <button class="collapsible">🌳 Ветки выполнения (для генерации тестов)</button>
-             <div class="collapsible-content">
-                 ${branchesInfoHtml}
-             </div>
-         </div>
-         
-         <!-- Выпадающие комбинированные пути -->
-         <div class="methods-section">
-             <button class="collapsible">🔗 Комбинированные тестовые пути (конкретные переходы)</button>
-             <div class="collapsible-content">
-                 ${combinedPathsHtml}
-             </div>
-         </div>
-      </div>
-
-     <script>
-         // Данные для генерации графов
-         const fsmDotData = ${JSON.stringify(fsmDot)};
-         const pathsDotData = ${JSON.stringify(pathsDot)};
-
-         // Инициализация выпадающих секций
-         document.addEventListener('DOMContentLoaded', function() {
-             const collapsibles = document.querySelectorAll('.collapsible');
-             collapsibles.forEach(function(collapsible) {
-                 collapsible.addEventListener('click', function() {
-                     this.classList.toggle('active');
-                     const content = this.nextElementSibling;
-                     content.classList.toggle('active');
-                 });
-             });
-         });
-
-         // Функции для работы с графами
-         function showFSMGraph() {
-             const container = document.getElementById('fsm-graph');
-             container.style.display = 'block';
-             
-             try {
-                 d3.select("#fsm-graph").graphviz()
-                     .renderDot(fsmDotData)
-                     .on("end", function() {
-                         console.log('FSM граф отрендерен');
-                     });
-             } catch (error) {
-                 console.error('Ошибка рендеринга FSM графа:', error);
-                 container.innerHTML = '<div style="padding: 20px; color: #dc3545;">❌ Ошибка рендеринга графа. Проверьте консоль браузера.</div>';
-             }
-         }
-
-         function hideFSMGraph() {
-             const container = document.getElementById('fsm-graph');
-             container.style.display = 'none';
-             container.innerHTML = '';
-         }
-
-         function showPathsGraph() {
-             const container = document.getElementById('paths-graph');
-             container.style.display = 'block';
-             
-             try {
-                 d3.select("#paths-graph").graphviz()
-                     .renderDot(pathsDotData)
-                     .on("end", function() {
-                         console.log('Paths граф отрендерен');
-                     });
-             } catch (error) {
-                 console.error('Ошибка рендеринга Paths графа:', error);
-                 container.innerHTML = '<div style="padding: 20px; color: #dc3545;">❌ Ошибка рендеринга графа. Проверьте консоль браузера.</div>';
-             }
-         }
-
-         function hidePathsGraph() {
-             const container = document.getElementById('paths-graph');
-             container.style.display = 'none';
-             container.innerHTML = '';
-         }
-
-         function copyFSMDot() {
-             navigator.clipboard.writeText(fsmDotData).then(() => {
-                 alert('📋 DOT код автомата состояний скопирован в буфер обмена!');
-             }).catch(err => {
-                 console.error('Ошибка копирования: ', err);
-                 alert('❌ Ошибка копирования в буфер обмена');
-             });
-         }
-
-         function copyPathsDot() {
-             navigator.clipboard.writeText(pathsDotData).then(() => {
-                 alert('📋 DOT код тестовых путей скопирован в буфер обмена!');
-             }).catch(err => {
-                 console.error('Ошибка копирования: ', err);
-                 alert('❌ Ошибка копирования в буфер обмена');
-             });
-         }
-
-         function openGraphvizOnline() {
-             window.open('https://dreampuf.github.io/GraphvizOnline/', '_blank');
-             alert('🌐 Graphviz Online открыт в новой вкладке. Вставьте скопированный DOT код для визуализации!');
-         }
-     </script>
- </body>
- </html>`;
-
-    // Показываем WebView в VS Code
-    const panel = vscode.window.createWebviewPanel(
-        'testAnalysisV2',
-        `🎯 Анализ тестов v2.0: ${cubitName}`,
-        vscode.ViewColumn.Beside,
-        {
-            enableScripts: true,
-            retainContextWhenHidden: true
-        }
+    // Используем новый модуль webview
+    createTestAnalysisWebview(
+        cubitName,
+        enhancedMethods,
+        enhancedStates,
+        fsm,
+        testPaths,
+        executionBranches,
+        fsmDot,
+        pathsDot
     );
-    
-    panel.webview.html = htmlContent;
-    console.log('✓ WebView панель открыта в VS Code');
 }
 
 // ===== ГЛАВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ =====
 
-export async function generateTestNew(
+/**
+ * Главная функция генерации тестов для Cubit/Bloc классов
+ * Анализирует код класса, парсит состояния и методы, строит автомат состояний
+ * и генерирует полную структуру тестов с WebView панелью для анализа
+ * 
+ * @param workspaceRoot - Корневая директория рабочего пространства VS Code
+ * @param testDir - Директория для создания тестов (обычно 'test')
+ * @param featureName - Имя фичи (используется для структуры папок)
+ * @param cubitName - Имя класса Cubit/Bloc для анализа
+ * @param classCode - Полный исходный код класса Cubit/Bloc
+ * @param packageName - Имя пакета (для импортов в тестах)
+ * 
+ * @throws {Error} Если не найдено состояний или произошла ошибка при парсинге
+ * 
+ * @description
+ * **Этапы генерации:**
+ * 1. Парсинг состояний из отдельного файла или встроенных
+ * 2. Анализ методов/событий через унифицированный лексер
+ * 3. Построение автомата состояний (FSM)
+ * 4. Генерация тестовых путей
+ * 5. Создание WebView панели с анализом
+ * 6. Генерация файлов тестов (.dart)
+ * 
+ * **Результат:**
+ * - Файлы тестов в test/features/[featureName]/
+ * - WebView панель с интерактивным анализом
+ * - Графы автомата состояний и тестовых путей
+ * - Логи процесса генерации в консоли
+ */
+export async function generateTest(
     workspaceRoot: vscode.Uri, 
     testDir: string, 
     featureName: string, 
@@ -2137,14 +1968,22 @@ export async function generateTestNew(
         }
         
         // 3. Построение автомата
-        const { fsm, parsedMethods, executionBranches } = buildEnhancedFSM(enhancedMethods, enhancedStates, initialState);
+        const { fsm, parsedMethods } = buildEnhancedFSM(enhancedMethods, enhancedStates, initialState);
         console.log(`✓ Построен автомат: ${fsm.states.length} состояний, ${fsm.transitions.length} переходов`);
         
         // 4. Генерация тестовых путей
         const testPaths = generateTestPaths(fsm, enhancedMethods, 20);
         console.log(`✓ Сгенерировано ${testPaths.length} тестовых путей`);
         
-        // 5. Создание информационного файла
+        // 5. Генерация комбинированных путей
+        const combinedPaths = generateRandomCombinedPaths(fsm, enhancedMethods, 5);
+        console.log(`✓ Сгенерировано ${combinedPaths.length} комбинированных путей`);
+        
+        // 6. Создание веток выполнения на основе реальных тестовых путей
+        const executionBranches = createExecutionBranchesFromTestPaths(testPaths, combinedPaths, enhancedMethods);
+        console.log(`✓ Создано ${Array.from(executionBranches.values()).reduce((acc, branches) => acc + branches.length, 0)} веток выполнения`);
+        
+        // 7. Создание информационного файла
         await generateInfoFile(
             workspaceRoot,
             testDir,
@@ -2157,7 +1996,7 @@ export async function generateTestNew(
             executionBranches
         );
         
-        // 6. Генерация структуры тестов
+        // 8. Генерация структуры тестов
         await generateTestFilesStructure(
             workspaceRoot,
             testDir,
@@ -2166,6 +2005,7 @@ export async function generateTestNew(
             enhancedMethods,
             enhancedStates,
             testPaths,
+            combinedPaths,
             isBloc,
             fsm,
             classCode

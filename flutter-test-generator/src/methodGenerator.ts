@@ -1,19 +1,18 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { TextEncoder } from 'util';
+import { toSnakeCase } from './utils';
 
-// Функция для преобразования camelCase или PascalCase в lower_case_with_underscores
-function toLowerCaseWithUnderscores(name: string): string {
-    return name
-        .replace(/([a-z])([A-Z])/g, '$1_$2') // Разделяем camelCase или PascalCase
-        .replace(/([A-Z])([A-Z][a-z])/g, '$1_$2') // Обрабатываем последовательные заглавные буквы
-        .toLowerCase() // Преобразуем в нижний регистр
-        .replace(/\s+/g, '_'); // Заменяем пробелы на подчеркивания
-}
-
+/**
+ * Генерирует тестовый файл для отдельного метода или функции
+ * @param workspaceRoot - корневая директория рабочего пространства
+ * @param testDir - директория для тестов
+ * @param methodName - имя метода для тестирования
+ * @param methodCode - код метода
+ * @param packageName - имя пакета проекта
+ */
 export async function generateTest(workspaceRoot: vscode.Uri, testDir: string, methodName: string, methodCode: string, packageName: string) {
-    // Преобразуем имя метода в lower_case_with_underscores
-    const testFileName = `${toLowerCaseWithUnderscores(methodName)}_test.dart`;
+    const testFileName = `${toSnakeCase(methodName)}_test.dart`;
     const testUri = vscode.Uri.joinPath(workspaceRoot, testDir, 'unit_test', testFileName);
     const dirUri = vscode.Uri.joinPath(workspaceRoot, testDir, 'unit_test');
     await vscode.workspace.fs.createDirectory(dirUri);
