@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="584pt" height="180pt" viewBox="0.00 0.00 584.39 179.80">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 175.8)">
+<title>LoginCubitFSM</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-175.8 580.39,-175.8 580.39,4 -4,4"/>
+<!-- Initial -->
+<g id="node1" class="node">
+<title>Initial</title>
+<path fill="none" stroke="black" d="M16.43,-40.5C16.43,-40.5 75.31,-40.5 75.31,-40.5 81.31,-40.5 87.31,-46.5 87.31,-52.5 87.31,-52.5 87.31,-64.5 87.31,-64.5 87.31,-70.5 81.31,-76.5 75.31,-76.5 75.31,-76.5 16.43,-76.5 16.43,-76.5 10.43,-76.5 4.43,-70.5 4.43,-64.5 4.43,-64.5 4.43,-52.5 4.43,-52.5 4.43,-46.5 10.43,-40.5 16.43,-40.5"/>
+<text text-anchor="middle" x="45.87" y="-54.4" font-family="Times,serif" font-size="14.00">LoginInitial</text>
+</g>
+<!-- Initial&#45;&gt;Initial -->
+<g id="edge6" class="edge">
+<title>Initial-&gt;Initial</title>
+<path fill="none" stroke="black" d="M22.88,-76.9C19.34,-86.42 27.01,-95 45.87,-95 56.48,-95 63.55,-92.29 67.07,-88.22"/>
+<polygon fill="black" stroke="black" points="70.52,-88.82 68.63,-78.4 63.61,-87.73 70.52,-88.82"/>
+<text text-anchor="middle" x="45.87" y="-99.2" font-family="Times,serif" font-size="14.00">reset() / logout()</text>
+</g>
+<!-- Loading -->
+<g id="node2" class="node">
+<title>Loading</title>
+<path fill="none" stroke="black" d="M270.61,-40.5C270.61,-40.5 342.71,-40.5 342.71,-40.5 348.71,-40.5 354.71,-46.5 354.71,-52.5 354.71,-52.5 354.71,-64.5 354.71,-64.5 354.71,-70.5 348.71,-76.5 342.71,-76.5 342.71,-76.5 270.61,-76.5 270.61,-76.5 264.61,-76.5 258.61,-70.5 258.61,-64.5 258.61,-64.5 258.61,-52.5 258.61,-52.5 258.61,-46.5 264.61,-40.5 270.61,-40.5"/>
+<text text-anchor="middle" x="306.66" y="-54.4" font-family="Times,serif" font-size="14.00">LoginLoading</text>
+</g>
+<!-- Initial&#45;&gt;Loading -->
+<g id="edge1" class="edge">
+<title>Initial-&gt;Loading</title>
+<path fill="none" stroke="black" d="M87.59,-58.5C130.42,-58.5 198.22,-58.5 246.85,-58.5"/>
+<polygon fill="black" stroke="black" points="246.64,-62 256.64,-58.5 246.64,-55 246.64,-62"/>
+<text text-anchor="middle" x="172.96" y="-62.7" font-family="Times,serif" font-size="14.00">loginUser(valid/invalid)</text>
+</g>
+<!-- Loading&#45;&gt;Loading -->
+<g id="edge7" class="edge">
+<title>Loading-&gt;Loading</title>
+<path fill="none" stroke="black" d="M287.61,-76.9C284.68,-86.42 291.03,-95 306.66,-95 315.46,-95 321.31,-92.29 324.23,-88.22"/>
+<polygon fill="black" stroke="black" points="327.69,-88.78 325.52,-78.41 320.75,-87.87 327.69,-88.78"/>
+<text text-anchor="middle" x="306.66" y="-99.2" font-family="Times,serif" font-size="14.00">logout()</text>
+</g>
+<!-- Success -->
+<g id="node3" class="node">
+<title>Success</title>
+<path fill="none" stroke="black" d="M481.24,-100.5C481.24,-100.5 551.01,-100.5 551.01,-100.5 557.01,-100.5 563.01,-106.5 563.01,-112.5 563.01,-112.5 563.01,-124.5 563.01,-124.5 563.01,-130.5 557.01,-136.5 551.01,-136.5 551.01,-136.5 481.24,-136.5 481.24,-136.5 475.24,-136.5 469.24,-130.5 469.24,-124.5 469.24,-124.5 469.24,-112.5 469.24,-112.5 469.24,-106.5 475.24,-100.5 481.24,-100.5"/>
+<text text-anchor="middle" x="516.12" y="-114.4" font-family="Times,serif" font-size="14.00">LoginSuccess</text>
+</g>
+<!-- Loading&#45;&gt;Success -->
+<g id="edge2" class="edge">
+<title>Loading-&gt;Success</title>
+<path fill="none" stroke="black" d="M355,-72.19C385.73,-81.08 425.94,-92.71 458.38,-102.09"/>
+<polygon fill="black" stroke="black" points="457.03,-105.34 467.61,-104.76 458.98,-98.62 457.03,-105.34"/>
+<text text-anchor="middle" x="411.98" y="-103.29" font-family="Times,serif" font-size="14.00">emit(Success)</text>
+</g>
+<!-- Failure -->
+<g id="node4" class="node">
+<title>Failure</title>
+<path fill="none" stroke="black" d="M483.58,-0.5C483.58,-0.5 548.67,-0.5 548.67,-0.5 554.67,-0.5 560.67,-6.5 560.67,-12.5 560.67,-12.5 560.67,-24.5 560.67,-24.5 560.67,-30.5 554.67,-36.5 548.67,-36.5 548.67,-36.5 483.58,-36.5 483.58,-36.5 477.58,-36.5 471.58,-30.5 471.58,-24.5 471.58,-24.5 471.58,-12.5 471.58,-12.5 471.58,-6.5 477.58,-0.5 483.58,-0.5"/>
+<text text-anchor="middle" x="516.12" y="-14.4" font-family="Times,serif" font-size="14.00">LoginFailure</text>
+</g>
+<!-- Loading&#45;&gt;Failure -->
+<g id="edge3" class="edge">
+<title>Loading-&gt;Failure</title>
+<path fill="none" stroke="black" d="M355,-49.37C386.24,-43.35 427.28,-35.44 459.99,-29.13"/>
+<polygon fill="black" stroke="black" points="460.54,-32.59 469.69,-27.26 459.21,-25.72 460.54,-32.59"/>
+<text text-anchor="middle" x="411.98" y="-49.76" font-family="Times,serif" font-size="14.00">emit(Failure)</text>
+</g>
+<!-- Success&#45;&gt;Initial -->
+<g id="edge4" class="edge">
+<title>Success-&gt;Initial</title>
+<path fill="none" stroke="black" d="M468.8,-119.26C436.76,-119.74 393.15,-120.3 354.71,-120.5 312,-120.72 300.96,-126.06 258.61,-120.5 188.69,-111.31 172.62,-100.56 105.31,-79.5 103.06,-78.8 100.77,-78.06 98.46,-77.3"/>
+<polygon fill="black" stroke="black" points="99.62,-74 89.03,-74.11 97.38,-80.63 99.62,-74"/>
+<text text-anchor="middle" x="306.66" y="-127.22" font-family="Times,serif" font-size="14.00">logout() / reset()</text>
+</g>
+<!-- Success&#45;&gt;Success -->
+<g id="edge9" class="edge">
+<title>Success-&gt;Success</title>
+<path fill="none" stroke="black" d="M497.28,-136.9C494.39,-146.42 500.67,-155 516.12,-155 524.82,-155 530.61,-152.29 533.5,-148.22"/>
+<polygon fill="black" stroke="black" points="536.96,-148.77 534.77,-138.41 530.02,-147.87 536.96,-148.77"/>
+<text text-anchor="middle" x="516.12" y="-159.2" font-family="Times,serif" font-size="14.00">loginUser()</text>
+</g>
+<!-- Failure&#45;&gt;Initial -->
+<g id="edge5" class="edge">
+<title>Failure-&gt;Initial</title>
+<path fill="none" stroke="black" d="M471.21,-17.18C438.98,-16.28 394.13,-15.17 354.71,-14.7 312,-14.19 301.1,-10.35 258.61,-14.7 203.25,-20.37 141,-34.16 98.4,-44.77"/>
+<polygon fill="black" stroke="black" points="97.78,-41.31 88.94,-47.15 99.5,-48.1 97.78,-41.31"/>
+<text text-anchor="middle" x="306.66" y="-18.9" font-family="Times,serif" font-size="14.00">reset()</text>
+</g>
+<!-- Failure&#45;&gt;Failure -->
+<g id="edge8" class="edge">
+<title>Failure-&gt;Failure</title>
+<path fill="none" stroke="black" d="M497.28,-36.9C494.39,-46.42 500.67,-55 516.12,-55 524.82,-55 530.61,-52.29 533.5,-48.22"/>
+<polygon fill="black" stroke="black" points="536.96,-48.77 534.77,-38.41 530.02,-47.87 536.96,-48.77"/>
+<text text-anchor="middle" x="516.12" y="-59.2" font-family="Times,serif" font-size="14.00">loginUser() / logout()</text>
+</g>
+</g>
+</svg>
