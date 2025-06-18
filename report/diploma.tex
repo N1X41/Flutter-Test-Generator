@@ -596,7 +596,6 @@
 %\renewcommand{\ttdefault}{pcr}
 
 \setlength{\tabcolsep}{3pt}
-\thispagestyle{empty}
 \newpage
 \setcounter{page}{4}
 
@@ -2105,7 +2104,6 @@ void main() {
        // final actualPrice = calculatePrice(quantity, itemPrice);
        // expect(actualPrice, expectedPrice);
     });
-    // TODO: Добавьте альтернативные тесты, если необходимо
   }); }
 // Заглушка реальной функции/метода для контекста
 double calculatePrice(int quantity, double itemPrice) {
@@ -2116,7 +2114,7 @@ double calculatePrice(int quantity, double itemPrice) {
     return quantity * itemPrice;
 }
 \end{minted}
-    \end{listing}
+\end{listing}
 \newpage
 \begin{listing}[!htb]
 \caption{Пример сгенерированного теста для DTO (Dart)}
