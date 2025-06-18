@@ -18,6 +18,8 @@ flutter-test-generator/src/**
 
 !report/
 report/**
+!report/images/
+!report/images/**
 !report/main.tex
 !report/main.pdf
 
