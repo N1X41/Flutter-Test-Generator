@@ -74,7 +74,7 @@ class SearchFilterCubit extends Cubit<SearchFilterState> {
         .where((value) =>
             value != null &&
             value != '' &&
-            (value is! List || (value as List).isNotEmpty))
+            (value is! List || (value).isNotEmpty))
         .length;
   }
 
@@ -96,15 +96,5 @@ class SearchFilterCubit extends Cubit<SearchFilterState> {
     }
 
     return filters;
-  }
-
-  /// Приватный метод для сохранения фильтров в хранилище
-  Future<void> _saveFiltersToStorage(Map<String, dynamic> filters) async {
-    final filtersString =
-        filters.entries.map((entry) => '${entry.key}:${entry.value}').join('|');
-
-    await _secureStorage.write('search_filters', filtersString);
-    await _secureStorage.write(
-        'filters_save_time', DateTime.now().toIso8601String());
   }
 }
