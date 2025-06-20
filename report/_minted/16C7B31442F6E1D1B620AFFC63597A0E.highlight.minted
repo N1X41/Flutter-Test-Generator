@@ -1,0 +1,12 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface StateTransition \PYGZob{}
+    fromState: string;           // Начальное состояние
+    toState: string;             // Конечное состояние
+    transientStates: string[];   // Сквозные состояния между началом и концом
+    repositoryCalls: string[];   // Вызовы методов репозитория
+    storageCalls: string[];      // Вызовы методов хранилища
+    privateMethodCalls: string[];// Вызовы приватных методов
+    isReachable: boolean;        // Достижимость перехода
+    conditionGuards: string[];   // Условия/ограничения перехода
+\PYGZcb{}
+\end{MintedVerbatim}

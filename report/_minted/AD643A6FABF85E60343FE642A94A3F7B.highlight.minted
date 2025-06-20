@@ -1,0 +1,19 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface EnhancedMethodInfo \PYGZob{}
+    name: string;                // Название метода/события
+    type: \PYGZsq{}event\PYGZsq{} | \PYGZsq{}method\PYGZsq{};    // Тип: событие (для Bloc) или метод (для Cubit)
+    event?: string;              // Само событие (для блоков)
+    handler?: string;            // Обработчик (для блоков)
+    parameters: string[];        // Параметры
+    transitions: StateTransition[]; // Детальные переходы между состояниями
+    reachableStates: string[];   // Все достижимые состояния из этого метода
+    finalStates: string[];       // Конечные состояния метода
+    transientStates: string[];   // Сквозные состояния метода
+    repositoryCalls: string[];   // Вызовы репозитория
+    storageCalls: string[];      // Вызовы хранилища
+    privateMethodCalls: string[];// Вызовы приватных методов
+    guardConditions: GuardCondition[]; // Guard условия
+    allowedStates: string[];     // Разрешенные состояния для вызова
+    isArrowFunction?: boolean;   // Является ли стрелочной функцией
+\PYGZcb{}
+\end{MintedVerbatim}

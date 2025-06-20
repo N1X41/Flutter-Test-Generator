@@ -1,0 +1,7 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{DataItem}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{dartName}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// Имя переменной в Dart\PYGZhy{}нотации}
+\PYG{+w}{    }\PYG{n+nx}{jsonKey}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{             }\PYG{c+c1}{// Имя переменной в JSON\PYGZhy{}нотации}
+\PYG{+w}{    }\PYG{k+kr}{type}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{                }\PYG{c+c1}{// Тип переменной}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

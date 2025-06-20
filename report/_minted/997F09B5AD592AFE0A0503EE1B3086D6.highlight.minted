@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{EmitInfo}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{state}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{               }\PYG{c+c1}{// Нормализованное название состояния}
+\PYG{+w}{    }\PYG{n+nx}{rawStatement}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{        }\PYG{c+c1}{// Оригинальный emit statement}
+\PYG{+w}{    }\PYG{n+nx}{context}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{DartMethodContext}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{k+kc}{null}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nx}{isTransient}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{boolean}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nx}{isFinal}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{boolean}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nx}{reason}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

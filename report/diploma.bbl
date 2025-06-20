@@ -1,0 +1,662 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global/global}
+    \entry{FlutterDev}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=8b36e9207c24c76e6719268e49201d94}{%
+           family={{Google}},
+           familyi={G\bibinitperiod}}}%
+      }
+      \strng{namehash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{fullhash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{fullhashraw}{8b36e9207c24c76e6719268e49201d94}
+      \strng{bibnamehash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{authorbibnamehash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{authornamehash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{authorfullhash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{authorfullhashraw}{8b36e9207c24c76e6719268e49201d94}
+      \field{extraname}{1}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Официальный сайт Flutter}
+      \field{title}{Flutter - Build apps for any screen}
+      \field{urlday}{22}
+      \field{urlmonth}{4}
+      \field{urlyear}{2024}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://flutter.dev/
+      \endverb
+      \verb{url}
+      \verb https://flutter.dev/
+      \endverb
+    \endentry
+    \entry{FlutterTestingCookbook}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=07075041ffe64a2c3de1802287e89440}{%
+           family={{Flutter Team}},
+           familyi={F\bibinitperiod}}}%
+      }
+      \strng{namehash}{07075041ffe64a2c3de1802287e89440}
+      \strng{fullhash}{07075041ffe64a2c3de1802287e89440}
+      \strng{fullhashraw}{07075041ffe64a2c3de1802287e89440}
+      \strng{bibnamehash}{07075041ffe64a2c3de1802287e89440}
+      \strng{authorbibnamehash}{07075041ffe64a2c3de1802287e89440}
+      \strng{authornamehash}{07075041ffe64a2c3de1802287e89440}
+      \strng{authorfullhash}{07075041ffe64a2c3de1802287e89440}
+      \strng{authorfullhashraw}{07075041ffe64a2c3de1802287e89440}
+      \field{extraname}{1}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Официальная документация Flutter по тестированию}
+      \field{title}{Testing Flutter apps}
+      \field{urlday}{22}
+      \field{urlmonth}{4}
+      \field{urlyear}{2024}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://docs.flutter.dev/testing
+      \endverb
+      \verb{url}
+      \verb https://docs.flutter.dev/testing
+      \endverb
+    \endentry
+    \entry{BlocLibraryTesting}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=740b7c7e0ae4e4d1e1329c002c642311}{%
+           family={{Bloc Library Authors}},
+           familyi={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{fullhash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{fullhashraw}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{bibnamehash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{authorbibnamehash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{authornamehash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{authorfullhash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{authorfullhashraw}{740b7c7e0ae4e4d1e1329c002c642311}
+      \field{extraname}{1}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Официальная документация по тестированию в библиотеке BLoC}
+      \field{title}{Testing - Bloc Library}
+      \field{urlday}{22}
+      \field{urlmonth}{4}
+      \field{urlyear}{2024}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://bloclibrary.dev/\#/testing
+      \endverb
+      \verb{url}
+      \verb https://bloclibrary.dev/%5C#/testing
+      \endverb
+    \endentry
+    \entry{VSCodeAPI}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=140864078aeca1c7c35b4beb33c53c34}{%
+           family={{Microsoft}},
+           familyi={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{140864078aeca1c7c35b4beb33c53c34}
+      \strng{fullhash}{140864078aeca1c7c35b4beb33c53c34}
+      \strng{fullhashraw}{140864078aeca1c7c35b4beb33c53c34}
+      \strng{bibnamehash}{140864078aeca1c7c35b4beb33c53c34}
+      \strng{authorbibnamehash}{140864078aeca1c7c35b4beb33c53c34}
+      \strng{authornamehash}{140864078aeca1c7c35b4beb33c53c34}
+      \strng{authorfullhash}{140864078aeca1c7c35b4beb33c53c34}
+      \strng{authorfullhashraw}{140864078aeca1c7c35b4beb33c53c34}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Документация по API для разработки расширений VS Code}
+      \field{title}{Visual Studio Code Extension API}
+      \field{urlday}{22}
+      \field{urlmonth}{4}
+      \field{urlyear}{2024}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://code.visualstudio.com/api
+      \endverb
+      \verb{url}
+      \verb https://code.visualstudio.com/api
+      \endverb
+    \endentry
+    \entry{FlutterUnitTesting}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=07075041ffe64a2c3de1802287e89440}{%
+           family={{Flutter Team}},
+           familyi={F\bibinitperiod}}}%
+      }
+      \strng{namehash}{07075041ffe64a2c3de1802287e89440}
+      \strng{fullhash}{07075041ffe64a2c3de1802287e89440}
+      \strng{fullhashraw}{07075041ffe64a2c3de1802287e89440}
+      \strng{bibnamehash}{07075041ffe64a2c3de1802287e89440}
+      \strng{authorbibnamehash}{07075041ffe64a2c3de1802287e89440}
+      \strng{authornamehash}{07075041ffe64a2c3de1802287e89440}
+      \strng{authorfullhash}{07075041ffe64a2c3de1802287e89440}
+      \strng{authorfullhashraw}{07075041ffe64a2c3de1802287e89440}
+      \field{extraname}{2}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Раздел документации Flutter по модульному тестированию}
+      \field{title}{Unit testing}
+      \field{urlday}{22}
+      \field{urlmonth}{4}
+      \field{urlyear}{2024}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://docs.flutter.dev/cookbook/testing/unit/introduction
+      \endverb
+      \verb{url}
+      \verb https://docs.flutter.dev/cookbook/testing/unit/introduction
+      \endverb
+    \endentry
+    \entry{DartDev}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=8b36e9207c24c76e6719268e49201d94}{%
+           family={{Google}},
+           familyi={G\bibinitperiod}}}%
+      }
+      \strng{namehash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{fullhash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{fullhashraw}{8b36e9207c24c76e6719268e49201d94}
+      \strng{bibnamehash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{authorbibnamehash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{authornamehash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{authorfullhash}{8b36e9207c24c76e6719268e49201d94}
+      \strng{authorfullhashraw}{8b36e9207c24c76e6719268e49201d94}
+      \field{extraname}{2}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Официальный сайт языка Dart}
+      \field{title}{Dart programming language}
+      \field{urlday}{22}
+      \field{urlmonth}{4}
+      \field{urlyear}{2024}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://dart.dev/
+      \endverb
+      \verb{url}
+      \verb https://dart.dev/
+      \endverb
+    \endentry
+    \entry{BlocTestPackage}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=740b7c7e0ae4e4d1e1329c002c642311}{%
+           family={{Bloc Library Authors}},
+           familyi={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{fullhash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{fullhashraw}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{bibnamehash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{authorbibnamehash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{authornamehash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{authorfullhash}{740b7c7e0ae4e4d1e1329c002c642311}
+      \strng{authorfullhashraw}{740b7c7e0ae4e4d1e1329c002c642311}
+      \field{extraname}{2}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Пакет для тестирования BLoC и Cubit}
+      \field{title}{package:bloc\_test}
+      \field{urlday}{22}
+      \field{urlmonth}{4}
+      \field{urlyear}{2024}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://pub.dev/packages/bloc\_test
+      \endverb
+      \verb{url}
+      \verb https://pub.dev/packages/bloc%5C_test
+      \endverb
+    \endentry
+    \entry{DartTestPackage}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=080adf224129401487d1416e7a60eb4a}{%
+           family={{Dart Team}},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{080adf224129401487d1416e7a60eb4a}
+      \strng{fullhash}{080adf224129401487d1416e7a60eb4a}
+      \strng{fullhashraw}{080adf224129401487d1416e7a60eb4a}
+      \strng{bibnamehash}{080adf224129401487d1416e7a60eb4a}
+      \strng{authorbibnamehash}{080adf224129401487d1416e7a60eb4a}
+      \strng{authornamehash}{080adf224129401487d1416e7a60eb4a}
+      \strng{authorfullhash}{080adf224129401487d1416e7a60eb4a}
+      \strng{authorfullhashraw}{080adf224129401487d1416e7a60eb4a}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Официальная страница пакета для написания тестов на Dart}
+      \field{title}{package:test}
+      \field{urlday}{22}
+      \field{urlmonth}{4}
+      \field{urlyear}{2024}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://pub.dev/packages/test
+      \endverb
+      \verb{url}
+      \verb https://pub.dev/packages/test
+      \endverb
+    \endentry
+    \entry{MockitoDart}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=e379911137cd5120fd1c9355fa64c224}{%
+           family={{Dart Team and Community}},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{e379911137cd5120fd1c9355fa64c224}
+      \strng{fullhash}{e379911137cd5120fd1c9355fa64c224}
+      \strng{fullhashraw}{e379911137cd5120fd1c9355fa64c224}
+      \strng{bibnamehash}{e379911137cd5120fd1c9355fa64c224}
+      \strng{authorbibnamehash}{e379911137cd5120fd1c9355fa64c224}
+      \strng{authornamehash}{e379911137cd5120fd1c9355fa64c224}
+      \strng{authorfullhash}{e379911137cd5120fd1c9355fa64c224}
+      \strng{authorfullhashraw}{e379911137cd5120fd1c9355fa64c224}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Популярный фреймворк для мокирования в Dart}
+      \field{title}{package:mockito}
+      \field{urlday}{23}
+      \field{urlmonth}{4}
+      \field{urlyear}{2024}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://pub.dev/packages/mockito
+      \endverb
+      \verb{url}
+      \verb https://pub.dev/packages/mockito
+      \endverb
+    \endentry
+    \entry{AhoHopcroftUllman1974}{book}{}{}
+      \name{author}{3}{}{%
+        {{hash=87e9142329f09390b038692270dc2168}{%
+           family={Aho},
+           familyi={A\bibinitperiod},
+           given={Alfred\bibnamedelima V.},
+           giveni={A\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+        {{hash=3eb95b81adce8c445e8b11c4e0615664}{%
+           family={Hopcroft},
+           familyi={H\bibinitperiod},
+           given={John\bibnamedelima E.},
+           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+        {{hash=cafe1d770c56825ebccdb81e9f7c9b3b}{%
+           family={Ullman},
+           familyi={U\bibinitperiod},
+           given={Jeffrey\bibnamedelima D.},
+           giveni={J\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Addison-Wesley}%
+      }
+      \strng{namehash}{3d2efe2c3525c7fef65b05e4a47da368}
+      \strng{fullhash}{3d2efe2c3525c7fef65b05e4a47da368}
+      \strng{fullhashraw}{3d2efe2c3525c7fef65b05e4a47da368}
+      \strng{bibnamehash}{3d2efe2c3525c7fef65b05e4a47da368}
+      \strng{authorbibnamehash}{3d2efe2c3525c7fef65b05e4a47da368}
+      \strng{authornamehash}{3d2efe2c3525c7fef65b05e4a47da368}
+      \strng{authorfullhash}{3d2efe2c3525c7fef65b05e4a47da368}
+      \strng{authorfullhashraw}{3d2efe2c3525c7fef65b05e4a47da368}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{The Design and Analysis of Computer Algorithms}
+      \field{year}{1974}
+    \endentry
+    \entry{AlbertCulikKarhumaki1982}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=58057bb4fbd943265d4b315fffc6c888}{%
+           family={Albert},
+           familyi={A\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+        {{hash=dd6fc7d742d990ff0bacc7eff39fbe94}{%
+           family={II},
+           familyi={I\bibinitperiod},
+           given={K.\bibnamedelimi Culik},
+           giveni={K\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+        {{hash=0c748d0ce016c59a4b93d61249b5355a}{%
+           family={Karhumäki},
+           familyi={K\bibinitperiod},
+           given={Juhani},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{cad1c7e760c3337f6272b0ef526d2eb8}
+      \strng{fullhash}{cad1c7e760c3337f6272b0ef526d2eb8}
+      \strng{fullhashraw}{cad1c7e760c3337f6272b0ef526d2eb8}
+      \strng{bibnamehash}{cad1c7e760c3337f6272b0ef526d2eb8}
+      \strng{authorbibnamehash}{cad1c7e760c3337f6272b0ef526d2eb8}
+      \strng{authornamehash}{cad1c7e760c3337f6272b0ef526d2eb8}
+      \strng{authorfullhash}{cad1c7e760c3337f6272b0ef526d2eb8}
+      \strng{authorfullhashraw}{cad1c7e760c3337f6272b0ef526d2eb8}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{internalsortvolume}{52}
+      \field{journaltitle}{Information and Control}
+      \field{title}{Test sets for context-free languages and algebraic systems of equations}
+      \field{year}{1982}
+      \field{number}{2}
+      \range{number}{1}
+      \field{pages}{172\bibrangedash 186}
+      \range{pages}{15}
+      \field{volume}{52}
+      \range{volume}{1}
+      \verb{doi}
+      \verb 10.1016/S0019-9958(82)80028-4
+      \endverb
+    \endentry
+    \entry{JarominekKarhumakiRytterTCS}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=5321bea392418887b1c4119083c649d8}{%
+           family={Jarominek},
+           familyi={J\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=0c748d0ce016c59a4b93d61249b5355a}{%
+           family={Karhumäki},
+           familyi={K\bibinitperiod},
+           given={Juhani},
+           giveni={J\bibinitperiod}}}%
+        {{hash=69d2cd82599f6ceb669cf76a54c6b12f}{%
+           family={Rytter},
+           familyi={R\bibinitperiod},
+           given={Wojciech},
+           giveni={W\bibinitperiod}}}%
+      }
+      \strng{namehash}{a6170e42e576aac3f5fcc0a5925d0c91}
+      \strng{fullhash}{a6170e42e576aac3f5fcc0a5925d0c91}
+      \strng{fullhashraw}{a6170e42e576aac3f5fcc0a5925d0c91}
+      \strng{bibnamehash}{a6170e42e576aac3f5fcc0a5925d0c91}
+      \strng{authorbibnamehash}{a6170e42e576aac3f5fcc0a5925d0c91}
+      \strng{authornamehash}{a6170e42e576aac3f5fcc0a5925d0c91}
+      \strng{authorfullhash}{a6170e42e576aac3f5fcc0a5925d0c91}
+      \strng{authorfullhashraw}{a6170e42e576aac3f5fcc0a5925d0c91}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{internalsortvolume}{520}
+      \field{journaltitle}{Lecture Notes in Computer Science}
+      \field{title}{Efficient construction of test sets for regular and context-free languages}
+      \field{year}{1991}
+      \field{pages}{249\bibrangedash 258}
+      \range{pages}{10}
+      \field{volume}{520}
+      \range{volume}{1}
+      \verb{doi}
+      \verb 10.1007/3-540-54345-7_68
+      \endverb
+    \endentry
+    \entry{Plandowski1993}{inproceedings}{}{}
+      \name{author}{1}{}{%
+        {{hash=996ec4320a5a0b2f3024a74f3b31805d}{%
+           family={Plandowski},
+           familyi={P\bibinitperiod},
+           given={Wojciech},
+           giveni={W\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{996ec4320a5a0b2f3024a74f3b31805d}
+      \strng{fullhash}{996ec4320a5a0b2f3024a74f3b31805d}
+      \strng{fullhashraw}{996ec4320a5a0b2f3024a74f3b31805d}
+      \strng{bibnamehash}{996ec4320a5a0b2f3024a74f3b31805d}
+      \strng{authorbibnamehash}{996ec4320a5a0b2f3024a74f3b31805d}
+      \strng{authornamehash}{996ec4320a5a0b2f3024a74f3b31805d}
+      \strng{authorfullhash}{996ec4320a5a0b2f3024a74f3b31805d}
+      \strng{authorfullhashraw}{996ec4320a5a0b2f3024a74f3b31805d}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Fundamentals of Computation Theory, 9th International Symposium, FCT '93, Szeged, Hungary, August 24-27, 1993, Proceedings}
+      \field{internalsortvolume}{710}
+      \field{series}{Lecture Notes in Computer Science}
+      \field{title}{Testing equivalence of morphisms on context-free languages}
+      \field{year}{1993}
+      \field{pages}{460\bibrangedash 470}
+      \range{pages}{11}
+      \field{volume}{710}
+      \range{volume}{1}
+      \verb{doi}
+      \verb 10.1007/BFb0049431
+      \endverb
+    \endentry
+    \entry{Karhumaki1992}{inproceedings}{}{}
+      \name{author}{3}{}{%
+        {{hash=0c748d0ce016c59a4b93d61249b5355a}{%
+           family={Karhumäki},
+           familyi={K\bibinitperiod},
+           given={Juhani},
+           giveni={J\bibinitperiod}}}%
+        {{hash=996ec4320a5a0b2f3024a74f3b31805d}{%
+           family={Plandowski},
+           familyi={P\bibinitperiod},
+           given={Wojciech},
+           giveni={W\bibinitperiod}}}%
+        {{hash=69d2cd82599f6ceb669cf76a54c6b12f}{%
+           family={Rytter},
+           familyi={R\bibinitperiod},
+           given={Wojciech},
+           giveni={W\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{1560da426aea65958cc0199c955840b8}
+      \strng{fullhash}{1560da426aea65958cc0199c955840b8}
+      \strng{fullhashraw}{1560da426aea65958cc0199c955840b8}
+      \strng{bibnamehash}{1560da426aea65958cc0199c955840b8}
+      \strng{authorbibnamehash}{1560da426aea65958cc0199c955840b8}
+      \strng{authornamehash}{1560da426aea65958cc0199c955840b8}
+      \strng{authorfullhash}{1560da426aea65958cc0199c955840b8}
+      \strng{authorfullhashraw}{1560da426aea65958cc0199c955840b8}
+      \field{extraname}{1}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Automata, Languages and Programming, 19th International Colloquium, ICALP92, Vienna, Austria, July 13-17, 1992, Proceedings}
+      \field{internalsortvolume}{623}
+      \field{series}{Lecture Notes in Computer Science}
+      \field{title}{Polynomial Size Test Sets for Context-Free Languages}
+      \field{year}{1992}
+      \field{pages}{53\bibrangedash 64}
+      \range{pages}{12}
+      \field{volume}{623}
+      \range{volume}{1}
+      \verb{doi}
+      \verb 10.1007/3-540-55719-9_63
+      \endverb
+    \endentry
+    \entry{Karhumaki1993}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=0c748d0ce016c59a4b93d61249b5355a}{%
+           family={Karhumäki},
+           familyi={K\bibinitperiod},
+           given={Juhani},
+           giveni={J\bibinitperiod}}}%
+        {{hash=996ec4320a5a0b2f3024a74f3b31805d}{%
+           family={Plandowski},
+           familyi={P\bibinitperiod},
+           given={Wojciech},
+           giveni={W\bibinitperiod}}}%
+        {{hash=69d2cd82599f6ceb669cf76a54c6b12f}{%
+           family={Rytter},
+           familyi={R\bibinitperiod},
+           given={Wojciech},
+           giveni={W\bibinitperiod}}}%
+      }
+      \strng{namehash}{1560da426aea65958cc0199c955840b8}
+      \strng{fullhash}{1560da426aea65958cc0199c955840b8}
+      \strng{fullhashraw}{1560da426aea65958cc0199c955840b8}
+      \strng{bibnamehash}{1560da426aea65958cc0199c955840b8}
+      \strng{authorbibnamehash}{1560da426aea65958cc0199c955840b8}
+      \strng{authornamehash}{1560da426aea65958cc0199c955840b8}
+      \strng{authorfullhash}{1560da426aea65958cc0199c955840b8}
+      \strng{authorfullhashraw}{1560da426aea65958cc0199c955840b8}
+      \field{extraname}{2}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{internalsortvolume}{50}
+      \field{journaltitle}{J. Comput. Syst. Sci.}
+      \field{title}{Polynomial size test sets for context-free languages}
+      \field{year}{1995}
+      \field{number}{1}
+      \range{number}{1}
+      \field{pages}{11\bibrangedash 19}
+      \range{pages}{9}
+      \field{volume}{50}
+      \range{volume}{1}
+      \verb{doi}
+      \verb 10.1006/jcss.1995.1002
+      \endverb
+    \endentry
+    \entry{Jaffar1990}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=f0d981f886fa33374908cd3dffa2f8c4}{%
+           family={Jaffar},
+           familyi={J\bibinitperiod},
+           given={Joxan},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{f0d981f886fa33374908cd3dffa2f8c4}
+      \strng{fullhash}{f0d981f886fa33374908cd3dffa2f8c4}
+      \strng{fullhashraw}{f0d981f886fa33374908cd3dffa2f8c4}
+      \strng{bibnamehash}{f0d981f886fa33374908cd3dffa2f8c4}
+      \strng{authorbibnamehash}{f0d981f886fa33374908cd3dffa2f8c4}
+      \strng{authornamehash}{f0d981f886fa33374908cd3dffa2f8c4}
+      \strng{authorfullhash}{f0d981f886fa33374908cd3dffa2f8c4}
+      \strng{authorfullhashraw}{f0d981f886fa33374908cd3dffa2f8c4}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{internalsortvolume}{37}
+      \field{journaltitle}{J. ACM}
+      \field{title}{Minimal and Complete Word Unification}
+      \field{year}{1990}
+      \field{number}{1}
+      \range{number}{1}
+      \field{pages}{47\bibrangedash 85}
+      \range{pages}{39}
+      \field{volume}{37}
+      \range{volume}{1}
+      \verb{doi}
+      \verb 10.1145/78935.78938
+      \endverb
+    \endentry
+    \entry{KoscielskiPacholski1990}{inproceedings}{}{}
+      \name{author}{2}{}{%
+        {{hash=57e22e0894a0f21675a3359ae82b6a17}{%
+           family={Kościelski},
+           familyi={K\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=916796e68e2a2056a587a4eab54fdc8b}{%
+           family={Pacholski},
+           familyi={P\bibinitperiod},
+           given={Leszek},
+           giveni={L\bibinitperiod}}}%
+      }
+      \strng{namehash}{371a62543d673474fa5cf10d68b3329e}
+      \strng{fullhash}{371a62543d673474fa5cf10d68b3329e}
+      \strng{fullhashraw}{371a62543d673474fa5cf10d68b3329e}
+      \strng{bibnamehash}{371a62543d673474fa5cf10d68b3329e}
+      \strng{authorbibnamehash}{371a62543d673474fa5cf10d68b3329e}
+      \strng{authornamehash}{371a62543d673474fa5cf10d68b3329e}
+      \strng{authorfullhash}{371a62543d673474fa5cf10d68b3329e}
+      \strng{authorfullhashraw}{371a62543d673474fa5cf10d68b3329e}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 3rd Annual IEEE Symposium on Foundations of Computer Science}
+      \field{title}{Complexity of Unification in Free Groups and Free Semigroups}
+      \field{year}{1990}
+      \field{pages}{824\bibrangedash 829}
+      \range{pages}{6}
+    \endentry
+    \entry{Lothaire1983}{book}{}{}
+      \name{editor}{1}{}{%
+        {{hash=afa7a85697739666224f84996ac89dff}{%
+           family={Lothaire},
+           familyi={L\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Reading, Mass.}%
+      }
+      \list{publisher}{1}{%
+        {Addison-Wesley Publishing Company}%
+      }
+      \strng{editorbibnamehash}{afa7a85697739666224f84996ac89dff}
+      \strng{editornamehash}{afa7a85697739666224f84996ac89dff}
+      \strng{editorfullhash}{afa7a85697739666224f84996ac89dff}
+      \strng{editorfullhashraw}{afa7a85697739666224f84996ac89dff}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labeltitlesource}{title}
+      \field{internalsortvolume}{17}
+      \field{series}{Encyclopedia of Mathematics and its Applications}
+      \field{title}{Combinatorics on Words}
+      \field{year}{1983}
+      \field{volume}{17}
+      \range{volume}{1}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

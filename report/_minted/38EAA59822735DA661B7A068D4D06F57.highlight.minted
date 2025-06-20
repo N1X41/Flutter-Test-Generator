@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface ParsedMethod \PYGZob{}
+    name: string;                // Название метода/события
+    type: \PYGZsq{}event\PYGZsq{} | \PYGZsq{}method\PYGZsq{};    // Тип: событие (для Bloc) или метод (для Cubit)
+    allowedFromStates: string[]; // Состояния, из которых можно вызвать
+    emitStates: string[];        // Состояния, которые эмитируются
+    guardConditions: string[];   // Guard условия (запрещенные состояния)
+\PYGZcb{}
+\end{MintedVerbatim}

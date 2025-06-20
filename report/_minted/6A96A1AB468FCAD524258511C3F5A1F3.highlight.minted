@@ -1,0 +1,12 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{ExecutionBranch}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{branchId}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// Уникальный идентификатор ветки}
+\PYG{+w}{    }\PYG{n+nx}{states}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// Последовательность состояний}
+\PYG{+w}{    }\PYG{n+nx}{repositoryCalls}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// Вызовы методов репозитория}
+\PYG{+w}{    }\PYG{n+nx}{storageCalls}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{      }\PYG{c+c1}{// Вызовы методов хранилища}
+\PYG{+w}{    }\PYG{n+nx}{privateMethodCalls}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Вызовы приватных методов}
+\PYG{+w}{    }\PYG{n+nx}{isSuccessPath}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{boolean}\PYG{p}{;}\PYG{+w}{      }\PYG{c+c1}{// Путь успеха}
+\PYG{+w}{    }\PYG{n+nx}{isErrorPath}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{boolean}\PYG{p}{;}\PYG{+w}{        }\PYG{c+c1}{// Путь с ошибкой}
+\PYG{+w}{    }\PYG{n+nx}{isFinalState}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{boolean}\PYG{p}{;}\PYG{+w}{       }\PYG{c+c1}{// Конечное состояние}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

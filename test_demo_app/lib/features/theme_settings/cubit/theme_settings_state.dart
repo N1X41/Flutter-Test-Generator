@@ -31,4 +31,4 @@ class ThemeSystemState extends ThemeSettingsState {
 /// Состояние загрузки настроек темы
 class ThemeLoadingState extends ThemeSettingsState {
   const ThemeLoadingState();
-} 
+}

@@ -1,0 +1,61 @@
+
+\babel@toc {russian}{}\relax 
+\contentsline {section}{\numberline {}ВВЕДЕНИЕ}{7}{section*.1}%
+\contentsline {section}{\numberline {1}Исследовательская часть}{8}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Постановка задачи и техническое задание}{8}{subsection.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1}Требования к интеграции в IDE}{8}{subsubsection.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.2}Требования к генерации тестовых файлов}{8}{subsubsection.1.1.2}%
+\contentsline {subsubsection}{\numberline {1.1.3}Требования к генерации тестов для различных компонентов}{9}{subsubsection.1.1.3}%
+\contentsline {subsection}{\numberline {1.2}Статические методы генерации тестов}{10}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Теоретические основы тестирования на основе моделей}{12}{subsection.1.3}%
+\contentsline {subsubsection}{\numberline {1.3.1}Конечные автоматы как модель поведения}{12}{subsubsection.1.3.1}%
+\contentsline {subsubsection}{\numberline {1.3.2}Тестовые множества и полнота тестирования}{13}{subsubsection.1.3.2}%
+\contentsline {subsubsection}{\numberline {1.3.3}Цели тестового покрытия для автоматов}{14}{subsubsection.1.3.3}%
+\contentsline {subsection}{\numberline {1.4}Генерация тестов для Cubit с использованием автоматов}{15}{subsection.1.4}%
+\contentsline {subsubsection}{\numberline {1.4.1}Построение автомата состояний}{15}{subsubsection.1.4.1}%
+\contentsline {subsubsection}{\numberline {1.4.2}Генерация тестовых путей}{16}{subsubsection.1.4.2}%
+\contentsline {subsubsection}{\numberline {1.4.3}Трансляция путей в тестовый код}{18}{subsubsection.1.4.3}%
+\contentsline {subsection}{\numberline {1.5}Анализ подхода и анализ релевантности}{19}{subsection.1.5}%
+\contentsline {subsubsection}{\numberline {1.5.1}Преимущества}{19}{subsubsection.1.5.1}%
+\contentsline {subsubsection}{\numberline {1.5.2}Ограничения и сложности}{19}{subsubsection.1.5.2}%
+\contentsline {subsubsection}{\numberline {1.5.3}Анализ релевантности}{19}{subsubsection.1.5.3}%
+\contentsline {subsection}{\numberline {1.6}Обзор предметной области}{21}{subsection.1.6}%
+\contentsline {subsubsection}{\numberline {1.6.1}Используемые технологии}{21}{subsubsection.1.6.1}%
+\contentsline {subsubsection}{\numberline {1.6.2}Тестирование в разработке на Flutter}{23}{subsubsection.1.6.2}%
+\contentsline {subsubsection}{\numberline {1.6.3}Проблемы ручного тестирования и необходимость автоматизации}{24}{subsubsection.1.6.3}%
+\contentsline {subsubsection}{\numberline {1.6.4}Постановка задачи разработки плагина}{24}{subsubsection.1.6.4}%
+\contentsline {section}{\numberline {2}Конструкторская часть}{26}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Проектирование плагина}{26}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Архитектура плагина}{26}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}Основные интерфейсы и структуры данных}{27}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}Основные функциональные компоненты}{33}{subsubsection.2.1.3}%
+\contentsline {subsubsection}{\numberline {2.1.4}Порядок выполнения}{35}{subsubsection.2.1.4}%
+\contentsline {subsubsection}{\numberline {2.1.5}Взаимодействие с пользователем}{35}{subsubsection.2.1.5}%
+\contentsline {subsubsection}{\numberline {2.1.6}Парсинг исходного кода}{36}{subsubsection.2.1.6}%
+\contentsline {section}{\numberline {3}Технологическая часть}{38}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Реализация ключевых функций}{38}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Генерация тестов для Cubit/BLoC}{38}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Генерация тестов для Data Transfer Object}{39}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Генерация тестов для методов/ивентов}{40}{subsubsection.3.1.3}%
+\contentsline {subsubsection}{\numberline {3.1.4}Решение проблем и доработки}{41}{subsubsection.3.1.4}%
+\contentsline {subsection}{\numberline {3.2}Инструкция пользователя}{42}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Аналитическая часть}{45}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Результаты работы}{45}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Результаты генерации тестов для Cubit}{45}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}Результаты генерации тестов для BLoC}{45}{subsubsection.4.1.2}%
+\contentsline {subsubsection}{\numberline {4.1.3}Результаты генерации тестов для Data Transfer Object}{46}{subsubsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.4}Качественные характеристики генерируемых тестов}{46}{subsubsection.4.1.4}%
+\contentsline {subsubsection}{\numberline {4.1.5}Практическая ценность результатов}{47}{subsubsection.4.1.5}%
+\contentsline {subsection}{\numberline {4.2}Анализ эффективности применения плагина}{47}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Методология оценки}{47}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}Временные характеристики}{48}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.3}Сводный анализ эффективности}{50}{subsubsection.4.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.4}Качественный анализ}{51}{subsubsection.4.2.4}%
+\contentsline {subsubsection}{\numberline {4.2.5}Выводы по анализу эффективности}{51}{subsubsection.4.2.5}%
+\contentsline {section}{\numberline {}ЗАКЛЮЧЕНИЕ}{53}{section*.11}%
+\contentsline {section}{\numberline {}СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}{55}{section*.11}%
+\save@tocdepth \setcounter {tocdepth}{1}
+\contentsline {section}{\numberline {}ПРИЛОЖЕНИЕ А}{57}{section*.12}%
+\contentsline {section}{\numberline {}ПРИЛОЖЕНИЕ Б}{64}{section*.20}%
+\contentsline {section}{\numberline {}ПРИЛОЖЕНИЕ В}{65}{section*.23}%
+\contentsline {section}{\numberline {}ПРИЛОЖЕНИЕ Г}{68}{section*.29}%

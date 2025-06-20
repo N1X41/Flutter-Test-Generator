@@ -26,13 +26,17 @@ class ThemeSettingsCubit extends Cubit<ThemeSettingsState> {
   /// Загружает сохраненную тему из хранилища
   Future<void> loadSavedTheme() async {
     emit(const ThemeLoadingState());
-    
+
     try {
       final savedTheme = await _secureStorage.read('theme_preference');
-      
+
       switch (savedTheme) {
         case 'light':
-          emit(const ThemeLightState());
+          if (state is ThemeInitialState) {
+            emit(const ThemeLightState());
+          } else {
+            emit(const ThemeDarkState());
+          }
           break;
         case 'dark':
           emit(const ThemeDarkState());
@@ -51,7 +55,7 @@ class ThemeSettingsCubit extends Cubit<ThemeSettingsState> {
   /// Сохраняет текущую тему в хранилище
   Future<void> saveCurrentTheme() async {
     String themeValue = 'initial';
-    
+
     if (state is ThemeLightState) {
       themeValue = 'light';
     } else if (state is ThemeDarkState) {
@@ -59,7 +63,7 @@ class ThemeSettingsCubit extends Cubit<ThemeSettingsState> {
     } else if (state is ThemeSystemState) {
       themeValue = 'system';
     }
-    
+
     await _secureStorage.write('theme_preference', themeValue);
   }
-} 
+}

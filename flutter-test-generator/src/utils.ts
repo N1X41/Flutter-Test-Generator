@@ -29,11 +29,16 @@ export const STATE_NAME_PATTERNS = {
  * Общие регулярные выражения для парсинга
  */
 export const REGEX_PATTERNS = {
-    // Основные паттерны
+    // Основные паттерны для поиска вызовов методов
     privateMethod: /_\w+\(/g,
-    repository: /(\w+Repository|\w+Repo)\.\w+\(/g,
-    storage: /(secureStorage|storage|_storage|localStorage)\.\w+\(/g,
+    repository: /(?:final\s+)?(?:_)?(\w*[Rr]epository|\w*[Rr]epo)\.\w+\(/g,
+    storage: /(?:final\s+)?(?:_)?(secureStorage|storage|_storage|localStorage|_secureStorage)\.\w+\(/g,
     guardCondition: /if\s*\(\s*state\s+is\s+(\w+)\s*\)\s*return\s*;/g,
+    
+    // Расширенные паттерны для поиска вызовов зависимостей
+    anyRepositoryCall: /(?:^|[^a-zA-Z0-9_])(_?\w*[Rr]epository|_?\w*[Rr]epo)\.\w+\s*\(/g,
+    anyStorageCall: /(?:^|[^a-zA-Z0-9_])(_?secureStorage|_?storage|_?localStorage|_?storageService|_?\w*Storage)\.\w+\s*\(/g,
+    anyServiceCall: /(?:^|[^a-zA-Z0-9_])(_?\w*[Ss]ervice)\.\w+\s*\(/g,
     
     // Паттерны для блоков управления потоком
     breakStatement: /break\s*;/,

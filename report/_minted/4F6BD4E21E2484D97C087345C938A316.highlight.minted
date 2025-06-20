@@ -1,0 +1,24 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+abstract class ASTNode \PYGZob{}
+    public type: string;
+    constructor(type: string) \PYGZob{} this.type = type; \PYGZcb{}
+\PYGZcb{}
+
+class ClassNode extends ASTNode \PYGZob{}
+    constructor(
+        public name: string,
+        public extendsClass?: string,
+        public body: ASTNode[] = []
+    ) \PYGZob{} super(\PYGZsq{}class\PYGZsq{}); \PYGZcb{}
+\PYGZcb{}
+
+class MethodNode extends ASTNode \PYGZob{}
+    constructor(
+        public name: string,
+        public returnType: string,
+        public isAsync: boolean = false,
+        public parameters: string[] = [],
+        public body: ASTNode[] = []
+    ) \PYGZob{} super(\PYGZsq{}method\PYGZsq{}); \PYGZcb{}
+\PYGZcb{}
+\end{MintedVerbatim}

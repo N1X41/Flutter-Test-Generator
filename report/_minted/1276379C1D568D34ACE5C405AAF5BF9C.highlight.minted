@@ -1,0 +1,180 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{package:bloc\PYGZus{}test/bloc\PYGZus{}test.dart}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{;}
+\PYG{k}{import}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{package:test/test.dart}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{;}
+\PYG{c+c1}{// import \PYGZsq{}package:mockito/mockito.dart\PYGZsq{}; // Раскомментируйте, если нужны моки}
+\PYG{c+c1}{// import \PYGZsq{}path/to/your/cubit\PYGZus{}source.dart\PYGZsq{}; // Импортируйте Cubit и состояния}
+
+\PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{} Заглушки Cubit и состояний для контекста \PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k+kd}{abstract}\PYG{+w}{ }\PYG{k+kd}{class}\PYG{+w}{ }\PYG{n+nc}{LoginState}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{p}{\PYGZcb{}}
+\PYG{k+kd}{class}\PYG{+w}{ }\PYG{n+nc}{LoginInitial}\PYG{+w}{ }\PYG{k+kd}{extends}\PYG{+w}{ }\PYG{n}{LoginState}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{p}{\PYGZcb{}}
+\PYG{k+kd}{class}\PYG{+w}{ }\PYG{n+nc}{LoginLoading}\PYG{+w}{ }\PYG{k+kd}{extends}\PYG{+w}{ }\PYG{n}{LoginState}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{p}{\PYGZcb{}}
+\PYG{k+kd}{class}\PYG{+w}{ }\PYG{n+nc}{LoginSuccess}\PYG{+w}{ }\PYG{k+kd}{extends}\PYG{+w}{ }\PYG{n}{LoginState}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{k+kt}{String}\PYG{+w}{ }\PYG{n}{token}\PYG{p}{;}
+\PYG{+w}{  }\PYG{n}{LoginSuccess}\PYG{p}{(}\PYG{k}{this}\PYG{p}{.}\PYG{n}{token}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{  }\PYG{n+nd}{@override}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{k+kd}{operator}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{p}{(}\PYG{k+kt}{Object}\PYG{+w}{ }\PYG{n}{other}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{other}\PYG{+w}{ }\PYG{k}{is}\PYG{+w}{ }\PYG{n}{LoginSuccess}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{token}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{other}\PYG{p}{.}\PYG{n}{token}\PYG{p}{;}
+\PYG{+w}{  }\PYG{n+nd}{@override}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{k+kd}{get}\PYG{+w}{ }\PYG{n}{hashCode}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{token}\PYG{p}{.}\PYG{n}{hashCode}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\PYG{k+kd}{class}\PYG{+w}{ }\PYG{n+nc}{LoginFailure}\PYG{+w}{ }\PYG{k+kd}{extends}\PYG{+w}{ }\PYG{n}{LoginState}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{k+kt}{String}\PYG{+w}{ }\PYG{n}{error}\PYG{p}{;}
+\PYG{+w}{  }\PYG{n}{LoginFailure}\PYG{p}{(}\PYG{k}{this}\PYG{p}{.}\PYG{n}{error}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{   }\PYG{n+nd}{@override}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{k+kd}{operator}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{p}{(}\PYG{k+kt}{Object}\PYG{+w}{ }\PYG{n}{other}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{other}\PYG{+w}{ }\PYG{k}{is}\PYG{+w}{ }\PYG{n}{LoginFailure}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{error}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{other}\PYG{p}{.}\PYG{n}{error}\PYG{p}{;}
+\PYG{+w}{   }\PYG{n+nd}{@override}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{k+kd}{get}\PYG{+w}{ }\PYG{n}{hashCode}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{error}\PYG{p}{.}\PYG{n}{hashCode}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Пример зависимости}
+\PYG{k+kd}{abstract}\PYG{+w}{ }\PYG{k+kd}{class}\PYG{+w}{ }\PYG{n+nc}{AuthRepository}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{n}{Future}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{login}\PYG{p}{(}\PYG{k+kt}{String}\PYG{+w}{ }\PYG{n}{username}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{String}\PYG{+w}{ }\PYG{n}{password}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Мок для зависимости}
+\PYG{c+c1}{// class MockAuthRepository extends Mock implements AuthRepository \PYGZob{}\PYGZcb{}}
+
+\PYG{k+kd}{class}\PYG{+w}{ }\PYG{n+nc}{LoginCubit}\PYG{+w}{ }\PYG{k+kd}{extends}\PYG{+w}{ }\PYG{n}{Cubit}\PYG{o}{\PYGZlt{}}\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{c+c1}{// final AuthRepository authRepository; // Пример зависимости}
+
+\PYG{+w}{  }\PYG{n}{LoginCubit}\PYG{p}{(}\PYG{c+cm}{/*this.authRepository*/}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{k}{super}\PYG{p}{(}\PYG{n}{LoginInitial}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{  }\PYG{n}{Future}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{void}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{loginUser}\PYG{p}{(}\PYG{k+kt}{String}\PYG{+w}{ }\PYG{n}{username}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{String}\PYG{+w}{ }\PYG{n}{password}\PYG{p}{)}\PYG{+w}{ }\PYG{k+kd}{async}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{state}\PYG{+w}{ }\PYG{k}{is}\PYG{+w}{ }\PYG{n}{LoginLoading}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{return}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Предотвращение параллельных логинов}
+\PYG{+w}{    }\PYG{n}{emit}\PYG{p}{(}\PYG{n}{LoginLoading}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{try}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{c+c1}{// Симуляция API вызова}
+\PYG{+w}{      }\PYG{c+c1}{// final token = await authRepository.login(username, password);}
+\PYG{+w}{      }\PYG{k+kd}{await}\PYG{+w}{ }\PYG{n}{Future}\PYG{p}{.}\PYG{n}{delayed}\PYG{p}{(}\PYG{n}{Duration}\PYG{p}{(}\PYG{n+nl}{milliseconds:}\PYG{+w}{ }\PYG{l+m}{10}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Симуляция задержки}
+\PYG{+w}{      }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{username}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user}\PYG{l+s+s1}{\PYGZsq{}}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{password}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{pass}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{         }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{token}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{fake\PYGZhy{}token\PYGZhy{}123}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{         }\PYG{n}{emit}\PYG{p}{(}\PYG{n}{LoginSuccess}\PYG{p}{(}\PYG{n}{token}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{         }\PYG{k}{throw}\PYG{+w}{ }\PYG{n}{Exception}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Invalid credentials}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{catch}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n}{emit}\PYG{p}{(}\PYG{n}{LoginFailure}\PYG{p}{(}\PYG{n}{e}\PYG{p}{.}\PYG{n}{toString}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{  }\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{logout}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{     }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{state}\PYG{+w}{ }\PYG{k}{is}\PYG{+w}{ }\PYG{n}{LoginSuccess}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{emit}\PYG{p}{(}\PYG{n}{LoginInitial}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{     }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{     }\PYG{c+c1}{// Опционально: обработка logout из других состояний?}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{   }\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n}{emit}\PYG{p}{(}\PYG{n}{LoginInitial}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{   }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{} Конец заглушек \PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{main}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{n}{group}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Тесты LoginCubit (сгенерировано из FSM)}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// late MockAuthRepository mockAuthRepository; // Экземпляр мок\PYGZhy{}зависимости}
+
+\PYG{+w}{    }\PYG{n}{setUp}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{c+c1}{// mockAuthRepository = MockAuthRepository();}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser (успех) \PYGZhy{}\PYGZgt{} Success}
+\PYG{+w}{    }\PYG{n}{blocTest}\PYG{o}{\PYGZlt{}}\PYG{n}{LoginCubit}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{(}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Путь 1: выдает [Loading, Success] при вызове loginUser с валидными данными}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{build:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Настройка мока для успешного логина}
+\PYG{+w}{        }\PYG{c+c1}{// when(mockAuthRepository.login(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{}))}
+\PYG{+w}{        }\PYG{c+c1}{//    .thenAnswer((\PYGZus{}) async =\PYGZgt{} \PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{});}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{LoginCubit}\PYG{p}{(}\PYG{c+cm}{/*mockAuthRepository*/}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{act:}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cubit}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{cubit}\PYG{p}{.}\PYG{n}{loginUser}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{pass}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{expect:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{[}
+\PYG{+w}{        }\PYG{n}{LoginLoading}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{LoginSuccess}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{fake\PYGZhy{}token\PYGZhy{}123}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{      }\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{      }\PYG{c+c1}{// verify: (\PYGZus{}) \PYGZob{} // Опционально: проверка взаимодействий с моком}
+\PYG{+w}{      }\PYG{c+c1}{//   verify(mockAuthRepository.login(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{})).called(1);}
+\PYG{+w}{      }\PYG{c+c1}{// \PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser (неудача) \PYGZhy{}\PYGZgt{} Failure}
+\PYG{+w}{    }\PYG{n}{blocTest}\PYG{o}{\PYGZlt{}}\PYG{n}{LoginCubit}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{(}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Путь 2: выдает [Loading, Failure] при вызове loginUser с невалидными данными}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{build:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Настройка мока для неудачного логина}
+\PYG{+w}{        }\PYG{c+c1}{// when(mockAuthRepository.login(\PYGZsq{}wrong\PYGZsq{}, \PYGZsq{}wrong\PYGZsq{}))}
+\PYG{+w}{        }\PYG{c+c1}{//    .thenThrow(Exception(\PYGZsq{}Invalid credentials\PYGZsq{}));}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{LoginCubit}\PYG{p}{(}\PYG{c+cm}{/*mockAuthRepository*/}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{act:}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cubit}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{cubit}\PYG{p}{.}\PYG{n}{loginUser}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{wrong}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{wrong}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{expect:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{[}
+\PYG{+w}{        }\PYG{n}{LoginLoading}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{LoginFailure}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Exception: Invalid credentials}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{c+c1}{// Сопоставьте с ожидаемым форматом ошибки}
+\PYG{+w}{      }\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{     }\PYG{c+c1}{// Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser (успех) \PYGZhy{}\PYGZgt{} Success \PYGZhy{}\PYGZgt{} logout \PYGZhy{}\PYGZgt{} Initial}
+\PYG{+w}{    }\PYG{n}{blocTest}\PYG{o}{\PYGZlt{}}\PYG{n}{LoginCubit}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{(}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Путь 3: выдает [Loading, Success, Initial] для успешного логина и последующего logout}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{build:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{         }\PYG{c+c1}{// when(mockAuthRepository.login(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{})).thenAnswer((\PYGZus{}) async =\PYGZgt{} \PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{});}
+\PYG{+w}{         }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{LoginCubit}\PYG{p}{(}\PYG{c+cm}{/*mockAuthRepository*/}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{act:}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cubit}\PYG{p}{)}\PYG{+w}{ }\PYG{k+kd}{async}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{         }\PYG{k+kd}{await}\PYG{+w}{ }\PYG{n}{cubit}\PYG{p}{.}\PYG{n}{loginUser}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{pass}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{         }\PYG{c+c1}{// Убедимся, что переход состояния завершен перед следующим действием, если нужно}
+\PYG{+w}{         }\PYG{c+c1}{// await Future.delayed(Duration.zero);}
+\PYG{+w}{         }\PYG{n}{cubit}\PYG{p}{.}\PYG{n}{logout}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{expect:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{[}
+\PYG{+w}{        }\PYG{n}{LoginLoading}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{LoginSuccess}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{fake\PYGZhy{}token\PYGZhy{}123}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{LoginInitial}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{c+c1}{// Состояние после logout}
+\PYG{+w}{      }\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{       }\PYG{c+c1}{// seed: () =\PYGZgt{} LoginInitial(), // Можно указать начальное состояние, если нужно}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{     }\PYG{c+c1}{// Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser (неудача) \PYGZhy{}\PYGZgt{} Failure \PYGZhy{}\PYGZgt{} reset \PYGZhy{}\PYGZgt{} Initial}
+\PYG{+w}{     }\PYG{n}{blocTest}\PYG{o}{\PYGZlt{}}\PYG{n}{LoginCubit}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{(}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Путь 4: выдает [Loading, Failure, Initial] для неудачного логина и последующего reset}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{build:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{         }\PYG{c+c1}{// when(mockAuthRepository.login(\PYGZsq{}wrong\PYGZsq{}, \PYGZsq{}wrong\PYGZsq{})).thenThrow(Exception(\PYGZsq{}Invalid credentials\PYGZsq{}));}
+\PYG{+w}{         }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{LoginCubit}\PYG{p}{(}\PYG{c+cm}{/*mockAuthRepository*/}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{act:}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cubit}\PYG{p}{)}\PYG{+w}{ }\PYG{k+kd}{async}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{         }\PYG{k+kd}{await}\PYG{+w}{ }\PYG{n}{cubit}\PYG{p}{.}\PYG{n}{loginUser}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{wrong}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{wrong}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{         }\PYG{n}{cubit}\PYG{p}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{expect:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{[}
+\PYG{+w}{        }\PYG{n}{LoginLoading}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{LoginFailure}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Exception: Invalid credentials}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{LoginInitial}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{c+c1}{// Состояние после reset}
+\PYG{+w}{      }\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} reset \PYGZhy{}\PYGZgt{} Initial (Без изменений)}
+\PYG{+w}{    }\PYG{n}{blocTest}\PYG{o}{\PYGZlt{}}\PYG{n}{LoginCubit}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{(}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Путь 5: выдает [] при вызове reset из состояния Initial}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{build:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{LoginCubit}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{act:}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cubit}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{cubit}\PYG{p}{.}\PYG{n}{reset}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{expect:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{[}\PYG{p}{]}\PYG{p}{,}\PYG{+w}{ }\PYG{c+c1}{// Изменений состояния не ожидается}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser(валидный) \PYGZhy{}\PYGZgt{} Success \PYGZhy{}\PYGZgt{} loginUser(валидный) \PYGZhy{}\PYGZgt{} Success (Изменений не ожидается во время загрузки)}
+\PYG{+w}{    }\PYG{n}{blocTest}\PYG{o}{\PYGZlt{}}\PYG{n}{LoginCubit}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{(}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Путь 6: выдает [Loading, Success], игнорирует второй вызов login во время загрузки первого (упрощенный тест)}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{       }\PYG{n+nl}{build:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{         }\PYG{c+c1}{// when(mockAuthRepository.login(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{})).thenAnswer((\PYGZus{}) async =\PYGZgt{} \PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{});}
+\PYG{+w}{         }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{LoginCubit}\PYG{p}{(}\PYG{c+cm}{/*mockAuthRepository*/}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{       }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{       }\PYG{n+nl}{act:}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cubit}\PYG{p}{)}\PYG{+w}{ }\PYG{k+kd}{async}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{          }\PYG{c+c1}{// Вызываем login дважды быстро \PYGZhy{} второй вызов должен быть проигнорирован логикой cubit}
+\PYG{+w}{          }\PYG{n}{cubit}\PYG{p}{.}\PYG{n}{loginUser}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{pass}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{          }\PYG{n}{cubit}\PYG{p}{.}\PYG{n}{loginUser}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{pass}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Этот вызов в идеале должен игнорироваться}
+\PYG{+w}{       }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{       }\PYG{n+nl}{expect:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{n}{LoginState}\PYG{o}{\PYGZgt{}}\PYG{p}{[}
+\PYG{+w}{         }\PYG{n}{LoginLoading}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{         }\PYG{n}{LoginSuccess}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{fake\PYGZhy{}token\PYGZhy{}123}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{         }\PYG{c+c1}{// ПРИМЕЧАНИЕ: bloc\PYGZus{}test может не идеально отловить игнорирование}
+\PYG{+w}{         }\PYG{c+c1}{// в зависимости от таймингов. Тест проверяет итоговую последовательность состояний.}
+\PYG{+w}{       }\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

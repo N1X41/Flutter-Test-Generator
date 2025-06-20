@@ -1,0 +1,12 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface ExecutionBranch \PYGZob{}
+    branchId: string;            // Уникальный идентификатор ветки
+    states: string[];            // Последовательность состояний
+    repositoryCalls: string[];   // Вызовы методов репозитория
+    storageCalls: string[];      // Вызовы методов хранилища
+    privateMethodCalls: string[]; // Вызовы приватных методов
+    isSuccessPath: boolean;      // Путь успеха
+    isErrorPath: boolean;        // Путь с ошибкой
+    isFinalState: boolean;       // Конечное состояние
+\PYGZcb{}
+\end{MintedVerbatim}

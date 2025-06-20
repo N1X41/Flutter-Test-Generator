@@ -1,0 +1,43 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+      test(\PYGZsq{}должен обновлять указанные поля, сохраняя остальные\PYGZsq{}, () \PYGZob{}
+        final original = createDefaultUserDto();
+        final newName = \PYGZsq{}Jane Doe\PYGZsq{};
+        final newAge = 31;
+        final copy = original.copyWith(name: newName, age: newAge);
+
+        expect(copy.id, original.id);
+        expect(copy.name, newName);
+        expect(copy.age, newAge);
+        expect(copy, isNot(equals(original)));
+      \PYGZcb{});
+    \PYGZcb{});
+
+    group(\PYGZsq{}Равенство и HashCode\PYGZsq{}, () \PYGZob{}
+      test(\PYGZsq{}должен быть равен другому экземпляру с теми же значениями\PYGZsq{}, () \PYGZob{}
+        final dto1 = createDefaultUserDto();
+        final dto2 = UserDto(id: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, name: \PYGZsq{}John Doe\PYGZsq{}, age: 30);
+        expect(dto1, equals(dto2));
+        expect(dto1.hashCode, equals(dto2.hashCode));
+      \PYGZcb{});
+
+      test(\PYGZsq{}не должен быть равен экземпляру с другими значениями\PYGZsq{}, () \PYGZob{}
+        final dto1 = createDefaultUserDto();
+        final dto2 = UserDto(id: \PYGZsq{}user\PYGZhy{}456\PYGZsq{}, name: \PYGZsq{}Jane Doe\PYGZsq{}, age: 31);
+        final dto3 = UserDto(id: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, name: \PYGZsq{}Jane Doe\PYGZsq{}, age: 30); // Другое имя
+        final dto4 = UserDto(id: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, name: \PYGZsq{}John Doe\PYGZsq{}, age: 31); // Другой возраст
+
+        expect(dto1, isNot(equals(dto2)));
+        expect(dto1, isNot(equals(dto3)));
+        expect(dto1, isNot(equals(dto4)));
+        // Хеш\PYGZhy{}коды не обязаны быть разными, но вероятно будут
+      \PYGZcb{});
+
+      test(\PYGZsq{}не должен быть равен null или объекту другого типа\PYGZsq{}, () \PYGZob{}
+        final dto1 = createDefaultUserDto();
+        expect(dto1, isNot(equals(null)));
+        expect(dto1, isNot(equals(\PYGZsq{}some string\PYGZsq{})));
+      \PYGZcb{});
+    \PYGZcb{});
+  \PYGZcb{});
+\PYGZcb{}
+\end{MintedVerbatim}

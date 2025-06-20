@@ -1,19 +1,10 @@
 import * as vscode from 'vscode';
-import { parseClassWithLexer, parseStatesWithLexer, extractMethodBodyWithLexer, parseCubitMethodsWithLexer, parseAllMethodsWithLexer } from './dartLexer';
+import { parseClassWithLexer, parseStatesWithLexer, parseAllMethodsWithLexer } from './dartLexer';
 import { 
     toSnakeCase, 
     toPascalCase, 
-    getStateTypeConfig, 
-    createTransitionKey, 
-    cleanCode, 
-    hasSignificantCodeAfter, 
     extractMethodName,
-    classifyDependency,
-    generateMockName,
-    generateMockVariableName,
-    deduplicateBy,
-    REGEX_PATTERNS,
-    extractFeatureName
+    REGEX_PATTERNS
 } from './utils';
 import { createTestAnalysisWebview } from './webviewGenerator';
 
@@ -278,6 +269,7 @@ function parseMethodContexts(methodBody: string): DartMethodContext[] {
  * @param methodBody - тело метода для анализа
  * @returns массив guard условий
  */
+//TODO(Vlad): ИЛИ условие множественных гуардов
 function parseGuardConditions(methodBody: string): GuardCondition[] {
     const guardConditions: GuardCondition[] = [];
     
@@ -414,15 +406,9 @@ function parseEnhancedEmitStatements(methodBody: string, methodName: string): {
 } {
     const emits: EmitInfo[] = [];
     const contexts = parseMethodContexts(methodBody);
+
     
-    // debug логирование
-    // console.log(`🔍 Парсинг метода ${methodName}:`);
-    // console.log(`   Найдено ${contexts.length} контекстов:`);
-    // contexts.forEach((ctx, i) => {
-    //     console.log(`   ${i + 1}. ${ctx.blockType} (${ctx.startIndex}-${ctx.endIndex}, level: ${ctx.nestingLevel})`);
-    // });
-    
-    // Улучшенный regex для многострочных emit
+    // Regex для многострочных emit
     const emitPattern = /emit\s*\(\s*(?:const\s+)?(\w+)\s*\([^)]*\)\s*\)/g;
     let match: RegExpExecArray | null;
     
@@ -443,12 +429,6 @@ function parseEnhancedEmitStatements(methodBody: string, methodName: string): {
         }
         
         const analysis = analyzeEmitStatusFixed(methodBody, emitPosition, contexts, emitContext, fullEmitMatch);
-        
-        // debug логирование
-        // console.log(`   📤 emit(${stateName}) на позиции ${emitPosition}:`);
-        // console.log(`      Контекст: ${emitContext?.blockType || 'null'}`);
-        // console.log(`      Статус: ${analysis.isTransient ? 'транзитный' : 'финальный'}`);
-        // console.log(`      Причина: ${analysis.reason}`);
         
         emits.push({
             state: stateName,
@@ -483,50 +463,61 @@ function parseStorageRepositoryCalls(
     const storageCalls: string[] = [];
     const privateMethodCalls: string[] = [];
     
+    console.log(`🔍 ПАРСЕР ВЫЗОВОВ: Анализируем тело метода (${methodBody.length} символов)`);
+    
+    // Создаем новые экземпляры регулярных выражений для каждого поиска
+    // чтобы избежать проблем с глобальным флагом /g
+    const repositoryRegex = new RegExp(REGEX_PATTERNS.anyRepositoryCall.source, 'g');
+    const storageRegex = new RegExp(REGEX_PATTERNS.anyStorageCall.source, 'g');
+    const serviceRegex = new RegExp(REGEX_PATTERNS.anyServiceCall.source, 'g');
+    const privateMethodRegex = new RegExp(REGEX_PATTERNS.privateMethod.source, 'g');
+    
     // Ищем вызовы репозитория
-    const repoRegex = /(\w+Repository|\w+Repo)\.\w+\(/g;
     let repoMatch;
-    while ((repoMatch = repoRegex.exec(methodBody)) !== null) {
-        repositoryCalls.push(repoMatch[0].slice(0, -1));
+    while ((repoMatch = repositoryRegex.exec(methodBody)) !== null) {
+        // Для новых паттернов нужно извлечь правильную часть из match
+        const fullMatch = repoMatch[0];
+        const actualCall = fullMatch.includes('.') ? fullMatch.substring(fullMatch.lastIndexOf(' ') + 1) : fullMatch;
+        const methodCall = extractMethodName(actualCall);
+        repositoryCalls.push(methodCall);
+        console.log(`   📦 Repository вызов: ${methodCall} (из: ${fullMatch.trim()})`);
     }
     
     // Ищем вызовы хранилища
-    const storageRegex = /(secureStorage|storage|_storage|localStorage)\.\w+\(/g;
-    let storageMatch;
+    let storageMatch; 
     while ((storageMatch = storageRegex.exec(methodBody)) !== null) {
-        storageCalls.push(storageMatch[0].slice(0, -1));
+        const fullMatch = storageMatch[0];
+        const actualCall = fullMatch.includes('.') ? fullMatch.substring(fullMatch.lastIndexOf(' ') + 1) : fullMatch;
+        const methodCall = extractMethodName(actualCall);
+        storageCalls.push(methodCall);
+        console.log(`   💾 Storage вызов: ${methodCall} (из: ${fullMatch.trim()})`);
+    }
+    
+    // Ищем вызовы сервисов (добавляем их к репозиториям для моков)
+    let serviceMatch;
+    while ((serviceMatch = serviceRegex.exec(methodBody)) !== null) {
+        const fullMatch = serviceMatch[0];
+        const actualCall = fullMatch.includes('.') ? fullMatch.substring(fullMatch.lastIndexOf(' ') + 1) : fullMatch;
+        const methodCall = extractMethodName(actualCall);
+        repositoryCalls.push(methodCall); // Добавляем сервисы к репозиториям для простоты
+        console.log(`   ⚙️ Service вызов: ${methodCall} (из: ${fullMatch.trim()})`);
     }
     
     // Ищем вызовы приватных методов (исключая известные обработчики событий)
-    const privateMethodRegex = /_\w+\(/g;
     let privateMatch;
     while ((privateMatch = privateMethodRegex.exec(methodBody)) !== null) {
-        const methodCall = privateMatch[0].slice(0, -1);
+        const methodCall = extractMethodName(privateMatch[0]);
         
         // Исключаем известные обработчики событий из списка приватных методов
         if (!knownEventHandlers.includes(methodCall)) {
             privateMethodCalls.push(methodCall);
+            console.log(`   🔒 Private метод вызов: ${methodCall}`);
         }
     }
     
-    return { repositoryCalls, storageCalls, privateMethodCalls };
-}
-
-/**
- * Извлекает тело метода из кода класса через лексер
- * @param classCode - Код класса для анализа
- * @param methodName - Имя метода для извлечения тела
- * @returns Тело метода в виде строки или null если метод не найден
- */
-function extractMethodBodyFromCode(classCode: string, methodName: string): string | null {
-    const lexerResult = extractMethodBodyWithLexer(classCode, methodName);
-    if (lexerResult) {
-        console.log(`🔧 ЛЕКСЕР: Извлечено тело метода ${methodName}`);
-        return lexerResult;
-    }
+    console.log(`✓ ПАРСЕР ВЫЗОВОВ: ${repositoryCalls.length} repo, ${storageCalls.length} storage, ${privateMethodCalls.length} private`);
     
-    console.log(`⚠️ ЛЕКСЕР: Не удалось извлечь тело метода ${methodName}`);
-    return null;
+    return { repositoryCalls, storageCalls, privateMethodCalls };
 }
 
 // Создание переходов из всех allowedStates
@@ -709,7 +700,7 @@ function parseEnhancedMethods(classCode: string, cubitName: string, isBloc: bool
             }
         }
         
-        console.log(`✓ НОВЫЙ ПАРСЕР: Найдено ${enhancedMethods.length} методов для блока (${events.length} событий + ${globalMethods.length} глобальных методов)`);
+        console.log(`✓ ПАРСЕР: Найдено ${enhancedMethods.length} методов для блока (${events.length} событий + ${globalMethods.length} глобальных методов)`);
         
     } else {
         // Для кубитов: все публичные методы (нет обработчиков событий)
@@ -741,7 +732,7 @@ function parseEnhancedMethods(classCode: string, cubitName: string, isBloc: bool
             }
         }
         
-        console.log(`✓ НОВЫЙ ПАРСЕР: Найдено ${cubitMethods.length} методов кубита`);
+        console.log(`✓ ПАРСЕР: Найдено ${cubitMethods.length} методов кубита`);
     }
     
     // Создаем EnhancedStateInfo только для реальных состояний
@@ -1322,15 +1313,21 @@ function generateEnhancedTestContent(
         // Генерируем моки только для тех зависимостей, которые действительно используются методом
         const repositoryMocks = method.repositoryCalls.length > 0 ? `
       // Repository mocks
-      ${method.repositoryCalls.map(call => `
-      when(() => mockAuthRepository.${call.split('.')[1]}(any()))
-          .thenAnswer((_) async => {});`).join('')}` : '';
+      ${method.repositoryCalls.map(call => {
+          const methodName = call.includes('.') ? call.split('.')[1] : call.replace(/\w+\./g, '').replace(/\(/g, '');
+          return `
+      when(() => mockAuthRepository.${methodName}(any()))
+          .thenAnswer((_) async => {});`;
+      }).join('')}` : '';
           
         const storageMocks = method.storageCalls.length > 0 ? `
       // Storage mocks
-      ${method.storageCalls.map(call => `
-      when(() => mockSecureStorageService.${call.split('.')[1]}(any()))
-          .thenAnswer((_) async => 'test_value');`).join('')}` : '';
+      ${method.storageCalls.map(call => {
+          const methodName = call.includes('.') ? call.split('.')[1] : call.replace(/\w+\./g, '').replace(/\(/g, '');
+          return `
+      when(() => mockSecureStorageService.${methodName}(any()))
+          .thenAnswer((_) async => 'test_value');`;
+      }).join('')}` : '';
         
         // Если метод не использует зависимости, добавляем комментарий
         const noMocksComment = (method.repositoryCalls.length === 0 && method.storageCalls.length === 0) 
@@ -1878,7 +1875,7 @@ async function generateInfoFile(
     
     // Создаем DOT графы
     const fsmDot = generateFSMGraphvizDot(fsm, enhancedStates);
-    const pathsDot = generateTestPathsGraphvizDot(fsm, testPaths, enhancedStates);
+    const pathsDot = generateAdvancedTestPathsGraphvizDot(fsm, testPaths, enhancedStates);
 
     // Используем новый модуль webview
     createTestAnalysisWebview(
@@ -1971,13 +1968,58 @@ export async function generateTest(
         const { fsm, parsedMethods } = buildEnhancedFSM(enhancedMethods, enhancedStates, initialState);
         console.log(`✓ Построен автомат: ${fsm.states.length} состояний, ${fsm.transitions.length} переходов`);
         
-        // 4. Генерация тестовых путей
-        const testPaths = generateTestPaths(fsm, enhancedMethods, 20);
-        console.log(`✓ Сгенерировано ${testPaths.length} тестовых путей`);
+        // 4. Генерация тестовых путей на основе полной теории BFS остовного дерева
+        const testPaths = generateTestPaths(fsm, enhancedMethods, 10);
+        console.log(`✓ ТЕОРИЯ BFS: Сгенерировано ${testPaths.length} основных тестовых путей`);
         
-        // 5. Генерация комбинированных путей
-        const combinedPaths = generateRandomCombinedPaths(fsm, enhancedMethods, 5);
-        console.log(`✓ Сгенерировано ${combinedPaths.length} комбинированных путей`);
+        // 5. Генерация дополнительных интеллектуальных комбинированных путей
+        const combinedPaths = generateSmartCombinedPaths(fsm, enhancedMethods, testPaths, 5, 2, 3);
+        console.log(`✓ ТЕОРИЯ: Сгенерировано ${combinedPaths.length} интеллектуальных комбинированных путей`);
+        
+        // 📊 ДЕТАЛЬНАЯ СТАТИСТИКА ПОКРЫТИЯ
+        const allGeneratedPaths = [...testPaths, ...combinedPaths];
+        console.log(`\n📊 ФИНАЛЬНАЯ СТАТИСТИКА ТЕОРИИ BFS:`);
+        console.log(`   🧮 Основных путей (систематические): ${testPaths.length}`);
+        console.log(`   🎯 Дополнительных путей (интеллектуальные): ${combinedPaths.length}`);
+        console.log(`   📈 Всего уникальных тестовых путей: ${allGeneratedPaths.length}`);
+        
+        // Анализ покрытия методов и состояний
+        const allMethods: string[] = [];
+        const allStates: string[] = [];
+        
+        for (const path of allGeneratedPaths) {
+            allMethods.push(...path.methods);
+            allStates.push(...path.states);
+        }
+        
+        const coveredMethods = new Set(allMethods);
+        const coveredStates = new Set(allStates);
+        const totalMethods = enhancedMethods.length;
+        const totalStates = fsm.states.length;
+        
+        console.log(`   ⚙️ Покрытие методов: ${coveredMethods.size}/${totalMethods} (${Math.round(coveredMethods.size/totalMethods*100)}%)`);
+        console.log(`   🎭 Покрытие состояний: ${coveredStates.size}/${totalStates} (${Math.round(coveredStates.size/totalStates*100)}%)`);
+        
+        // Детальный анализ по типам путей
+        const initializationPaths = testPaths.filter(p => p.methods.length === 0);
+        const shortPaths = testPaths.filter(p => p.methods.length >= 1 && p.methods.length <= 2);
+        const mediumPaths = testPaths.filter(p => p.methods.length >= 3);
+        
+        console.log(`   📝 Распределение основных путей:`);
+        console.log(`      - Инициализация: ${initializationPaths.length}`);
+        console.log(`      - Короткие (1-2 перехода): ${shortPaths.length}`);
+        console.log(`      - Средние (3+ переходов): ${mediumPaths.length}`);
+        
+        // Анализ качества покрытия
+        const methodCoverageQuality = coveredMethods.size / totalMethods;
+        const stateCoverageQuality = coveredStates.size / totalStates;
+        const avgPathLength = allGeneratedPaths.reduce((sum, path) => sum + path.methods.length, 0) / allGeneratedPaths.length;
+        
+        console.log(`   📈 Качественные метрики:`);
+        console.log(`      - Средняя длина пути: ${avgPathLength.toFixed(1)} переходов`);
+        console.log(`      - Коэффициент покрытия методов: ${(methodCoverageQuality * 100).toFixed(1)}%`);
+        console.log(`      - Коэффициент покрытия состояний: ${(stateCoverageQuality * 100).toFixed(1)}%`);
+        console.log(`      - Общий коэффициент качества: ${((methodCoverageQuality + stateCoverageQuality) / 2 * 100).toFixed(1)}%`);
         
         // 6. Создание веток выполнения на основе реальных тестовых путей
         const executionBranches = createExecutionBranchesFromTestPaths(testPaths, combinedPaths, enhancedMethods);
@@ -2011,10 +2053,639 @@ export async function generateTest(
             classCode
         );
         
-        console.log('🎉 НОВЫЙ ГЕНЕРАТОР: Генерация завершена успешно!');
+        console.log('🎉 ГЕНЕРАТОР: Генерация завершена успешно!');
         
     } catch (error) {
-        console.error('❌ НОВЫЙ ГЕНЕРАТОР: Ошибка при генерации:', error);
+        console.error('❌ ГЕНЕРАТОР: Ошибка при генерации:', error);
         throw error;
     }
 } 
+
+// ===== ТЕОРИЯ BFS ОСТОВНОГО ДЕРЕВА ДЛЯ ГЕНЕРАЦИИ ТЕСТОВЫХ МНОЖЕСТВ =====
+
+/**
+ * Интерфейс для узла BFS дерева
+ */
+interface BFSTreeNode {
+    state: string;
+    parent?: BFSTreeNode;
+    depth: number;
+    pathFromRoot: string[]; // последовательность методов от корня
+    statesFromRoot: string[]; // последовательность состояний от корня
+}
+
+/**
+ * Интерфейс для ребра автомата с пометкой принадлежности к дереву
+ */
+interface EdgeWithTreeInfo {
+    from: string;
+    to: string;
+    method: string;
+    isInTree: boolean; // входит ли ребро в остовное дерево
+}
+
+/**
+ * Интерфейс расширенного тестового пути с метаинформацией
+ */
+interface EnhancedTestPath extends TestPath {
+    pathType: 'in-tree-root' | 'in-tree-node' | 'out-tree' | 'combined';
+    depth?: number;
+    isSpanningTreePath?: boolean;
+}
+
+/**
+ * Строит BFS остовное дерево для автомата состояний согласно теории
+ * @param fsm - конечный автомат состояний
+ * @returns корень дерева, все узлы и классификация ребер
+ */
+function buildBFSSpanningTreeAdvanced(fsm: FSM): {
+    root: BFSTreeNode;
+    allNodes: Map<string, BFSTreeNode>;
+    edges: EdgeWithTreeInfo[];
+    treeEdges: EdgeWithTreeInfo[];
+    nonTreeEdges: EdgeWithTreeInfo[];
+} {
+    const visited = new Set<string>();
+    const queue: BFSTreeNode[] = [];
+    const allNodes = new Map<string, BFSTreeNode>();
+    const edges: EdgeWithTreeInfo[] = [];
+    const treeEdges: EdgeWithTreeInfo[] = [];
+    const nonTreeEdges: EdgeWithTreeInfo[] = [];
+    
+    // Создаем корневой узел (начальное состояние q₀)
+    const root: BFSTreeNode = {
+        state: fsm.initialState,
+        depth: 0,
+        pathFromRoot: [],
+        statesFromRoot: [fsm.initialState]
+    };
+    
+    queue.push(root);
+    visited.add(fsm.initialState);
+    allNodes.set(fsm.initialState, root);
+    
+    console.log(`🌳 BFS ТЕОРИЯ: Построение остовного дерева из q₀ = ${fsm.initialState}`);
+    
+    // BFS обход для построения остовного дерева
+    while (queue.length > 0) {
+        const currentNode = queue.shift()!;
+        const currentState = currentNode.state;
+        
+        // Находим все исходящие переходы из текущего состояния
+        const outgoingTransitions = fsm.transitions.filter(t => t.from === currentState);
+        
+        for (const transition of outgoingTransitions) {
+            const edge: EdgeWithTreeInfo = {
+                from: transition.from,
+                to: transition.to,
+                method: transition.method,
+                isInTree: false
+            };
+            
+            if (!visited.has(transition.to)) {
+                // Новая вершина - добавляем в остовное дерево
+                visited.add(transition.to);
+                edge.isInTree = true;
+                
+                const newNode: BFSTreeNode = {
+                    state: transition.to,
+                    parent: currentNode,
+                    depth: currentNode.depth + 1,
+                    pathFromRoot: [...currentNode.pathFromRoot, transition.method],
+                    statesFromRoot: [...currentNode.statesFromRoot, transition.to]
+                };
+                
+                queue.push(newNode);
+                allNodes.set(transition.to, newNode);
+                treeEdges.push(edge);
+                
+                console.log(`   ✓ Дерево: ${transition.from} --[${transition.method}]--> ${transition.to} (глубина ${newNode.depth})`);
+            } else {
+                // Уже посещенная вершина - ребро вне остовного дерева
+                edge.isInTree = false;
+                nonTreeEdges.push(edge);
+                
+                console.log(`   → Вне дерева: ${transition.from} --[${transition.method}]--> ${transition.to}`);
+            }
+            
+            edges.push(edge);
+        }
+    }
+    
+    console.log(`✓ BFS дерево: ${allNodes.size} узлов, ${treeEdges.length} ребер в дереве, ${nonTreeEdges.length} ребер вне дерева`);
+    
+    return { root, allNodes, edges, treeEdges, nonTreeEdges };
+}
+
+/**
+ * Генерирует пути в остовном дереве (до каждого достижимого состояния)
+ * @param allNodes - все узлы BFS дерева
+ * @returns массив путей в остовном дереве
+ */
+function generateInTreePathsAdvanced(allNodes: Map<string, BFSTreeNode>): EnhancedTestPath[] {
+    const paths: EnhancedTestPath[] = [];
+    
+    console.log(`🛤️ ТЕОРИЯ: Генерация путей в остовном дереве:`);
+    
+    for (const [state, node] of allNodes) {
+        if (node.depth === 0) {
+            // Корневой узел - путь инициализации
+            paths.push({
+                states: [node.state],
+                methods: [],
+                conditions: [],
+                pathType: 'in-tree-root',
+                depth: 0,
+                isSpanningTreePath: true
+            });
+            
+            console.log(`   📍 Корневой путь: q₀ = ${node.state}`);
+        } else {
+            // Путь от корня до данного узла по ребрам остовного дерева
+            paths.push({
+                states: node.statesFromRoot,
+                methods: node.pathFromRoot,
+                conditions: [],
+                pathType: 'in-tree-node',
+                depth: node.depth,
+                isSpanningTreePath: true
+            });
+            
+            console.log(`   🎯 Путь в дереве (d=${node.depth}): ${node.pathFromRoot.join(' → ')} = ${node.statesFromRoot.join(' → ')}`);
+        }
+    }
+    
+    return paths;
+}
+
+/**
+ * Генерирует пути по ребрам вне остовного дерева
+ * @param nonTreeEdges - ребра вне остовного дерева  
+ * @param allNodes - все узлы BFS дерева
+ * @returns массив путей по ребрам вне дерева
+ */
+function generateOutTreePathsAdvanced(nonTreeEdges: EdgeWithTreeInfo[], allNodes: Map<string, BFSTreeNode>): EnhancedTestPath[] {
+    const paths: EnhancedTestPath[] = [];
+    
+    console.log(`🔄 ТЕОРИЯ: Генерация путей по ребрам вне остовного дерева:`);
+    
+    for (const edge of nonTreeEdges) {
+        const fromNode = allNodes.get(edge.from);
+        
+        if (fromNode) {
+            // Путь: (BFS путь до узла from) + (ребро вне дерева)
+            const pathStates = [...fromNode.statesFromRoot, edge.to];
+            const pathMethods = [...fromNode.pathFromRoot, edge.method];
+            
+            paths.push({
+                states: pathStates,
+                methods: pathMethods,
+                conditions: [],
+                pathType: 'out-tree',
+                depth: fromNode.depth + 1,
+                isSpanningTreePath: false
+            });
+            
+            console.log(`   🔄 Путь вне дерева: (${fromNode.pathFromRoot.join(' → ')}) + [${edge.method}] = ${pathStates.join(' → ')}`);
+        }
+    }
+    
+    return paths;
+}
+
+/**
+ * Выбирает наиболее разнообразные пути из множества согласно критериям теории
+ * @param allPaths - все сгенерированные пути
+ * @param maxPaths - максимальное количество путей для выбора
+ * @param preferredMinLength - предпочтительная минимальная длина пути
+ * @param preferredMaxLength - предпочтительная максимальная длина пути
+ * @returns отобранные пути с максимальным покрытием
+ */
+function selectDiversePathsAdvanced(
+    allPaths: EnhancedTestPath[], 
+    maxPaths: number = 5,
+    preferredMinLength: number = 2,
+    preferredMaxLength: number = 3
+): TestPath[] {
+    console.log(`🎲 ТЕОРИЯ: Выбор ${maxPaths} наиболее разнообразных путей из ${allPaths.length}:`);
+    
+    // Группируем пути по типам для обеспечения покрытия
+    const inTreePaths = allPaths.filter(p => p.pathType.startsWith('in-tree'));
+    const outTreePaths = allPaths.filter(p => p.pathType === 'out-tree');
+    
+    // Фильтруем пути по предпочтительной длине (2-3 перехода)
+    const preferredLengthPaths = allPaths.filter(p => 
+        p.methods.length >= preferredMinLength && p.methods.length <= preferredMaxLength
+    );
+    
+    const selectedPaths: TestPath[] = [];
+    const usedTransitions = new Set<string>();
+    const usedStates = new Set<string>();
+    
+    // 1. Путь инициализации (q₀)
+    const rootPath = inTreePaths.find(p => p.methods.length === 0);
+    if (rootPath) {
+        selectedPaths.push({
+            states: rootPath.states,
+            methods: rootPath.methods,
+            conditions: rootPath.conditions
+        });
+        console.log(`   ✅ Обязательный: Инициализация q₀`);
+    }
+    
+    // 2. Пути предпочтительной длины с максимальным покрытием
+    const sortedPreferredPaths = preferredLengthPaths.sort((a, b) => {
+        // Приоритизируем пути с новыми переходами и состояниями
+        const newTransitionsA = a.methods.filter(m => !usedTransitions.has(m)).length;
+        const newTransitionsB = b.methods.filter(m => !usedTransitions.has(m)).length;
+        const newStatesA = a.states.filter(s => !usedStates.has(s)).length;
+        const newStatesB = b.states.filter(s => !usedStates.has(s)).length;
+        
+        // Комбинированный скор: новые переходы + новые состояния
+        const scoreA = newTransitionsA * 2 + newStatesA;
+        const scoreB = newTransitionsB * 2 + newStatesB;
+        
+        return scoreB - scoreA; // по убыванию
+    });
+    
+    for (const path of sortedPreferredPaths) {
+        if (selectedPaths.length >= maxPaths) break;
+        
+        const hasNewContent = 
+            path.methods.some(method => !usedTransitions.has(method)) ||
+            path.states.some(state => !usedStates.has(state));
+        
+        if (hasNewContent || selectedPaths.length < 3) {
+            selectedPaths.push({
+                states: path.states,
+                methods: path.methods,
+                conditions: path.conditions
+            });
+            
+            // Обновляем множества использованных элементов
+            path.methods.forEach(method => usedTransitions.add(method));
+            path.states.forEach(state => usedStates.add(state));
+            
+            const pathTypeDesc = path.pathType === 'in-tree-node' ? 'в дереве' : 
+                                path.pathType === 'out-tree' ? 'вне дерева' : 'корень';
+            console.log(`   ✅ Выбран (${pathTypeDesc}, d=${path.depth || 0}): ${path.methods.join(' → ') || 'q₀'}`);
+        }
+    }
+    
+    // 3. Оставшиеся пути для достижения maxPaths
+    const remainingPaths = allPaths.filter(p => 
+        !selectedPaths.some(sp => 
+            sp.states.join('-') === p.states.join('-') && 
+            sp.methods.join('-') === p.methods.join('-')
+        )
+    );
+    
+    for (const path of remainingPaths) {
+        if (selectedPaths.length >= maxPaths) break;
+        
+        selectedPaths.push({
+            states: path.states,
+            methods: path.methods,
+            conditions: path.conditions
+        });
+        
+        const pathTypeDesc = path.pathType === 'in-tree-node' ? 'в дереве' : 
+                            path.pathType === 'out-tree' ? 'вне дерева' : 'корень';
+        console.log(`   ✅ Дополнительный (${pathTypeDesc}): ${path.methods.join(' → ') || 'q₀'}`);
+    }
+    
+    console.log(`✓ ТЕОРИЯ: Отобрано ${selectedPaths.length} путей для тестов`);
+    
+    // Анализ покрытия
+    const allMethods = new Set<string>();
+    const allStates = new Set<string>();
+    
+    for (const path of selectedPaths) {
+        path.methods.forEach(method => allMethods.add(method));
+        path.states.forEach(state => allStates.add(state));
+    }
+    
+    console.log(`📊 Покрытие: ${allMethods.size} методов, ${allStates.size} состояний`);
+    
+    return selectedPaths;
+}
+
+/**
+ * Генерирует дополнительные комбинированные пути с учетом уже выбранных
+ * @param fsm - конечный автомат состояний
+ * @param enhancedMethods - массив расширенной информации о методах
+ * @param excludePaths - пути, которые уже были выбраны (чтобы избежать дубликатов)
+ * @param maxPaths - максимальное количество дополнительных путей
+ * @param minLength - минимальная длина пути
+ * @param maxLength - максимальная длина пути
+ * @returns массив дополнительных тестовых путей
+ */
+function generateSmartCombinedPaths(
+    fsm: FSM, 
+    enhancedMethods: EnhancedMethodInfo[], 
+    excludePaths: TestPath[] = [],
+    maxPaths: number = 5,
+    minLength: number = 2,
+    maxLength: number = 3
+): TestPath[] {
+    console.log('\n🎯 ТЕОРИЯ: Генерация интеллектуальных комбинированных путей...');
+    
+    const combinedPaths: TestPath[] = [];
+    const maxAttempts = 100;
+    const excludeSignatures = new Set(
+        excludePaths.map(p => `${p.states.join('-')}-${p.methods.join('-')}`)
+    );
+    
+    // Группируем переходы по состояниям для эффективного поиска
+    const transitionsByState = new Map<string, FSMTransition[]>();
+    for (const transition of fsm.transitions) {
+        if (!transitionsByState.has(transition.from)) {
+            transitionsByState.set(transition.from, []);
+        }
+        transitionsByState.get(transition.from)!.push(transition);
+    }
+    
+    // Анализ частоты использования методов в уже выбранных путях
+    const methodUsage = new Map<string, number>();
+    for (const path of excludePaths) {
+        for (const method of path.methods) {
+            methodUsage.set(method, (methodUsage.get(method) || 0) + 1);
+        }
+    }
+    
+    console.log(`🔍 Исключаем ${excludePaths.length} существующих путей`);
+    console.log(`📈 Приоритизируем менее используемые методы`);
+    
+    for (let attempt = 0; attempt < maxAttempts && combinedPaths.length < maxPaths; attempt++) {
+        // Случайная длина пути в заданном диапазоне
+        const pathLength = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
+        
+        // Начинаем с начального состояния
+        let currentState = fsm.initialState;
+        const pathStates = [currentState];
+        const pathMethods: string[] = [];
+        let validPath = true;
+        
+        // Строим интеллектуальный случайный путь
+        for (let i = 0; i < pathLength; i++) {
+            const availableTransitions = transitionsByState.get(currentState) || [];
+            
+            if (availableTransitions.length === 0) {
+                validPath = false;
+                break;
+            }
+            
+            // Сортируем переходы по частоте использования (менее используемые - приоритетнее)
+            const sortedTransitions = availableTransitions.sort((a, b) => {
+                const usageA = methodUsage.get(a.method) || 0;
+                const usageB = methodUsage.get(b.method) || 0;
+                return usageA - usageB;
+            });
+            
+            // Выбираем из первой трети наименее используемых (с элементом случайности)
+            const topThird = sortedTransitions.slice(0, Math.max(1, Math.ceil(sortedTransitions.length / 3)));
+            const selectedTransition = topThird[Math.floor(Math.random() * topThird.length)];
+            
+            pathMethods.push(selectedTransition.method);
+            pathStates.push(selectedTransition.to);
+            currentState = selectedTransition.to;
+        }
+        
+        // Проверяем валидность и уникальность пути
+        if (validPath && pathMethods.length >= minLength) {
+            const pathSignature = `${pathStates.join('-')}-${pathMethods.join('-')}`;
+            
+            if (!excludeSignatures.has(pathSignature)) {
+                const newPath: TestPath = {
+                    states: pathStates,
+                    methods: pathMethods,
+                    conditions: []
+                };
+                
+                combinedPaths.push(newPath);
+                excludeSignatures.add(pathSignature);
+                
+                // Обновляем статистику использования методов
+                pathMethods.forEach(method => {
+                    methodUsage.set(method, (methodUsage.get(method) || 0) + 1);
+                });
+                
+                console.log(`   🎯 Путь ${combinedPaths.length}: ${pathMethods.join(' → ')} = ${pathStates.join(' → ')}`);
+            }
+        }
+    }
+    
+    console.log(`✓ ТЕОРИЯ: Сгенерировано ${combinedPaths.length} интеллектуальных комбинированных путей`);
+    return combinedPaths;
+}
+
+/**
+ * Главная функция генерации тестовых путей на основе полной теории BFS остовного дерева
+ * @param fsm - конечный автомат состояний
+ * @param enhancedMethods - массив расширенной информации о методах
+ * @param maxPaths - максимальное количество основных путей
+ * @returns массив тестовых путей
+ */
+function generateAdvancedTestPaths(fsm: FSM, enhancedMethods: EnhancedMethodInfo[], maxPaths: number = 10): TestPath[] {
+    console.log('\n🧮 ТЕОРИЯ BFS: Генерация систематического тестового множества...');
+    
+    // Проверяем, есть ли вообще переходы
+    if (fsm.transitions.length === 0) {
+        console.log('⚠️ Автомат не имеет переходов, создаем только тест инициализации');
+        return [{
+            states: [fsm.initialState],
+            methods: [],
+            conditions: []
+        }];
+    }
+    
+    // 1. Строим BFS остовное дерево согласно теории
+    const { root, allNodes, edges, treeEdges, nonTreeEdges } = buildBFSSpanningTreeAdvanced(fsm);
+    
+    // 2. Генерируем пути в остовном дереве (покрывают все достижимые состояния)
+    const inTreePaths = generateInTreePathsAdvanced(allNodes);
+    
+    // 3. Генерируем пути по ребрам вне дерева (покрывают сложные переходы)
+    const outTreePaths = generateOutTreePathsAdvanced(nonTreeEdges, allNodes);
+    
+    // 4. Объединяем все пути
+    const allPaths = [...inTreePaths, ...outTreePaths];
+    
+    console.log(`📊 ТЕОРИЯ - Статистика путей:`);
+    console.log(`   📍 Пути в остовном дереве: ${inTreePaths.length}`);
+    console.log(`   🔄 Пути по ребрам вне дерева: ${outTreePaths.length}`);
+    console.log(`   📈 Всего путей в множестве: ${allPaths.length}`);
+    
+    // 5. Выбираем наиболее разнообразные пути (длиной 2-3 перехода)
+    const selectedPaths = selectDiversePathsAdvanced(allPaths, Math.min(maxPaths, 10), 2, 3);
+    
+    return selectedPaths;
+}
+
+/**
+ * Генерирует улучшенный DOT граф для тестовых путей с визуализацией теории BFS
+ * @param fsm - конечный автомат состояний
+ * @param paths - массив тестовых путей
+ * @param states - массив информации о состояниях
+ * @returns строка с DOT кодом
+ */
+function generateAdvancedTestPathsGraphvizDot(fsm: FSM, paths: TestPath[], states?: StateInfo[]): string {
+    let dot = 'digraph AdvancedTestPaths {\n';
+    dot += '  rankdir=LR;\n';
+    dot += '  node [shape=circle, fontsize=10];\n';
+    dot += '  edge [fontsize=8];\n';
+    
+    // Собираем все состояния, используемые в тестовых путях
+    const usedStates = new Set<string>();
+    for (const path of paths) {
+        for (const state of path.states) {
+            usedStates.add(state);
+        }
+    }
+    
+    // Добавляем состояния с улучшенной цветовой кодировкой
+    for (const state of Array.from(usedStates)) {
+        const isInitial = state === fsm.initialState;
+        
+        const stateInfo = states?.find(s => s.name === state);
+        
+        let color = 'lightgray';
+        let label = state;
+        let stateType = '';
+        
+        if (isInitial) {
+            color = 'green';
+            stateType = '(q₀)';
+        } else if (stateInfo) {
+            // Используем информацию из анализа состояний
+            if (stateInfo.isError) {
+                color = 'lightcoral';
+                stateType = '(error)';
+            } else if (stateInfo.isLoading) {
+                color = 'lightyellow';
+                stateType = '(loading)';
+            } else if (stateInfo.isSuccess) {
+                color = 'lightblue';
+                stateType = '(success)';
+            } else {
+                color = 'lightcyan';
+                stateType = '(state)';
+            }
+        } else {
+            // Анализ по названию
+            const stateLower = state.toLowerCase();
+            if (stateLower.includes('error') || stateLower.includes('failure') || stateLower.includes('fail')) {
+                color = 'lightcoral';
+                stateType = '(error)';
+            } else if (stateLower.includes('loading') || stateLower.includes('waiting') || stateLower.includes('progress')) {
+                color = 'lightyellow';
+                stateType = '(loading)';
+            } else if (stateLower.includes('success') || stateLower.includes('loaded') || stateLower.includes('complete')) {
+                color = 'lightblue';
+                stateType = '(success)';
+            } else if (stateLower.includes('initial') || stateLower.includes('idle')) {
+                color = 'lightgreen';
+                stateType = '(initial)';
+            } else {
+                color = 'lightcyan';
+                stateType = '(state)';
+            }
+        }
+        
+        label += `\\n${stateType}`;
+        dot += `  "${state}" [style=filled, fillcolor=${color}, label="${label}"];\n`;
+    }
+    
+    // Цветовая схема для разных типов путей согласно теории BFS
+    const pathColors = {
+        'initialization': { color: 'green', style: 'bold', width: 3 },
+        'in-tree': { color: 'blue', style: 'solid', width: 2 },
+        'out-tree': { color: 'red', style: 'dashed', width: 2 },
+        'combined': { color: 'purple', style: 'dotted', width: 1 }
+    };
+    
+    // Добавляем тестовые пути с классификацией по теории BFS
+    for (let i = 0; i < paths.length; i++) {
+        const path = paths[i];
+        
+        // Определяем тип пути
+        let pathType: keyof typeof pathColors;
+        let pathDescription: string;
+        
+        if (path.methods.length === 0) {
+            pathType = 'initialization';
+            pathDescription = 'Инициализация q₀';
+        } else if (i < 5) { // Первые 5 путей считаем основными (из теории BFS)
+            pathType = 'in-tree';
+            pathDescription = `BFS-дерево: ${path.methods.join(' → ')}`;
+        } else if (i < 8) { // Следующие как пути вне дерева
+            pathType = 'out-tree';
+            pathDescription = `Вне дерева: ${path.methods.join(' → ')}`;
+        } else { // Остальные как комбинированные
+            pathType = 'combined';
+            pathDescription = `Комбинированный: ${path.methods.join(' → ')}`;
+        }
+        
+        const style = pathColors[pathType];
+        
+        dot += `\n  // ${pathDescription}\n`;
+        
+        if (path.states.length === 1) {
+            // Путь инициализации - добавляем специальную пометку
+            dot += `  // Путь инициализации: ${path.states[0]}\n`;
+            dot += `  "start" [shape=point, color=${style.color}];\n`;
+            dot += `  "start" -> "${path.states[0]}" [label="init", color=${style.color}, penwidth=${style.width}, style=${style.style}];\n`;
+        } else {
+            // Путь с переходами между состояниями
+            for (let j = 0; j < path.methods.length; j++) {
+                const fromState = path.states[j];
+                const toState = path.states[j + 1];
+                const method = path.methods[j];
+                
+                // Добавляем путевую метку с типом пути
+                const edgeLabel = `${method}\\n[${pathType.toUpperCase()}]`;
+                
+                dot += `  "${fromState}" -> "${toState}" [label="${edgeLabel}", color=${style.color}, penwidth=${style.width}, style=${style.style}, fontcolor=${style.color}];\n`;
+            }
+        }
+    }
+    
+    // Добавляем легенду с теорией BFS
+    if (paths.length > 0) {
+        dot += '\n  // Легенда согласно теории BFS остовного дерева\n';
+        dot += '  subgraph cluster_legend {\n';
+        dot += '    label="Легенда теории BFS остовного дерева";\n';
+        dot += '    style=filled;\n';
+        dot += '    fillcolor=lightyellow;\n';
+        dot += '    fontsize=12;\n';
+        
+        // Показываем типы путей с их характеристиками
+        let legendIndex = 0;
+        
+        Object.entries(pathColors).forEach(([type, style]) => {
+            const typeDescriptions = {
+                'initialization': 'Инициализация (q₀)',
+                'in-tree': 'Пути в остовном дереве',
+                'out-tree': 'Пути по ребрам вне дерева',
+                'combined': 'Интеллектуальные комбинированные пути'
+            };
+            
+            const description = typeDescriptions[type as keyof typeof typeDescriptions];
+            
+            dot += `    "legend_${type}" [shape=box, style=filled, fillcolor=white, label="${description}", color=${style.color}, penwidth=${style.width}];\n`;
+            legendIndex++;
+        });
+        
+        // Добавляем статистику покрытия
+        const initPaths = paths.filter(p => p.methods.length === 0).length;
+        const shortPaths = paths.filter(p => p.methods.length >= 1 && p.methods.length <= 2).length;
+        const mediumPaths = paths.filter(p => p.methods.length >= 3).length;
+        
+        dot += `    "legend_stats" [shape=plaintext, label="Статистика:\\nВсего путей: ${paths.length}\\nИнициализация: ${initPaths}\\nКороткие (1-2): ${shortPaths}\\nСредние (3+): ${mediumPaths}", fontsize=9, color=gray];\n`;
+        
+        dot += '  }\n';
+    }
+    
+    dot += '}\n';
+    return dot;
+}

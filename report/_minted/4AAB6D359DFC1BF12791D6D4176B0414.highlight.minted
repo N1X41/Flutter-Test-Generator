@@ -1,0 +1,7 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface DataItem \PYGZob{}
+    dartName: string;            // Имя переменной в Dart\PYGZhy{}нотации
+    jsonKey: string;             // Имя переменной в JSON\PYGZhy{}нотации
+    type: string;                // Тип переменной
+\PYGZcb{}
+\end{MintedVerbatim}

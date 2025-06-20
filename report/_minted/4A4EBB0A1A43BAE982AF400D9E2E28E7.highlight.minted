@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface StateInfo \PYGZob{}
+    name: string;                // Название состояния
+    properties?: string[];       // Свойства состояния
+    isInitial?: boolean;         // Является ли начальным состоянием
+    isError?: boolean;           // Является ли состоянием ошибки
+    isLoading?: boolean;         // Является ли состоянием загрузки
+    isSuccess?: boolean;         // Является ли успешным состоянием
+\PYGZcb{}
+\end{MintedVerbatim}

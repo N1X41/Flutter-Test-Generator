@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface DartMethodContext \PYGZob{}
+    blockType: \PYGZsq{}try\PYGZsq{} | \PYGZsq{}catch\PYGZsq{} | \PYGZsq{}if\PYGZsq{} | \PYGZsq{}else\PYGZsq{} | \PYGZsq{}switch\PYGZsq{} | \PYGZsq{}case\PYGZsq{} | \PYGZsq{}default\PYGZsq{} | \PYGZsq{}root\PYGZsq{};
+    startIndex: number;
+    endIndex: number;
+    nestingLevel: number;
+    parentContext?: DartMethodContext;
+\PYGZcb{}
+\end{MintedVerbatim}

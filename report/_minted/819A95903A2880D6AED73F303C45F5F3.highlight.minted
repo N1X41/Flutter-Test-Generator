@@ -1,0 +1,72 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+import \PYGZsq{}package:test/test.dart\PYGZsq{};
+// import \PYGZsq{}package:mockito/mockito.dart\PYGZsq{}; // Раскомментируйте, если нужны моки
+// import \PYGZsq{}path/to/your/method\PYGZus{}source.dart\PYGZsq{}; // Импортируйте исходный файл метода
+
+// class MockDependency extends Mock implements DependencyClass \PYGZob{}\PYGZcb{} // Пример мок\PYGZhy{}класса
+
+void main() \PYGZob{}
+  group(\PYGZsq{}Тесты calculatePrice\PYGZsq{}, () \PYGZob{}
+    // late YourClass instance; // Экземпляр класса, содержащего метод
+    // late MockDependency mockDependency; // Экземпляр мок\PYGZhy{}зависимости
+
+    setUp(() \PYGZob{}
+      // mockDependency = MockDependency();
+      // instance = YourClass(mockDependency); // Инициализация экземпляра
+    \PYGZcb{});
+
+    test(\PYGZsq{}должен возвращать корректную цену для типичных значений\PYGZsq{}, () \PYGZob{}
+      final quantity = 5;
+      final itemPrice = 10.0;
+      final expectedPrice = 50.0; // TODO: Уточните ожидаемое значение
+
+      final actualPrice = calculatePrice(quantity, itemPrice); // Предполагаем статическую или top\PYGZhy{}level функцию
+
+      expect(actualPrice, expectedPrice);
+      // TODO: Добавьте более специфичные проверки при необходимости
+    \PYGZcb{});
+
+    test(\PYGZsq{}должен обрабатывать нулевое количество\PYGZsq{}, () \PYGZob{}
+      final quantity = 0;
+      final itemPrice = 10.0;
+      final expectedPrice = 0.0; // TODO: Уточните ожидаемое значение
+
+      final actualPrice = calculatePrice(quantity, itemPrice);
+
+      expect(actualPrice, expectedPrice);
+    \PYGZcb{});
+
+    test(\PYGZsq{}должен обрабатывать нулевую цену\PYGZsq{}, () \PYGZob{}
+      final quantity = 5;
+      final itemPrice = 0.0;
+      final expectedPrice = 0.0; // TODO: Уточните ожидаемое значение
+
+      final actualPrice = calculatePrice(quantity, itemPrice);
+
+      expect(actualPrice, expectedPrice);
+    \PYGZcb{});
+
+     test(\PYGZsq{}должен обрабатывать отрицательное количество, если применимо\PYGZsq{}, () \PYGZob{}
+      final quantity = \PYGZhy{}5;
+      final itemPrice = 10.0;
+      // final expectedPrice = ...; // TODO: Определите ожидаемое поведение (например, ошибка или возврат 0)
+
+      // expect(() =\PYGZgt{} calculatePrice(quantity, itemPrice), throwsA(isA\PYGZlt{}ArgumentError\PYGZgt{}())); // Пример для ошибки
+       // ИЛИ
+       // final actualPrice = calculatePrice(quantity, itemPrice);
+       // expect(actualPrice, expectedPrice);
+    \PYGZcb{});
+
+    // TODO: Добавьте альтернативные тесты, если необходимо
+  \PYGZcb{});
+\PYGZcb{}
+
+// Заглушка реальной функции/метода для контекста
+double calculatePrice(int quantity, double itemPrice) \PYGZob{}
+    if (quantity \PYGZlt{} 0 || itemPrice \PYGZlt{} 0) \PYGZob{}
+        // Или выбросить ArgumentError(\PYGZsq{}Количество и цена должны быть неотрицательными\PYGZsq{});
+        return 0.0; // Упрощенная обработка
+    \PYGZcb{}
+    return quantity * itemPrice;
+\PYGZcb{}
+\end{MintedVerbatim}

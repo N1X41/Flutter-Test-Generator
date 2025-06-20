@@ -1,0 +1,19 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{EnhancedMethodInfo}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{name}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{                }\PYG{c+c1}{// Название метода/события}
+\PYG{+w}{    }\PYG{k+kr}{type}\PYG{o}{:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}event\PYGZsq{}}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}method\PYGZsq{}}\PYG{p}{;}\PYG{+w}{    }\PYG{c+c1}{// Тип: событие (для Bloc) или метод (для Cubit)}
+\PYG{+w}{    }\PYG{n+nx}{event?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{              }\PYG{c+c1}{// Само событие (для блоков)}
+\PYG{+w}{    }\PYG{n+nx}{handler?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// Обработчик (для блоков)}
+\PYG{+w}{    }\PYG{n+nx}{parameters}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{        }\PYG{c+c1}{// Параметры}
+\PYG{+w}{    }\PYG{n+nx}{transitions}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{StateTransition}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Детальные переходы между состояниями}
+\PYG{+w}{    }\PYG{n+nx}{reachableStates}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// Все достижимые состояния из этого метода}
+\PYG{+w}{    }\PYG{n+nx}{finalStates}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{       }\PYG{c+c1}{// Конечные состояния метода}
+\PYG{+w}{    }\PYG{n+nx}{transientStates}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// Сквозные состояния метода}
+\PYG{+w}{    }\PYG{n+nx}{repositoryCalls}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// Вызовы репозитория}
+\PYG{+w}{    }\PYG{n+nx}{storageCalls}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{      }\PYG{c+c1}{// Вызовы хранилища}
+\PYG{+w}{    }\PYG{n+nx}{privateMethodCalls}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{c+c1}{// Вызовы приватных методов}
+\PYG{+w}{    }\PYG{n+nx}{guardConditions}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{GuardCondition}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Guard условия}
+\PYG{+w}{    }\PYG{n+nx}{allowedStates}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{     }\PYG{c+c1}{// Разрешенные состояния для вызова}
+\PYG{+w}{    }\PYG{n+nx}{isArrowFunction?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{boolean}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// Является ли стрелочной функцией}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}
