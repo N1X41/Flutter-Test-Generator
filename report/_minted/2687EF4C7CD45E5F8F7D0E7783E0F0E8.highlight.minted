@@ -1,0 +1,12 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{StateTransition}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{fromState}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{           }\PYG{c+c1}{// Начальное состояние}
+\PYG{+w}{    }\PYG{n+nx}{toState}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{             }\PYG{c+c1}{// Конечное состояние}
+\PYG{+w}{    }\PYG{n+nx}{transientStates}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// Сквозные состояния между началом и концом}
+\PYG{+w}{    }\PYG{n+nx}{repositoryCalls}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// Вызовы методов репозитория}
+\PYG{+w}{    }\PYG{n+nx}{storageCalls}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{      }\PYG{c+c1}{// Вызовы методов хранилища}
+\PYG{+w}{    }\PYG{n+nx}{privateMethodCalls}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{c+c1}{// Вызовы приватных методов}
+\PYG{+w}{    }\PYG{n+nx}{isReachable}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{boolean}\PYG{p}{;}\PYG{+w}{        }\PYG{c+c1}{// Достижимость перехода}
+\PYG{+w}{    }\PYG{n+nx}{conditionGuards}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// Условия/ограничения перехода}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

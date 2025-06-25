@@ -1,0 +1,18 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{Token}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kr}{type}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nx}{TokenType}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nx}{value}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nx}{position}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nx}{line}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nx}{column}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{enum}\PYG{+w}{ }\PYG{n+nx}{TokenType}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{CLASS}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{IMPORT}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{FUNCTION}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{ASYNC}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{AWAIT}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{IF}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{ELSE}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{TRY}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{CATCH}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{SWITCH}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{CASE}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{DEFAULT}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{RETURN}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{EMIT}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{IDENTIFIER}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{TYPE}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{STRING}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{NUMBER}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{BOOLEAN}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{CHAR}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{FLOAT}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{DOUBLE}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{ASSIGN}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{EQUALS}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{NOT\PYGZus{}EQUALS}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{LT\PYGZus{}EQUALS}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{GT\PYGZus{}EQUALS}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{LPAREN}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{RPAREN}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{LBRACE}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{RBRACE}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{LBRACKET}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{RBRACKET}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{WHITESPACE}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{NEWLINE}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{COMMENT}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{EOF}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{UNKNOWN}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

@@ -1,0 +1,6 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface DependencyInfo \PYGZob{}
+    name: string;                // Имя переменной зависимости
+    type: string;                // Тип зависимости
+\PYGZcb{}
+\end{MintedVerbatim}

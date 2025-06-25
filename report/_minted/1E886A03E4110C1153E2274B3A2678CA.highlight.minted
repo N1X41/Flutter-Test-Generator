@@ -1,0 +1,6 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface GuardCondition \PYGZob{}
+    blockedState: string;        // Заблокированное состояние
+    action: string;              // Действие (обычно \PYGZdq{}return\PYGZdq{})
+\PYGZcb{}
+\end{MintedVerbatim}

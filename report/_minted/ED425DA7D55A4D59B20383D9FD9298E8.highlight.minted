@@ -1,0 +1,72 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{package:test/test.dart}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{;}
+\PYG{c+c1}{// import \PYGZsq{}package:mockito/mockito.dart\PYGZsq{}; // Раскомментируйте, если нужны моки}
+\PYG{c+c1}{// import \PYGZsq{}path/to/your/method\PYGZus{}source.dart\PYGZsq{}; // Импортируйте исходный файл метода}
+
+\PYG{c+c1}{// class MockDependency extends Mock implements DependencyClass \PYGZob{}\PYGZcb{} // Пример мок\PYGZhy{}класса}
+
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{main}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{n}{group}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Тесты calculatePrice}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// late YourClass instance; // Экземпляр класса, содержащего метод}
+\PYG{+w}{    }\PYG{c+c1}{// late MockDependency mockDependency; // Экземпляр мок\PYGZhy{}зависимости}
+
+\PYG{+w}{    }\PYG{n}{setUp}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{c+c1}{// mockDependency = MockDependency();}
+\PYG{+w}{      }\PYG{c+c1}{// instance = YourClass(mockDependency); // Инициализация экземпляра}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{должен возвращать корректную цену для типичных значений}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{quantity}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{5}\PYG{p}{;}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{itemPrice}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{10.0}\PYG{p}{;}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{expectedPrice}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{50.0}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// TODO: Уточните ожидаемое значение}
+
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{actualPrice}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{calculatePrice}\PYG{p}{(}\PYG{n}{quantity}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{itemPrice}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Предполагаем статическую или top\PYGZhy{}level функцию}
+
+\PYG{+w}{      }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{actualPrice}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{expectedPrice}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{c+c1}{// TODO: Добавьте более специфичные проверки при необходимости}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{должен обрабатывать нулевое количество}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{quantity}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{0}\PYG{p}{;}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{itemPrice}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{10.0}\PYG{p}{;}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{expectedPrice}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{0.0}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// TODO: Уточните ожидаемое значение}
+
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{actualPrice}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{calculatePrice}\PYG{p}{(}\PYG{n}{quantity}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{itemPrice}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{      }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{actualPrice}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{expectedPrice}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{должен обрабатывать нулевую цену}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{quantity}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{5}\PYG{p}{;}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{itemPrice}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{0.0}\PYG{p}{;}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{expectedPrice}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{0.0}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// TODO: Уточните ожидаемое значение}
+
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{actualPrice}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{calculatePrice}\PYG{p}{(}\PYG{n}{quantity}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{itemPrice}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{      }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{actualPrice}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{expectedPrice}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{     }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{должен обрабатывать отрицательное количество, если применимо}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{quantity}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{l+m}{5}\PYG{p}{;}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{itemPrice}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{10.0}\PYG{p}{;}
+\PYG{+w}{      }\PYG{c+c1}{// final expectedPrice = ...; // TODO: Определите ожидаемое поведение (например, ошибка или возврат 0)}
+
+\PYG{+w}{      }\PYG{c+c1}{// expect(() =\PYGZgt{} calculatePrice(quantity, itemPrice), throwsA(isA\PYGZlt{}ArgumentError\PYGZgt{}())); // Пример для ошибки}
+\PYG{+w}{       }\PYG{c+c1}{// ИЛИ}
+\PYG{+w}{       }\PYG{c+c1}{// final actualPrice = calculatePrice(quantity, itemPrice);}
+\PYG{+w}{       }\PYG{c+c1}{// expect(actualPrice, expectedPrice);}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// TODO: Добавьте альтернативные тесты, если необходимо}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Заглушка реальной функции/метода для контекста}
+\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{calculatePrice}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{quantity}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{itemPrice}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{quantity}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m}{0}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{itemPrice}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Или выбросить ArgumentError(\PYGZsq{}Количество и цена должны быть неотрицательными\PYGZsq{});}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{l+m}{0.0}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Упрощенная обработка}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{quantity}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{itemPrice}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

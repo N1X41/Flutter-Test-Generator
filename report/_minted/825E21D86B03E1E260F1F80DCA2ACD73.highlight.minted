@@ -1,0 +1,14 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{FSM}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{states}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// Все состояния в автомате}
+\PYG{+w}{    }\PYG{n+nx}{transitions}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{FSMTransition}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Все возможные переходы}
+\PYG{+w}{    }\PYG{n+nx}{initialState}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{        }\PYG{c+c1}{// Начальное состояние}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{FSMTransition}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{from}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{                }\PYG{c+c1}{// Исходное состояние}
+\PYG{+w}{    }\PYG{n+nx}{to}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{                  }\PYG{c+c1}{// Целевое состояние}
+\PYG{+w}{    }\PYG{n+nx}{method}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{              }\PYG{c+c1}{// Метод/событие, вызывающее переход}
+\PYG{+w}{    }\PYG{n+nx}{condition?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{          }\PYG{c+c1}{// Условие перехода}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

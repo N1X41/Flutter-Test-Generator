@@ -1,0 +1,7 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface TestPath \PYGZob{}
+    states: string[];            // Последовательность состояний в пути
+    methods: string[];           // Последовательность методов/событий
+    conditions: (string | undefined)[]; // Условия для каждого перехода
+\PYGZcb{}
+\end{MintedVerbatim}

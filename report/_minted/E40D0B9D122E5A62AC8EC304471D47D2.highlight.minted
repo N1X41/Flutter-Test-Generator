@@ -1,0 +1,6 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface EnhancedStateInfo extends StateInfo \PYGZob{}
+    isReachable?: boolean;       // Достижимость состояния
+    reachabilityPaths?: string[]; // Пути достижения состояния
+\PYGZcb{}
+\end{MintedVerbatim}

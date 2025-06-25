@@ -1,0 +1,14 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface FSM \PYGZob{}
+    states: string[];            // Все состояния в автомате
+    transitions: FSMTransition[]; // Все возможные переходы
+    initialState: string;        // Начальное состояние
+\PYGZcb{}
+
+interface FSMTransition \PYGZob{}
+    from: string;                // Исходное состояние
+    to: string;                  // Целевое состояние
+    method: string;              // Метод/событие, вызывающее переход
+    condition?: string;          // Условие перехода
+\PYGZcb{}
+\end{MintedVerbatim}

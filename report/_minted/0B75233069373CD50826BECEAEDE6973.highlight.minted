@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface EmitInfo \PYGZob{}
+    state: string;               // Нормализованное название состояния
+    rawStatement: string;        // Оригинальный emit statement
+    context: DartMethodContext | null;
+    isTransient: boolean;
+    isFinal: boolean;
+    reason: string;
+\PYGZcb{}
+\end{MintedVerbatim}

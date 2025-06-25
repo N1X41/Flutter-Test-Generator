@@ -1,0 +1,53 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+import \PYGZsq{}package:test/test.dart\PYGZsq{};
+// import \PYGZsq{}path/to/your/dto\PYGZus{}source.dart\PYGZsq{}; // Импортируйте исходный файл DTO
+
+// Заглушка класса DTO для контекста
+class UserDto \PYGZob{}
+  final String id;
+  final String name;
+  final int age;
+
+  UserDto(\PYGZob{}required this.id, required this.name, required this.age\PYGZcb{});
+
+  // Пример фабричного конструктора
+  factory UserDto.fromJson(Map\PYGZlt{}String, dynamic\PYGZgt{} json) \PYGZob{}
+    return UserDto(
+      id: json[\PYGZsq{}id\PYGZsq{}] as String,
+      name: json[\PYGZsq{}name\PYGZsq{}] as String,
+      age: json[\PYGZsq{}age\PYGZsq{}] as int,
+    );
+  \PYGZcb{}
+
+  // Пример метода toJson
+  Map\PYGZlt{}String, dynamic\PYGZgt{} toJson() \PYGZob{}
+    return \PYGZob{}
+      \PYGZsq{}id\PYGZsq{}: id,
+      \PYGZsq{}name\PYGZsq{}: name,
+      \PYGZsq{}age\PYGZsq{}: age,
+    \PYGZcb{};
+  \PYGZcb{}
+
+  // Пример метода copyWith
+  UserDto copyWith(\PYGZob{}String? id, String? name, int? age\PYGZcb{}) \PYGZob{}
+    return UserDto(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      age: age ?? this.age,
+    );
+  \PYGZcb{}
+
+  // Пример методов сравнения и hashCode
+  @override
+  bool operator ==(Object other) =\PYGZgt{}
+      identical(this, other) ||
+      other is UserDto \PYGZam{}\PYGZam{}
+          runtimeType == other.runtimeType \PYGZam{}\PYGZam{}
+          id == other.id \PYGZam{}\PYGZam{}
+          name == other.name \PYGZam{}\PYGZam{}
+          age == other.age;
+
+  @override
+  int get hashCode =\PYGZgt{} id.hashCode \PYGZca{} name.hashCode \PYGZca{} age.hashCode;
+\PYGZcb{}
+\end{MintedVerbatim}

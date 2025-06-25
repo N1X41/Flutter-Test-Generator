@@ -13,19 +13,19 @@ exports.generateTest = void 0;
 const vscode = require("vscode");
 const path = require("path");
 const util_1 = require("util");
-// Функция для преобразования camelCase или PascalCase в lower_case_with_underscores
-function toLowerCaseWithUnderscores(name) {
-    return name
-        .replace(/([a-z])([A-Z])/g, '$1_$2') // Разделяем camelCase или PascalCase
-        .replace(/([A-Z])([A-Z][a-z])/g, '$1_$2') // Обрабатываем последовательные заглавные буквы
-        .toLowerCase() // Преобразуем в нижний регистр
-        .replace(/\s+/g, '_'); // Заменяем пробелы на подчеркивания
-}
+const utils_1 = require("./utils");
+/**
+ * Генерирует тестовый файл для отдельного метода или функции
+ * @param workspaceRoot - корневая директория рабочего пространства
+ * @param testDir - директория для тестов
+ * @param methodName - имя метода для тестирования
+ * @param methodCode - код метода
+ * @param packageName - имя пакета проекта
+ */
 function generateTest(workspaceRoot, testDir, methodName, methodCode, packageName) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        // Преобразуем имя метода в lower_case_with_underscores
-        const testFileName = `${toLowerCaseWithUnderscores(methodName)}_test.dart`;
+        const testFileName = `${(0, utils_1.toSnakeCase)(methodName)}_test.dart`;
         const testUri = vscode.Uri.joinPath(workspaceRoot, testDir, 'unit_test', testFileName);
         const dirUri = vscode.Uri.joinPath(workspaceRoot, testDir, 'unit_test');
         yield vscode.workspace.fs.createDirectory(dirUri);

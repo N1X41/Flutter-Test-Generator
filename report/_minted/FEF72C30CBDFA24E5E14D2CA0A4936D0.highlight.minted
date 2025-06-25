@@ -1,0 +1,18 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface Token \PYGZob{}
+    type: TokenType;
+    value: string;
+    position: number;
+    line: number;
+    column: number;
+\PYGZcb{}
+
+enum TokenType \PYGZob{}
+    CLASS, IMPORT, FUNCTION, ASYNC, AWAIT, IF, ELSE, TRY, CATCH,
+    SWITCH, CASE, DEFAULT, RETURN, EMIT, IDENTIFIER, TYPE,
+    STRING, NUMBER, BOOLEAN, CHAR, FLOAT, DOUBLE,
+    ASSIGN, EQUALS, NOT\PYGZus{}EQUALS, LT\PYGZus{}EQUALS, GT\PYGZus{}EQUALS,
+    LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET,
+    WHITESPACE, NEWLINE, COMMENT, EOF, UNKNOWN
+\PYGZcb{}
+\end{MintedVerbatim}

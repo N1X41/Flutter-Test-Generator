@@ -1,0 +1,63 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+import \PYGZsq{}package:bloc\PYGZus{}test/bloc\PYGZus{}test.dart\PYGZsq{};
+import \PYGZsq{}package:test/test.dart\PYGZsq{};
+// import \PYGZsq{}package:mockito/mockito.dart\PYGZsq{}; // Раскомментируйте, если нужны моки
+// import \PYGZsq{}path/to/your/cubit\PYGZus{}source.dart\PYGZsq{}; // Импортируйте Cubit и состояния
+
+// \PYGZhy{}\PYGZhy{}\PYGZhy{} Заглушки Cubit и состояний для контекста \PYGZhy{}\PYGZhy{}\PYGZhy{}
+abstract class LoginState \PYGZob{}\PYGZcb{}
+class LoginInitial extends LoginState \PYGZob{}\PYGZcb{}
+class LoginLoading extends LoginState \PYGZob{}\PYGZcb{}
+class LoginSuccess extends LoginState \PYGZob{}
+  final String token;
+  LoginSuccess(this.token);
+  @override bool operator ==(Object other) =\PYGZgt{} other is LoginSuccess \PYGZam{}\PYGZam{} token == other.token;
+  @override int get hashCode =\PYGZgt{} token.hashCode;
+\PYGZcb{}
+class LoginFailure extends LoginState \PYGZob{}
+  final String error;
+  LoginFailure(this.error);
+   @override bool operator ==(Object other) =\PYGZgt{} other is LoginFailure \PYGZam{}\PYGZam{} error == other.error;
+   @override int get hashCode =\PYGZgt{} error.hashCode;
+\PYGZcb{}
+// Пример зависимости
+abstract class AuthRepository \PYGZob{}
+  Future\PYGZlt{}String\PYGZgt{} login(String username, String password);
+\PYGZcb{}
+// Мок для зависимости
+// class MockAuthRepository extends Mock implements AuthRepository \PYGZob{}\PYGZcb{}
+
+class LoginCubit extends Cubit\PYGZlt{}LoginState\PYGZgt{} \PYGZob{}
+  // final AuthRepository authRepository; // Пример зависимости
+
+  LoginCubit(/*this.authRepository*/) : super(LoginInitial());
+
+  Future\PYGZlt{}void\PYGZgt{} loginUser(String username, String password) async \PYGZob{}
+    if (state is LoginLoading) return; // Предотвращение параллельных логинов
+    emit(LoginLoading());
+    try \PYGZob{}
+      // Симуляция API вызова
+      // final token = await authRepository.login(username, password);
+      await Future.delayed(Duration(milliseconds: 10)); // Симуляция задержки
+      if (username == \PYGZsq{}user\PYGZsq{} \PYGZam{}\PYGZam{} password == \PYGZsq{}pass\PYGZsq{}) \PYGZob{}
+         final token = \PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{};
+         emit(LoginSuccess(token));
+      \PYGZcb{} else \PYGZob{}
+         throw Exception(\PYGZsq{}Invalid credentials\PYGZsq{});
+      \PYGZcb{}
+    \PYGZcb{} catch (e) \PYGZob{}
+      emit(LoginFailure(e.toString()));
+    \PYGZcb{}
+  \PYGZcb{}
+  void logout() \PYGZob{}
+     if (state is LoginSuccess) \PYGZob{}
+        emit(LoginInitial());
+     \PYGZcb{}
+     // Опционально: обработка logout из других состояний?
+  \PYGZcb{}
+   void reset() \PYGZob{}
+      emit(LoginInitial());
+   \PYGZcb{}
+\PYGZcb{}
+// \PYGZhy{}\PYGZhy{}\PYGZhy{} Конец заглушек \PYGZhy{}\PYGZhy{}\PYGZhy{}
+\end{MintedVerbatim}

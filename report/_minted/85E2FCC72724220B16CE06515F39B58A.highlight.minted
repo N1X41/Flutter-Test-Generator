@@ -1,0 +1,7 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{TestPath}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{states}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// Последовательность состояний в пути}
+\PYG{+w}{    }\PYG{n+nx}{methods}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{           }\PYG{c+c1}{// Последовательность методов/событий}
+\PYG{+w}{    }\PYG{n+nx}{conditions}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{string}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{k+kc}{undefined}\PYG{p}{)}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Условия для каждого перехода}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

@@ -1,0 +1,49 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+     // Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser (неудача) \PYGZhy{}\PYGZgt{} Failure \PYGZhy{}\PYGZgt{} reset \PYGZhy{}\PYGZgt{} Initial
+     blocTest\PYGZlt{}LoginCubit, LoginState\PYGZgt{}(
+      \PYGZsq{}Путь 4: выдает [Loading, Failure, Initial] для неудачного логина и последующего reset\PYGZsq{},
+      build: () \PYGZob{}
+         // when(mockAuthRepository.login(\PYGZsq{}wrong\PYGZsq{}, \PYGZsq{}wrong\PYGZsq{})).thenThrow(Exception(\PYGZsq{}Invalid credentials\PYGZsq{}));
+         return LoginCubit(/*mockAuthRepository*/);
+      \PYGZcb{},
+      act: (cubit) async \PYGZob{}
+         await cubit.loginUser(\PYGZsq{}wrong\PYGZsq{}, \PYGZsq{}wrong\PYGZsq{});
+         cubit.reset();
+      \PYGZcb{},
+      expect: () =\PYGZgt{} \PYGZlt{}LoginState\PYGZgt{}[
+        LoginLoading(),
+        LoginFailure(\PYGZsq{}Exception: Invalid credentials\PYGZsq{}),
+        LoginInitial(), // Состояние после reset
+      ],
+    );
+
+    // Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} reset \PYGZhy{}\PYGZgt{} Initial (Без изменений)
+    blocTest\PYGZlt{}LoginCubit, LoginState\PYGZgt{}(
+      \PYGZsq{}Путь 5: выдает [] при вызове reset из состояния Initial\PYGZsq{},
+      build: () =\PYGZgt{} LoginCubit(),
+      act: (cubit) =\PYGZgt{} cubit.reset(),
+      expect: () =\PYGZgt{} \PYGZlt{}LoginState\PYGZgt{}[], // Изменений состояния не ожидается
+    );
+
+    // Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser(валидный) \PYGZhy{}\PYGZgt{} Success \PYGZhy{}\PYGZgt{} loginUser(валидный) \PYGZhy{}\PYGZgt{} Success (Изменений не ожидается во время загрузки)
+    blocTest\PYGZlt{}LoginCubit, LoginState\PYGZgt{}(
+      \PYGZsq{}Путь 6: выдает [Loading, Success], игнорирует второй вызов login во время загрузки первого (упрощенный тест)\PYGZsq{},
+       build: () \PYGZob{}
+         // when(mockAuthRepository.login(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{})).thenAnswer((\PYGZus{}) async =\PYGZgt{} \PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{});
+         return LoginCubit(/*mockAuthRepository*/);
+       \PYGZcb{},
+       act: (cubit) async \PYGZob{}
+          // Вызываем login дважды быстро \PYGZhy{} второй вызов должен быть проигнорирован логикой cubit
+          cubit.loginUser(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{});
+          cubit.loginUser(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{}); // Этот вызов в идеале должен игнорироваться
+       \PYGZcb{},
+       expect: () =\PYGZgt{} \PYGZlt{}LoginState\PYGZgt{}[
+         LoginLoading(),
+         LoginSuccess(\PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{}),
+         // ПРИМЕЧАНИЕ: bloc\PYGZus{}test может не идеально отловить игнорирование
+         // в зависимости от таймингов. Тест проверяет итоговую последовательность состояний.
+       ],
+    );
+  \PYGZcb{});
+\PYGZcb{}
+\end{MintedVerbatim}

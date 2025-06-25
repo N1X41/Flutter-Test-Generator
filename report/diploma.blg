@@ -1,0 +1,15 @@
+[0] Config.pm:308> INFO - This is Biber 2.20
+[0] Config.pm:311> INFO - Logfile is 'diploma.blg'
+[40] biber-darwin:340> INFO - === Fri Jun 20, 2025, 16:14:47
+[55] Biber.pm:420> INFO - Reading 'diploma.bcf'
+[123] Biber.pm:991> INFO - Using all citekeys in bib section 0
+[134] Biber.pm:4463> INFO - Processing section 0
+[141] Biber.pm:4654> INFO - Looking for bibtex file 'biblio.bib' for section 0
+[146] bibtex.pm:1713> INFO - LaTeX decoding ...
+[157] bibtex.pm:1519> INFO - Found BibTeX data source 'biblio.bib'
+[228] UCollate.pm:68> INFO - Overriding locale 'ru-RU' defaults 'variable = shifted' with 'variable = non-ignorable'
+[228] UCollate.pm:68> INFO - Overriding locale 'ru-RU' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[228] Biber.pm:4283> INFO - Sorting list 'none/global//global/global/global' of type 'entry' with template 'none' and locale 'ru-RU'
+[228] Biber.pm:4289> INFO - No sort tailoring available for locale 'ru-RU'
+[242] bbl.pm:676> INFO - Writing 'diploma.bbl' with encoding 'UTF-8'
+[247] bbl.pm:779> INFO - Output to diploma.bbl

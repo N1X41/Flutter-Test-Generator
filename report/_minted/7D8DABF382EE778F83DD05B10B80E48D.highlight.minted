@@ -1,0 +1,6 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+interface EventInfo \PYGZob{}
+    name: string;                // Название события
+    handler: string;             // Название метода\PYGZhy{}обработчика
+\PYGZcb{}
+\end{MintedVerbatim}

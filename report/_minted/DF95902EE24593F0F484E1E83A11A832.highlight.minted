@@ -1,0 +1,180 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+import \PYGZsq{}package:bloc\PYGZus{}test/bloc\PYGZus{}test.dart\PYGZsq{};
+import \PYGZsq{}package:test/test.dart\PYGZsq{};
+// import \PYGZsq{}package:mockito/mockito.dart\PYGZsq{}; // Раскомментируйте, если нужны моки
+// import \PYGZsq{}path/to/your/cubit\PYGZus{}source.dart\PYGZsq{}; // Импортируйте Cubit и состояния
+
+// \PYGZhy{}\PYGZhy{}\PYGZhy{} Заглушки Cubit и состояний для контекста \PYGZhy{}\PYGZhy{}\PYGZhy{}
+abstract class LoginState \PYGZob{}\PYGZcb{}
+class LoginInitial extends LoginState \PYGZob{}\PYGZcb{}
+class LoginLoading extends LoginState \PYGZob{}\PYGZcb{}
+class LoginSuccess extends LoginState \PYGZob{}
+  final String token;
+  LoginSuccess(this.token);
+  @override bool operator ==(Object other) =\PYGZgt{} other is LoginSuccess \PYGZam{}\PYGZam{} token == other.token;
+  @override int get hashCode =\PYGZgt{} token.hashCode;
+\PYGZcb{}
+class LoginFailure extends LoginState \PYGZob{}
+  final String error;
+  LoginFailure(this.error);
+   @override bool operator ==(Object other) =\PYGZgt{} other is LoginFailure \PYGZam{}\PYGZam{} error == other.error;
+   @override int get hashCode =\PYGZgt{} error.hashCode;
+\PYGZcb{}
+
+// Пример зависимости
+abstract class AuthRepository \PYGZob{}
+  Future\PYGZlt{}String\PYGZgt{} login(String username, String password);
+\PYGZcb{}
+
+// Мок для зависимости
+// class MockAuthRepository extends Mock implements AuthRepository \PYGZob{}\PYGZcb{}
+
+class LoginCubit extends Cubit\PYGZlt{}LoginState\PYGZgt{} \PYGZob{}
+  // final AuthRepository authRepository; // Пример зависимости
+
+  LoginCubit(/*this.authRepository*/) : super(LoginInitial());
+
+  Future\PYGZlt{}void\PYGZgt{} loginUser(String username, String password) async \PYGZob{}
+    if (state is LoginLoading) return; // Предотвращение параллельных логинов
+    emit(LoginLoading());
+    try \PYGZob{}
+      // Симуляция API вызова
+      // final token = await authRepository.login(username, password);
+      await Future.delayed(Duration(milliseconds: 10)); // Симуляция задержки
+      if (username == \PYGZsq{}user\PYGZsq{} \PYGZam{}\PYGZam{} password == \PYGZsq{}pass\PYGZsq{}) \PYGZob{}
+         final token = \PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{};
+         emit(LoginSuccess(token));
+      \PYGZcb{} else \PYGZob{}
+         throw Exception(\PYGZsq{}Invalid credentials\PYGZsq{});
+      \PYGZcb{}
+    \PYGZcb{} catch (e) \PYGZob{}
+      emit(LoginFailure(e.toString()));
+    \PYGZcb{}
+  \PYGZcb{}
+
+  void logout() \PYGZob{}
+     if (state is LoginSuccess) \PYGZob{}
+        emit(LoginInitial());
+     \PYGZcb{}
+     // Опционально: обработка logout из других состояний?
+  \PYGZcb{}
+
+   void reset() \PYGZob{}
+      emit(LoginInitial());
+   \PYGZcb{}
+\PYGZcb{}
+// \PYGZhy{}\PYGZhy{}\PYGZhy{} Конец заглушек \PYGZhy{}\PYGZhy{}\PYGZhy{}
+
+
+void main() \PYGZob{}
+  group(\PYGZsq{}Тесты LoginCubit (сгенерировано из FSM)\PYGZsq{}, () \PYGZob{}
+    // late MockAuthRepository mockAuthRepository; // Экземпляр мок\PYGZhy{}зависимости
+
+    setUp(() \PYGZob{}
+      // mockAuthRepository = MockAuthRepository();
+    \PYGZcb{});
+
+    // Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser (успех) \PYGZhy{}\PYGZgt{} Success
+    blocTest\PYGZlt{}LoginCubit, LoginState\PYGZgt{}(
+      \PYGZsq{}Путь 1: выдает [Loading, Success] при вызове loginUser с валидными данными\PYGZsq{},
+      build: () \PYGZob{}
+        // Настройка мока для успешного логина
+        // when(mockAuthRepository.login(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{}))
+        //    .thenAnswer((\PYGZus{}) async =\PYGZgt{} \PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{});
+        return LoginCubit(/*mockAuthRepository*/);
+      \PYGZcb{},
+      act: (cubit) =\PYGZgt{} cubit.loginUser(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{}),
+      expect: () =\PYGZgt{} \PYGZlt{}LoginState\PYGZgt{}[
+        LoginLoading(),
+        LoginSuccess(\PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{}),
+      ],
+      // verify: (\PYGZus{}) \PYGZob{} // Опционально: проверка взаимодействий с моком
+      //   verify(mockAuthRepository.login(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{})).called(1);
+      // \PYGZcb{}
+    );
+
+    // Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser (неудача) \PYGZhy{}\PYGZgt{} Failure
+    blocTest\PYGZlt{}LoginCubit, LoginState\PYGZgt{}(
+      \PYGZsq{}Путь 2: выдает [Loading, Failure] при вызове loginUser с невалидными данными\PYGZsq{},
+      build: () \PYGZob{}
+        // Настройка мока для неудачного логина
+        // when(mockAuthRepository.login(\PYGZsq{}wrong\PYGZsq{}, \PYGZsq{}wrong\PYGZsq{}))
+        //    .thenThrow(Exception(\PYGZsq{}Invalid credentials\PYGZsq{}));
+        return LoginCubit(/*mockAuthRepository*/);
+      \PYGZcb{},
+      act: (cubit) =\PYGZgt{} cubit.loginUser(\PYGZsq{}wrong\PYGZsq{}, \PYGZsq{}wrong\PYGZsq{}),
+      expect: () =\PYGZgt{} \PYGZlt{}LoginState\PYGZgt{}[
+        LoginLoading(),
+        LoginFailure(\PYGZsq{}Exception: Invalid credentials\PYGZsq{}), // Сопоставьте с ожидаемым форматом ошибки
+      ],
+    );
+
+     // Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser (успех) \PYGZhy{}\PYGZgt{} Success \PYGZhy{}\PYGZgt{} logout \PYGZhy{}\PYGZgt{} Initial
+    blocTest\PYGZlt{}LoginCubit, LoginState\PYGZgt{}(
+      \PYGZsq{}Путь 3: выдает [Loading, Success, Initial] для успешного логина и последующего logout\PYGZsq{},
+      build: () \PYGZob{}
+         // when(mockAuthRepository.login(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{})).thenAnswer((\PYGZus{}) async =\PYGZgt{} \PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{});
+         return LoginCubit(/*mockAuthRepository*/);
+      \PYGZcb{},
+      act: (cubit) async \PYGZob{}
+         await cubit.loginUser(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{});
+         // Убедимся, что переход состояния завершен перед следующим действием, если нужно
+         // await Future.delayed(Duration.zero);
+         cubit.logout();
+      \PYGZcb{},
+      expect: () =\PYGZgt{} \PYGZlt{}LoginState\PYGZgt{}[
+        LoginLoading(),
+        LoginSuccess(\PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{}),
+        LoginInitial(), // Состояние после logout
+      ],
+       // seed: () =\PYGZgt{} LoginInitial(), // Можно указать начальное состояние, если нужно
+    );
+
+     // Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser (неудача) \PYGZhy{}\PYGZgt{} Failure \PYGZhy{}\PYGZgt{} reset \PYGZhy{}\PYGZgt{} Initial
+     blocTest\PYGZlt{}LoginCubit, LoginState\PYGZgt{}(
+      \PYGZsq{}Путь 4: выдает [Loading, Failure, Initial] для неудачного логина и последующего reset\PYGZsq{},
+      build: () \PYGZob{}
+         // when(mockAuthRepository.login(\PYGZsq{}wrong\PYGZsq{}, \PYGZsq{}wrong\PYGZsq{})).thenThrow(Exception(\PYGZsq{}Invalid credentials\PYGZsq{}));
+         return LoginCubit(/*mockAuthRepository*/);
+      \PYGZcb{},
+      act: (cubit) async \PYGZob{}
+         await cubit.loginUser(\PYGZsq{}wrong\PYGZsq{}, \PYGZsq{}wrong\PYGZsq{});
+         cubit.reset();
+      \PYGZcb{},
+      expect: () =\PYGZgt{} \PYGZlt{}LoginState\PYGZgt{}[
+        LoginLoading(),
+        LoginFailure(\PYGZsq{}Exception: Invalid credentials\PYGZsq{}),
+        LoginInitial(), // Состояние после reset
+      ],
+    );
+
+    // Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} reset \PYGZhy{}\PYGZgt{} Initial (Без изменений)
+    blocTest\PYGZlt{}LoginCubit, LoginState\PYGZgt{}(
+      \PYGZsq{}Путь 5: выдает [] при вызове reset из состояния Initial\PYGZsq{},
+      build: () =\PYGZgt{} LoginCubit(),
+      act: (cubit) =\PYGZgt{} cubit.reset(),
+      expect: () =\PYGZgt{} \PYGZlt{}LoginState\PYGZgt{}[], // Изменений состояния не ожидается
+    );
+
+    // Тест сгенерирован из пути: Initial \PYGZhy{}\PYGZgt{} loginUser(валидный) \PYGZhy{}\PYGZgt{} Success \PYGZhy{}\PYGZgt{} loginUser(валидный) \PYGZhy{}\PYGZgt{} Success (Изменений не ожидается во время загрузки)
+    blocTest\PYGZlt{}LoginCubit, LoginState\PYGZgt{}(
+      \PYGZsq{}Путь 6: выдает [Loading, Success], игнорирует второй вызов login во время загрузки первого (упрощенный тест)\PYGZsq{},
+       build: () \PYGZob{}
+         // when(mockAuthRepository.login(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{})).thenAnswer((\PYGZus{}) async =\PYGZgt{} \PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{});
+         return LoginCubit(/*mockAuthRepository*/);
+       \PYGZcb{},
+       act: (cubit) async \PYGZob{}
+          // Вызываем login дважды быстро \PYGZhy{} второй вызов должен быть проигнорирован логикой cubit
+          cubit.loginUser(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{});
+          cubit.loginUser(\PYGZsq{}user\PYGZsq{}, \PYGZsq{}pass\PYGZsq{}); // Этот вызов в идеале должен игнорироваться
+       \PYGZcb{},
+       expect: () =\PYGZgt{} \PYGZlt{}LoginState\PYGZgt{}[
+         LoginLoading(),
+         LoginSuccess(\PYGZsq{}fake\PYGZhy{}token\PYGZhy{}123\PYGZsq{}),
+         // ПРИМЕЧАНИЕ: bloc\PYGZus{}test может не идеально отловить игнорирование
+         // в зависимости от таймингов. Тест проверяет итоговую последовательность состояний.
+       ],
+    );
+  \PYGZcb{});
+\PYGZcb{}
+\end{MintedVerbatim}

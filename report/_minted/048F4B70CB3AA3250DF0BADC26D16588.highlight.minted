@@ -1,0 +1,154 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{package:test/test.dart}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{;}
+\PYG{c+c1}{// import \PYGZsq{}path/to/your/dto\PYGZus{}source.dart\PYGZsq{}; // Импортируйте исходный файл DTO}
+
+\PYG{c+c1}{// Заглушка класса DTO для контекста}
+\PYG{k+kd}{class}\PYG{+w}{ }\PYG{n+nc}{UserDto}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{k+kt}{String}\PYG{+w}{ }\PYG{n}{id}\PYG{p}{;}
+\PYG{+w}{  }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{k+kt}{String}\PYG{+w}{ }\PYG{n}{name}\PYG{p}{;}
+\PYG{+w}{  }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{age}\PYG{p}{;}
+
+\PYG{+w}{  }\PYG{n}{UserDto}\PYG{p}{(}\PYG{p}{\PYGZob{}}\PYG{k+kd}{required}\PYG{+w}{ }\PYG{k}{this}\PYG{p}{.}\PYG{n}{id}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kd}{required}\PYG{+w}{ }\PYG{k}{this}\PYG{p}{.}\PYG{n}{name}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kd}{required}\PYG{+w}{ }\PYG{k}{this}\PYG{p}{.}\PYG{n}{age}\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{  }\PYG{c+c1}{// Пример фабричного конструктора}
+\PYG{+w}{  }\PYG{k+kd}{factory}\PYG{+w}{ }\PYG{n}{UserDto}\PYG{p}{.}\PYG{n}{fromJson}\PYG{p}{(}\PYG{n}{Map}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{String}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{dynamic}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{json}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{UserDto}\PYG{p}{(}
+\PYG{+w}{      }\PYG{n+nl}{id:}\PYG{+w}{ }\PYG{n}{json}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{id}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{]}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{k+kt}{String}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{name:}\PYG{+w}{ }\PYG{n}{json}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{name}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{]}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{k+kt}{String}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{age:}\PYG{+w}{ }\PYG{n}{json}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{age}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{]}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{  }\PYG{c+c1}{// Пример метода toJson}
+\PYG{+w}{  }\PYG{n}{Map}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{String}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{dynamic}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{toJson}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{id}\PYG{l+s+s1}{\PYGZsq{}}\PYG{o}{:}\PYG{+w}{ }\PYG{n}{id}\PYG{p}{,}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{name}\PYG{l+s+s1}{\PYGZsq{}}\PYG{o}{:}\PYG{+w}{ }\PYG{n}{name}\PYG{p}{,}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{age}\PYG{l+s+s1}{\PYGZsq{}}\PYG{o}{:}\PYG{+w}{ }\PYG{n}{age}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{  }\PYG{c+c1}{// Пример метода copyWith}
+\PYG{+w}{  }\PYG{n}{UserDto}\PYG{+w}{ }\PYG{n}{copyWith}\PYG{p}{(}\PYG{p}{\PYGZob{}}\PYG{k+kt}{String}\PYG{o}{?}\PYG{+w}{ }\PYG{n}{id}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{String}\PYG{o}{?}\PYG{+w}{ }\PYG{n}{name}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{o}{?}\PYG{+w}{ }\PYG{n}{age}\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{UserDto}\PYG{p}{(}
+\PYG{+w}{      }\PYG{n+nl}{id:}\PYG{+w}{ }\PYG{n}{id}\PYG{+w}{ }\PYG{o}{?}\PYG{o}{?}\PYG{+w}{ }\PYG{k}{this}\PYG{p}{.}\PYG{n}{id}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{name:}\PYG{+w}{ }\PYG{n}{name}\PYG{+w}{ }\PYG{o}{?}\PYG{o}{?}\PYG{+w}{ }\PYG{k}{this}\PYG{p}{.}\PYG{n}{name}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nl}{age:}\PYG{+w}{ }\PYG{n}{age}\PYG{+w}{ }\PYG{o}{?}\PYG{o}{?}\PYG{+w}{ }\PYG{k}{this}\PYG{p}{.}\PYG{n}{age}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{  }\PYG{c+c1}{// Пример методов сравнения и hashCode}
+\PYG{+w}{  }\PYG{n+nd}{@override}
+\PYG{+w}{  }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{k+kd}{operator}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{p}{(}\PYG{k+kt}{Object}\PYG{+w}{ }\PYG{n}{other}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{n}{identical}\PYG{p}{(}\PYG{k}{this}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{other}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}
+\PYG{+w}{      }\PYG{n}{other}\PYG{+w}{ }\PYG{k}{is}\PYG{+w}{ }\PYG{n}{UserDto}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}
+\PYG{+w}{          }\PYG{n}{runtimeType}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{other}\PYG{p}{.}\PYG{n}{runtimeType}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}
+\PYG{+w}{          }\PYG{n}{id}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{other}\PYG{p}{.}\PYG{n}{id}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}
+\PYG{+w}{          }\PYG{n}{name}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{other}\PYG{p}{.}\PYG{n}{name}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}
+\PYG{+w}{          }\PYG{n}{age}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{other}\PYG{p}{.}\PYG{n}{age}\PYG{p}{;}
+
+\PYG{+w}{  }\PYG{n+nd}{@override}
+\PYG{+w}{  }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{k+kd}{get}\PYG{+w}{ }\PYG{n}{hashCode}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{id}\PYG{p}{.}\PYG{n}{hashCode}\PYG{+w}{ }\PYG{o}{\PYGZca{}}\PYG{+w}{ }\PYG{n}{name}\PYG{p}{.}\PYG{n}{hashCode}\PYG{+w}{ }\PYG{o}{\PYGZca{}}\PYG{+w}{ }\PYG{n}{age}\PYG{p}{.}\PYG{n}{hashCode}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{main}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{n}{group}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Тесты UserDto}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Вспомогательная функция для создания экземпляра по умолчанию}
+\PYG{+w}{    }\PYG{n}{UserDto}\PYG{+w}{ }\PYG{n}{createDefaultUserDto}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{UserDto}\PYG{p}{(}\PYG{n+nl}{id:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user\PYGZhy{}123}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{name:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{John Doe}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{age:}\PYG{+w}{ }\PYG{l+m}{30}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// Вспомогательная функция для создания JSON по умолчанию}
+\PYG{+w}{    }\PYG{n}{Map}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{String}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{dynamic}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{createDefaultJson}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{k}{return}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{id}\PYG{l+s+s1}{\PYGZsq{}}\PYG{o}{:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user\PYGZhy{}123}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{name}\PYG{l+s+s1}{\PYGZsq{}}\PYG{o}{:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{John Doe}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{age}\PYG{l+s+s1}{\PYGZsq{}}\PYG{o}{:}\PYG{+w}{ }\PYG{l+m}{30}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{конструктор должен создавать экземпляр с корректными значениями}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{test\PYGZhy{}id}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{name}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Test Name}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{age}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{25}\PYG{p}{;}
+
+\PYG{+w}{      }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{dto}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UserDto}\PYG{p}{(}\PYG{n+nl}{id:}\PYG{+w}{ }\PYG{n}{id}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{name:}\PYG{+w}{ }\PYG{n}{name}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{age:}\PYG{+w}{ }\PYG{n}{age}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{      }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto}\PYG{p}{.}\PYG{n}{id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{id}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto}\PYG{p}{.}\PYG{n}{name}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{name}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto}\PYG{p}{.}\PYG{n}{age}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{age}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{group}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{fromJson}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{должен корректно десериализовать из валидного JSON}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{json}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{createDefaultJson}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{dto}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UserDto}\PYG{p}{.}\PYG{n}{fromJson}\PYG{p}{(}\PYG{n}{json}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto}\PYG{p}{.}\PYG{n}{id}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user\PYGZhy{}123}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto}\PYG{p}{.}\PYG{n}{name}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{John Doe}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto}\PYG{p}{.}\PYG{n}{age}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m}{30}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{      }\PYG{c+c1}{// TODO: Добавьте тесты для невалидного JSON (пропущенные ключи, неверные типы), если применимо}
+\PYG{+w}{      }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{должен обрабатывать пропущенные ключи, если применимо}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{         }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{json}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{id}\PYG{l+s+s1}{\PYGZsq{}}\PYG{o}{:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user\PYGZhy{}123}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{name}\PYG{l+s+s1}{\PYGZsq{}}\PYG{o}{:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{John Doe}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{\PYGZcb{}}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Пропущен \PYGZsq{}age\PYGZsq{}}
+\PYG{+w}{         }\PYG{c+c1}{// expect(() =\PYGZgt{} UserDto.fromJson(json), throwsA(isA\PYGZlt{}TypeError\PYGZgt{}())); // Или специфичная ошибка}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{group}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{toJson}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{должен корректно сериализовать в JSON map}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{dto}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{createDefaultUserDto}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{expectedJson}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{createDefaultJson}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{json}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{dto}\PYG{p}{.}\PYG{n}{toJson}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{json}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{equals}\PYG{p}{(}\PYG{n}{expectedJson}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{group}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{copyWith}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{должен создавать идентичную копию без аргументов}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{original}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{createDefaultUserDto}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{copy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{original}\PYG{p}{.}\PYG{n}{copyWith}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{copy}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{equals}\PYG{p}{(}\PYG{n}{original}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{identical}\PYG{p}{(}\PYG{n}{copy}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{original}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{isFalse}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Убедимся, что это новый экземпляр}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{      }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{должен обновлять указанные поля, сохраняя остальные}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{original}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{createDefaultUserDto}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{newName}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Jane Doe}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{newAge}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m}{31}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{copy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{original}\PYG{p}{.}\PYG{n}{copyWith}\PYG{p}{(}\PYG{n+nl}{name:}\PYG{+w}{ }\PYG{n}{newName}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{age:}\PYG{+w}{ }\PYG{n}{newAge}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{copy}\PYG{p}{.}\PYG{n}{id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{original}\PYG{p}{.}\PYG{n}{id}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{copy}\PYG{p}{.}\PYG{n}{name}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{newName}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{copy}\PYG{p}{.}\PYG{n}{age}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{newAge}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{copy}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{isNot}\PYG{p}{(}\PYG{n}{equals}\PYG{p}{(}\PYG{n}{original}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{group}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Равенство и HashCode}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{должен быть равен другому экземпляру с теми же значениями}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{dto1}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{createDefaultUserDto}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{dto2}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UserDto}\PYG{p}{(}\PYG{n+nl}{id:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user\PYGZhy{}123}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{name:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{John Doe}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{age:}\PYG{+w}{ }\PYG{l+m}{30}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{equals}\PYG{p}{(}\PYG{n}{dto2}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto1}\PYG{p}{.}\PYG{n}{hashCode}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{equals}\PYG{p}{(}\PYG{n}{dto2}\PYG{p}{.}\PYG{n}{hashCode}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{      }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{не должен быть равен экземпляру с другими значениями}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{dto1}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{createDefaultUserDto}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{dto2}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UserDto}\PYG{p}{(}\PYG{n+nl}{id:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user\PYGZhy{}456}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{name:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Jane Doe}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{age:}\PYG{+w}{ }\PYG{l+m}{31}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{dto3}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UserDto}\PYG{p}{(}\PYG{n+nl}{id:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user\PYGZhy{}123}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{name:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Jane Doe}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{age:}\PYG{+w}{ }\PYG{l+m}{30}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Другое имя}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{dto4}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UserDto}\PYG{p}{(}\PYG{n+nl}{id:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{user\PYGZhy{}123}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{name:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{John Doe}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nl}{age:}\PYG{+w}{ }\PYG{l+m}{31}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Другой возраст}
+
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{isNot}\PYG{p}{(}\PYG{n}{equals}\PYG{p}{(}\PYG{n}{dto2}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{isNot}\PYG{p}{(}\PYG{n}{equals}\PYG{p}{(}\PYG{n}{dto3}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{isNot}\PYG{p}{(}\PYG{n}{equals}\PYG{p}{(}\PYG{n}{dto4}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{// Хеш\PYGZhy{}коды не обязаны быть разными, но вероятно будут}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{      }\PYG{n}{test}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{не должен быть равен null или объекту другого типа}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{final}\PYG{+w}{ }\PYG{n}{dto1}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{createDefaultUserDto}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{isNot}\PYG{p}{(}\PYG{n}{equals}\PYG{p}{(}\PYG{k+kc}{null}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{expect}\PYG{p}{(}\PYG{n}{dto1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{isNot}\PYG{p}{(}\PYG{n}{equals}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{some string}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

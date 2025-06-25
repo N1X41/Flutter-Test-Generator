@@ -1,0 +1,6 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{EventInfo}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{name}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{                }\PYG{c+c1}{// Название события}
+\PYG{+w}{    }\PYG{n+nx}{handler}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{             }\PYG{c+c1}{// Название метода\PYGZhy{}обработчика}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

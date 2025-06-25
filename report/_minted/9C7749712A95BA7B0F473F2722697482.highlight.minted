@@ -1,0 +1,60 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+void main() \PYGZob{}
+  group(\PYGZsq{}Тесты UserDto\PYGZsq{}, () \PYGZob{}
+    // Вспомогательная функция для создания экземпляра по умолчанию
+    UserDto createDefaultUserDto() \PYGZob{}
+      return UserDto(id: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, name: \PYGZsq{}John Doe\PYGZsq{}, age: 30);
+    \PYGZcb{}
+
+    // Вспомогательная функция для создания JSON по умолчанию
+    Map\PYGZlt{}String, dynamic\PYGZgt{} createDefaultJson() \PYGZob{}
+      return \PYGZob{}\PYGZsq{}id\PYGZsq{}: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, \PYGZsq{}name\PYGZsq{}: \PYGZsq{}John Doe\PYGZsq{}, \PYGZsq{}age\PYGZsq{}: 30\PYGZcb{};
+    \PYGZcb{}
+
+    test(\PYGZsq{}конструктор должен создавать экземпляр с корректными значениями\PYGZsq{}, () \PYGZob{}
+      final id = \PYGZsq{}test\PYGZhy{}id\PYGZsq{};
+      final name = \PYGZsq{}Test Name\PYGZsq{};
+      final age = 25;
+
+      final dto = UserDto(id: id, name: name, age: age);
+
+      expect(dto.id, id);
+      expect(dto.name, name);
+      expect(dto.age, age);
+    \PYGZcb{});
+
+    group(\PYGZsq{}fromJson\PYGZsq{}, () \PYGZob{}
+      test(\PYGZsq{}должен корректно десериализовать из валидного JSON\PYGZsq{}, () \PYGZob{}
+        final json = createDefaultJson();
+        final dto = UserDto.fromJson(json);
+
+        expect(dto.id, \PYGZsq{}user\PYGZhy{}123\PYGZsq{});
+        expect(dto.name, \PYGZsq{}John Doe\PYGZsq{});
+        expect(dto.age, 30);
+      \PYGZcb{});
+
+      // TODO: Добавьте тесты для невалидного JSON (пропущенные ключи, неверные типы), если применимо
+      test(\PYGZsq{}должен обрабатывать пропущенные ключи, если применимо\PYGZsq{}, () \PYGZob{}
+         final json = \PYGZob{}\PYGZsq{}id\PYGZsq{}: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, \PYGZsq{}name\PYGZsq{}: \PYGZsq{}John Doe\PYGZsq{}\PYGZcb{}; // Пропущен \PYGZsq{}age\PYGZsq{}
+         // expect(() =\PYGZgt{} UserDto.fromJson(json), throwsA(isA\PYGZlt{}TypeError\PYGZgt{}())); // Или специфичная ошибка
+      \PYGZcb{});
+    \PYGZcb{});
+
+    group(\PYGZsq{}toJson\PYGZsq{}, () \PYGZob{}
+      test(\PYGZsq{}должен корректно сериализовать в JSON map\PYGZsq{}, () \PYGZob{}
+        final dto = createDefaultUserDto();
+        final expectedJson = createDefaultJson();
+        final json = dto.toJson();
+        expect(json, equals(expectedJson));
+      \PYGZcb{});
+    \PYGZcb{});
+
+    group(\PYGZsq{}copyWith\PYGZsq{}, () \PYGZob{}
+      test(\PYGZsq{}должен создавать идентичную копию без аргументов\PYGZsq{}, () \PYGZob{}
+        final original = createDefaultUserDto();
+        final copy = original.copyWith();
+        expect(copy, equals(original));
+        expect(identical(copy, original), isFalse); // Убедимся, что это новый экземпляр
+      \PYGZcb{});
+
+\end{MintedVerbatim}

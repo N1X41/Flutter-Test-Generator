@@ -1,0 +1,6 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{GuardCondition}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{blockedState}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{        }\PYG{c+c1}{// Заблокированное состояние}
+\PYG{+w}{    }\PYG{n+nx}{action}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{              }\PYG{c+c1}{// Действие (обычно \PYGZdq{}return\PYGZdq{})}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

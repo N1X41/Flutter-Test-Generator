@@ -1,0 +1,154 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+import \PYGZsq{}package:test/test.dart\PYGZsq{};
+// import \PYGZsq{}path/to/your/dto\PYGZus{}source.dart\PYGZsq{}; // Импортируйте исходный файл DTO
+
+// Заглушка класса DTO для контекста
+class UserDto \PYGZob{}
+  final String id;
+  final String name;
+  final int age;
+
+  UserDto(\PYGZob{}required this.id, required this.name, required this.age\PYGZcb{});
+
+  // Пример фабричного конструктора
+  factory UserDto.fromJson(Map\PYGZlt{}String, dynamic\PYGZgt{} json) \PYGZob{}
+    return UserDto(
+      id: json[\PYGZsq{}id\PYGZsq{}] as String,
+      name: json[\PYGZsq{}name\PYGZsq{}] as String,
+      age: json[\PYGZsq{}age\PYGZsq{}] as int,
+    );
+  \PYGZcb{}
+
+  // Пример метода toJson
+  Map\PYGZlt{}String, dynamic\PYGZgt{} toJson() \PYGZob{}
+    return \PYGZob{}
+      \PYGZsq{}id\PYGZsq{}: id,
+      \PYGZsq{}name\PYGZsq{}: name,
+      \PYGZsq{}age\PYGZsq{}: age,
+    \PYGZcb{};
+  \PYGZcb{}
+
+  // Пример метода copyWith
+  UserDto copyWith(\PYGZob{}String? id, String? name, int? age\PYGZcb{}) \PYGZob{}
+    return UserDto(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      age: age ?? this.age,
+    );
+  \PYGZcb{}
+
+  // Пример методов сравнения и hashCode
+  @override
+  bool operator ==(Object other) =\PYGZgt{}
+      identical(this, other) ||
+      other is UserDto \PYGZam{}\PYGZam{}
+          runtimeType == other.runtimeType \PYGZam{}\PYGZam{}
+          id == other.id \PYGZam{}\PYGZam{}
+          name == other.name \PYGZam{}\PYGZam{}
+          age == other.age;
+
+  @override
+  int get hashCode =\PYGZgt{} id.hashCode \PYGZca{} name.hashCode \PYGZca{} age.hashCode;
+\PYGZcb{}
+
+
+void main() \PYGZob{}
+  group(\PYGZsq{}Тесты UserDto\PYGZsq{}, () \PYGZob{}
+    // Вспомогательная функция для создания экземпляра по умолчанию
+    UserDto createDefaultUserDto() \PYGZob{}
+      return UserDto(id: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, name: \PYGZsq{}John Doe\PYGZsq{}, age: 30);
+    \PYGZcb{}
+
+    // Вспомогательная функция для создания JSON по умолчанию
+    Map\PYGZlt{}String, dynamic\PYGZgt{} createDefaultJson() \PYGZob{}
+      return \PYGZob{}\PYGZsq{}id\PYGZsq{}: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, \PYGZsq{}name\PYGZsq{}: \PYGZsq{}John Doe\PYGZsq{}, \PYGZsq{}age\PYGZsq{}: 30\PYGZcb{};
+    \PYGZcb{}
+
+    test(\PYGZsq{}конструктор должен создавать экземпляр с корректными значениями\PYGZsq{}, () \PYGZob{}
+      final id = \PYGZsq{}test\PYGZhy{}id\PYGZsq{};
+      final name = \PYGZsq{}Test Name\PYGZsq{};
+      final age = 25;
+
+      final dto = UserDto(id: id, name: name, age: age);
+
+      expect(dto.id, id);
+      expect(dto.name, name);
+      expect(dto.age, age);
+    \PYGZcb{});
+
+    group(\PYGZsq{}fromJson\PYGZsq{}, () \PYGZob{}
+      test(\PYGZsq{}должен корректно десериализовать из валидного JSON\PYGZsq{}, () \PYGZob{}
+        final json = createDefaultJson();
+        final dto = UserDto.fromJson(json);
+
+        expect(dto.id, \PYGZsq{}user\PYGZhy{}123\PYGZsq{});
+        expect(dto.name, \PYGZsq{}John Doe\PYGZsq{});
+        expect(dto.age, 30);
+      \PYGZcb{});
+
+      // TODO: Добавьте тесты для невалидного JSON (пропущенные ключи, неверные типы), если применимо
+      test(\PYGZsq{}должен обрабатывать пропущенные ключи, если применимо\PYGZsq{}, () \PYGZob{}
+         final json = \PYGZob{}\PYGZsq{}id\PYGZsq{}: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, \PYGZsq{}name\PYGZsq{}: \PYGZsq{}John Doe\PYGZsq{}\PYGZcb{}; // Пропущен \PYGZsq{}age\PYGZsq{}
+         // expect(() =\PYGZgt{} UserDto.fromJson(json), throwsA(isA\PYGZlt{}TypeError\PYGZgt{}())); // Или специфичная ошибка
+      \PYGZcb{});
+    \PYGZcb{});
+
+    group(\PYGZsq{}toJson\PYGZsq{}, () \PYGZob{}
+      test(\PYGZsq{}должен корректно сериализовать в JSON map\PYGZsq{}, () \PYGZob{}
+        final dto = createDefaultUserDto();
+        final expectedJson = createDefaultJson();
+        final json = dto.toJson();
+        expect(json, equals(expectedJson));
+      \PYGZcb{});
+    \PYGZcb{});
+
+    group(\PYGZsq{}copyWith\PYGZsq{}, () \PYGZob{}
+      test(\PYGZsq{}должен создавать идентичную копию без аргументов\PYGZsq{}, () \PYGZob{}
+        final original = createDefaultUserDto();
+        final copy = original.copyWith();
+        expect(copy, equals(original));
+        expect(identical(copy, original), isFalse); // Убедимся, что это новый экземпляр
+      \PYGZcb{});
+
+      test(\PYGZsq{}должен обновлять указанные поля, сохраняя остальные\PYGZsq{}, () \PYGZob{}
+        final original = createDefaultUserDto();
+        final newName = \PYGZsq{}Jane Doe\PYGZsq{};
+        final newAge = 31;
+        final copy = original.copyWith(name: newName, age: newAge);
+
+        expect(copy.id, original.id);
+        expect(copy.name, newName);
+        expect(copy.age, newAge);
+        expect(copy, isNot(equals(original)));
+      \PYGZcb{});
+    \PYGZcb{});
+
+    group(\PYGZsq{}Равенство и HashCode\PYGZsq{}, () \PYGZob{}
+      test(\PYGZsq{}должен быть равен другому экземпляру с теми же значениями\PYGZsq{}, () \PYGZob{}
+        final dto1 = createDefaultUserDto();
+        final dto2 = UserDto(id: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, name: \PYGZsq{}John Doe\PYGZsq{}, age: 30);
+        expect(dto1, equals(dto2));
+        expect(dto1.hashCode, equals(dto2.hashCode));
+      \PYGZcb{});
+
+      test(\PYGZsq{}не должен быть равен экземпляру с другими значениями\PYGZsq{}, () \PYGZob{}
+        final dto1 = createDefaultUserDto();
+        final dto2 = UserDto(id: \PYGZsq{}user\PYGZhy{}456\PYGZsq{}, name: \PYGZsq{}Jane Doe\PYGZsq{}, age: 31);
+        final dto3 = UserDto(id: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, name: \PYGZsq{}Jane Doe\PYGZsq{}, age: 30); // Другое имя
+        final dto4 = UserDto(id: \PYGZsq{}user\PYGZhy{}123\PYGZsq{}, name: \PYGZsq{}John Doe\PYGZsq{}, age: 31); // Другой возраст
+
+        expect(dto1, isNot(equals(dto2)));
+        expect(dto1, isNot(equals(dto3)));
+        expect(dto1, isNot(equals(dto4)));
+        // Хеш\PYGZhy{}коды не обязаны быть разными, но вероятно будут
+      \PYGZcb{});
+
+      test(\PYGZsq{}не должен быть равен null или объекту другого типа\PYGZsq{}, () \PYGZob{}
+        final dto1 = createDefaultUserDto();
+        expect(dto1, isNot(equals(null)));
+        expect(dto1, isNot(equals(\PYGZsq{}some string\PYGZsq{})));
+      \PYGZcb{});
+    \PYGZcb{});
+  \PYGZcb{});
+\PYGZcb{}
+\end{MintedVerbatim}

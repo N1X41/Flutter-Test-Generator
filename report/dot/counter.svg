@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="166pt" height="115pt" viewBox="0.00 0.00 165.58 114.60">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 110.6)">
+<title>CounterCubitFSM</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-110.6 161.58,-110.6 161.58,4 -4,4"/>
+<!-- CounterState -->
+<g id="node1" class="node">
+<title>CounterState</title>
+<polygon fill="none" stroke="black" points="0,-0.5 0,-36.5 157.58,-36.5 157.58,-0.5 0,-0.5"/>
+<text text-anchor="middle" x="44.55" y="-14.4" font-family="Times,serif" font-size="14.00">CounterState</text>
+<polyline fill="none" stroke="black" points="89.1,-0.7 89.1,-36.5"/>
+<text text-anchor="middle" x="123.34" y="-14.4" font-family="Times,serif" font-size="14.00">value: int</text>
+</g>
+<!-- CounterState&#45;&gt;CounterState -->
+<g id="edge1" class="edge">
+<title>CounterState-&gt;CounterState</title>
+<path fill="none" stroke="black" d="M64.54,-36.9C62.34,-46.42 67.1,-55 78.79,-55 85.37,-55 89.75,-52.29 91.94,-48.22"/>
+<polygon fill="black" stroke="black" points="95.41,-48.71 92.9,-38.41 88.44,-48.02 95.41,-48.71"/>
+<text text-anchor="middle" x="78.79" y="-59.2" font-family="Times,serif" font-size="14.00">increment()</text>
+</g>
+<!-- CounterState&#45;&gt;CounterState -->
+<g id="edge2" class="edge">
+<title>CounterState-&gt;CounterState</title>
+<path fill="none" stroke="black" d="M54.9,-36.93C42.51,-54.23 50.48,-73 78.79,-73 101.58,-73 111.18,-60.85 107.61,-47.08"/>
+<polygon fill="black" stroke="black" points="110.86,-45.76 103.34,-38.29 104.56,-48.81 110.86,-45.76"/>
+<text text-anchor="middle" x="78.79" y="-77.2" font-family="Times,serif" font-size="14.00">decrement()</text>
+</g>
+</g>
+</svg>
